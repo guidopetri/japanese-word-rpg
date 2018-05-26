@@ -20,6 +20,11 @@ class StatusEffect(Enum):
 	berserk=2
 	slow=3
 
+class playerClasses(Enum):
+	fighter='fighter'
+	rogue='rogue'
+	wizard='wizard'
+
 class enemyWord():
 	def __init__(self,level):
 		self.level = level
@@ -61,18 +66,47 @@ class enemyWord():
 		return
 
 class PlayerCharacter():
-	def __init__(self,playerName='Player1',health=10,maxHP=10,level=1,kills=0,score=0,totalEXP=0,alive=True,totalGold=0):
-		self.name = playerName
-		self.health = health
-		self.maxHP = maxHP
-		self.level = level
-		self.kills = kills
-		self.score = score
+	def __init__(self,playerName=None,playerClass=None,playerDict=None):
+		if playerDict == None and playerName != None:
+			self.name = playerName
+			self.charClass = playerClass
+			self.health = 10
+			self.maxHP = 10
+			self.level = 1
+			self.kills = 0
+			self.score = 0
+			self.totalEXP = 0
+			self.alive = True
+			self.totalGold = 0
+			self.goldMultiplier = 1.0
+			self.dmgMultiplier = 1.0
+			self.calculateClassBonuses()
+		elif playerDict != None and playerName == None:
+			self.name = playerDict['name']
+			self.charClass = playerDict['charClass']
+			self.health = playerDict['health']
+			self.maxHP = playerDict['maxHP']
+			self.level = playerDict['level']
+			self.kills = playerDict['kills']
+			self.score = playerDict['score']
+			self.totalEXP = playerDict['totalEXP']
+			self.alive = playerDict['alive']
+			self.totalGold = playerDict['totalGold']
+			self.goldMultiplier = playerDict['goldMultiplier']
+			self.dmgMultiplier = playerDict['dmgMultiplier']
 		self.calculateScoreMultiplier()
-		self.totalEXP = totalEXP
-		self.alive = alive
-		self.totalGold = totalGold
 		self.calculateLevelThreshold()
+		return
+
+	def calculateClassBonuses(self):
+		if self.charClass == playerClasses.fighter:
+			self.maxHP = int(self.health*1.1)
+			self.health = int(self.health*1.1)
+			self.dmgMultiplier *= 1.1
+		elif self.charClass == playerClasses.rogue:
+			self.goldMultiplier *= 1.2
+		elif self.charClass == playerClasses.wizard:
+			self.dmgMultiplier *= 1.3
 		return
 
 	def takeDamage(self,amount):
@@ -85,6 +119,10 @@ class PlayerCharacter():
 		self.totalEXP += amount
 		if self.EXPThreshold-self.totalEXP <= 0:
 			self.levelUp()
+		return
+
+	def gainGold(self,amount):
+		self.totalGold += int(amount*self.goldMultiplier)
 		return
 
 	def levelUp(self):
@@ -109,7 +147,19 @@ class PlayerCharacter():
 		return
 
 	def toJSON(self):
-		returnDict = {'name':self.name,'health':self.health,'maxHP':self.maxHP,'level':self.level,'kills':self.kills,'score':self.score,'totalEXP':self.totalEXP,'alive':self.alive,'totalGold':self.totalGold}
+		returnDict = {'name':self.name,
+						'charClass':self.charClass,
+						'health':self.health,
+						'maxHP':self.maxHP,
+						'level':self.level,
+						'kills':self.kills,
+						'score':self.score,
+						'totalEXP':self.totalEXP,
+						'alive':self.alive,
+						'totalGold':self.totalGold,
+						'goldMultiplier':self.goldMultiplier,
+						'dmgMultiplier':self.dmgMultiplier
+						}
 		return returnDict
 
 def scoreWord(word,userInput):
@@ -136,11 +186,12 @@ try:
 	print([x for x in playerData.keys()],sep=' ',end='\n')
 	playerName = input("who are you?\n")
 	try:
-		player = PlayerCharacter(playerData[playerName]['name'],playerData[playerName]['health'],playerData[playerName]['maxHP'],playerData[playerName]['level'],playerData[playerName]['kills'],playerData[playerName]['score'],playerData[playerName]['totalEXP'],playerData[playerName]['alive'],playerData[playerName]['totalGold'])
+		player = PlayerCharacter(playerDict=playerData[playerName])
 	except KeyError:
 		print("player doesn't exist")
 		playerName = input("what's your name?\n")
-		player = PlayerCharacter(playerName=playerName)
+		playerClass = input("what's your class?\n")
+		player = PlayerCharacter(playerName=playerName,playerClass=playerClass)
 except FileNotFoundError:
 	playerData = {}
 	playerName = input("what's your name?\n")
