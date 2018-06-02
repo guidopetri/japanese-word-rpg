@@ -60,6 +60,10 @@ class PlayerCharacter():
 			self.totalGold = 0
 			self.goldMultiplier = 1.0
 			self.dmgMultiplier = 1.0
+			self.status = gameEnums.StatusEffect.normal
+			self.statusDuration = 0
+			self.difficulty = 0.93
+			self.initInventory()
 			self.calculateClassBonuses()
 		elif playerDict != None and playerName == None:
 			self.name = playerDict['name']
@@ -74,6 +78,10 @@ class PlayerCharacter():
 			self.totalGold = playerDict['totalGold']
 			self.goldMultiplier = playerDict['goldMultiplier']
 			self.dmgMultiplier = playerDict['dmgMultiplier']
+			self.status = playerDict['status']
+			self.statusDuration = playerDict['statusDuration']
+			self.inventory = playerDict['inventory']
+			self.difficulty = playerDict['difficulty']
 		self.calculateScoreMultiplier()
 		self.calculateLevelThreshold()
 		return
@@ -138,6 +146,16 @@ class PlayerCharacter():
 						'alive':self.alive,
 						'totalGold':self.totalGold,
 						'goldMultiplier':self.goldMultiplier,
-						'dmgMultiplier':self.dmgMultiplier
+						'dmgMultiplier':self.dmgMultiplier,
+						'inventory':self.inventory,
+						'status':self.status,
+						'statusDuration':self.statusDuration
+						'difficulty':self.difficulty
 						}
 		return returnDict
+
+	def initInventory(self):
+		self.inventory = {}
+		for item in gameEnums.useItems:
+			self.inventory[item] = 0
+		return
