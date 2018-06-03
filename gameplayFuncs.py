@@ -127,3 +127,18 @@ def getEffect(player,choice):
 		player.status = gameEnums.StatusEffect.staminaUp
 		player.statusDuration = 2
 	return
+
+def church(player):
+	if not player.alive:
+		price = player.maxHP*1.5
+		choice = input("would you like to revive for %s gold? y/n\n"%price)
+		if choice == 'y' or choice == 'Y':
+			if player.totalGold >= price:
+				player.alive = True
+				player.health = player.maxHP
+				player.totalGold -= price
+			else:
+				print("you don't have enough money!\n")
+	elif player.alive:
+		print("bless the LAWD\n")
+	return

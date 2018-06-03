@@ -20,6 +20,7 @@ class playerClasses(Enum):
 	wizard='wizard'
 	
 class useItems(Enum):
+	#item name=(identifier,price)
 	potion=('1','10')
 	coffee=('2','50')
 	poison_flask=('3','50')
