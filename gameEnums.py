@@ -32,5 +32,10 @@ class useItems(Enum):
 class gameColors(Enum):
 	offwhite=pygame.Color(230,230,230)
 	offblack=pygame.Color(20,20,20)
+	offblue=pygame.Color(50,50,255)
+	offred=pygame.Color(255,50,50)
+	bgyellow=pygame.Color(252,232,131)
+	bgblue=pygame.Color(131,131,252)
 	white=pygame.Color(255,255,255)
 	black=pygame.Color(0,0,0)
+	magenta=pygame.Color(255,0,255)

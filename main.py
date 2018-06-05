@@ -4,6 +4,7 @@
 
 #import pygame
 #import OpenGL
+#import kivy
 import sys
 import menus
 
