@@ -3,7 +3,6 @@
 #python 3.6.4
 
 from enum import Enum
-import pygame
 
 class StatusEffect(Enum):
 	normal=1
@@ -28,9 +27,3 @@ class useItems(Enum):
 	protein_shake=('4','50')
 	sharpening_oil=('5','50')
 	energy_bar=('6','50')
-
-class gameColors(Enum):
-	offwhite=pygame.Color(230,230,230)
-	offblack=pygame.Color(20,20,20)
-	white=pygame.Color(255,255,255)
-	black=pygame.Color(0,0,0)
