@@ -149,7 +149,7 @@ class PlayerCharacter():
 						'dmgMultiplier':self.dmgMultiplier,
 						'inventory':self.inventory,
 						'status':self.status,
-						'statusDuration':self.statusDuration
+						'statusDuration':self.statusDuration,
 						'difficulty':self.difficulty
 						}
 		return returnDict
