@@ -293,22 +293,35 @@ def church(gameSurface,font,player):
 	width = gameSurface.get_width()
 	height = gameSurface.get_height()
 	price = player.maxHP*1.5
-	reviveText = font.render("would you like to revive for %s gold? y/n"%price,True,gameEnums.gameColors.offwhite.value)
+	reviveText = font.render("would you like to revive for %s gold? y/n"%price,True,gameEnums.gameColors.offblack.value)
 	reviveRect = reviveText.get_rect()
 	reviveRect.midtop = (width/2,height/4)
 
-	aliveText = font.render("bless tha LAWD",True,gameEnums.gameColors.offwhite.value)
+	aliveText = font.render("bless tha LAWD",True,gameEnums.gameColors.offblack.value)
 	aliveRect = aliveText.get_rect()
 	aliveRect.midtop = (width/2,height/4)
 
-	noMoneyText = font.render("you don't have enough money!",True,gameEnums.gameColors.offwhite.value)
+	noMoneyText = font.render("you don't have enough money!",True,gameEnums.gameColors.offblack.value)
 	noMoneyRect = noMoneyText.get_rect()
 	noMoneyRect.midtop = (width/2,height/4+45)
+
+	backgroundSurface = pygame.Surface((width*3/4,height/4-10))
+	backgroundSurface.fill(gameEnums.gameColors.bgblue.value)
+	backgroundRect = backgroundSurface.get_rect()
+	backgroundRect.midtop = (width/2,height/4-25)
+
+	background = pygame.Surface((width*3/4-10,height/4-20))
+	background.fill(gameEnums.gameColors.bgyellow.value)
+	backgroundRect2 = background.get_rect()
+	backgroundRect2.midtop = (backgroundRect.width/2,5)
+
+	backgroundSurface.blit(background,backgroundRect2)
 
 	noMoney = False
 
 	while True:
 		gameSurface.fill(gameEnums.gameColors.offblack.value)
+		gameSurface.blit(backgroundSurface,backgroundRect)
 		if not player.alive:
 			gameSurface.blit(reviveText,reviveRect)
 			if noMoney:
