@@ -16,7 +16,7 @@ def loadPlayer():
 			playerData = json.loads(file.read())
 
 		print([x for x in playerData.keys()],sep=' ',end='\n')
-		playerName = 'Sid'#input("who are you?\n")
+		playerName = input("who are you?\n")
 		try:
 			player = classes.PlayerCharacter(playerDict=playerData[playerName])
 		except KeyError:

@@ -23,45 +23,32 @@ def mainMenu():
 	playSurface = pygame.display.set_mode((width,height))
 	pygame.display.set_caption("Word RPG")
 	sysFont = pygame.font.SysFont('Arial',32)
-	welcomeText = sysFont.render("welcome to Edo",True,gameEnums.gameColors.offblack.value)
+	welcomeText = sysFont.render("welcome to Edo",True,gameEnums.gameColors.offwhite.value)
 	welcomeRect = welcomeText.get_rect()
-	welcomeRect.midtop=(width/2,height/2-135)
+	welcomeRect.midtop=(350,100)
 
-	battleText = sysFont.render("1: battle",True,gameEnums.gameColors.offblack.value)
+	battleText = sysFont.render("1: battle",True,gameEnums.gameColors.offwhite.value)
 	battleRect = battleText.get_rect()
-	battleRect.midtop=(width/2,height/2-90)
+	battleRect.midtop=(350,145)
 
-	shopText = sysFont.render("2: shop",True,gameEnums.gameColors.offblack.value)
+	shopText = sysFont.render("2: shop",True,gameEnums.gameColors.offwhite.value)
 	shopRect = shopText.get_rect()
-	shopRect.midtop=(width/2,height/2-45)
+	shopRect.midtop=(350,190)
 
-	inventoryText = sysFont.render("3: inventory",True,gameEnums.gameColors.offblack.value)
+	inventoryText = sysFont.render("3: inventory",True,gameEnums.gameColors.offwhite.value)
 	inventoryRect = inventoryText.get_rect()
-	inventoryRect.midtop=(width/2,height/2)
+	inventoryRect.midtop=(350,235)
 
-	churchText = sysFont.render("4: church",True,gameEnums.gameColors.offblack.value)
+	churchText = sysFont.render("4: church",True,gameEnums.gameColors.offwhite.value)
 	churchRect = churchText.get_rect()
-	churchRect.midtop=(width/2,height/2+45)
+	churchRect.midtop=(350,280)
 
-	quitText = sysFont.render("0: quit",True,gameEnums.gameColors.offblack.value)
+	quitText = sysFont.render("0: quit",True,gameEnums.gameColors.offwhite.value)
 	quitRect = quitText.get_rect()
-	quitRect.midtop=(width/2,height/2+90)
+	quitRect.midtop=(350,325)
 
-	backgroundSurface = pygame.Surface((welcomeRect.width+100,305))
-	backgroundSurface.fill(gameEnums.gameColors.bgblue.value)
-	backgroundRect = backgroundSurface.get_rect()
-	backgroundRect.midtop = (width/2,height/2-157)
-
-	background = pygame.Surface((welcomeRect.width+90,295))
-	background.fill(gameEnums.gameColors.bgyellow.value)
-	backgroundRect2 = background.get_rect()
-	backgroundRect2.midtop = (backgroundRect.width/2,5)
-
-	backgroundSurface.blit(background,backgroundRect2)
-	
 	while True:
 		playSurface.fill(gameEnums.gameColors.offblack.value)
-		playSurface.blit(backgroundSurface,backgroundRect)
 		playSurface.blit(welcomeText,welcomeRect)
 		playSurface.blit(battleText,battleRect)
 		playSurface.blit(shopText,shopRect)
@@ -75,7 +62,7 @@ def mainMenu():
 				sys.exit()
 			elif event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_1:
-					gameplayFuncs.battle(playSurface,sysFont,currentPlayer,allWords,20)
+					gameplayFuncs.battle(playSurface,sysFont,currentPlayer,allWords,60)
 				elif event.key == pygame.K_2:
 					gameplayFuncs.shop(playSurface,sysFont,currentPlayer)
 				elif event.key == pygame.K_3:
