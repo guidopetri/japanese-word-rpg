@@ -7,8 +7,10 @@ import difflib
 import time
 import random
 import gameEnums
+import pyglet.gl
+import pyglet
 
-def battle(player,allWords,gameTime):
+def battle(window,player,allWords,gameTime):
 	if not player.alive:
 		print("you're passed out! you can't battle!\n")
 		return
@@ -128,17 +130,41 @@ def getEffect(player,choice):
 		player.statusDuration = 2
 	return
 
-def church(player):
-	if not player.alive:
-		price = player.maxHP*1.5
-		choice = input("would you like to revive for %s gold? y/n\n"%price)
-		if choice == 'y' or choice == 'Y':
+def church(window,player):
+	width,height = window.get_size()
+
+	price = player.maxHP*1.5
+	notEnoughMoney = False
+
+	reviveQuestion = pyglet.text.Label("would you like to revive for %s gold?"%price,font_name='Arial',font_size=32,x=width/2,y=height/2,anchor_x='center',anchor_y='center',align='center',color=(255,0,0,255))
+	noMoney = pyglet.text.Label("you don't have enough money!",font_name='Arial',font_size=32,x=width/2,y=height/2-45,anchor_x='center',anchor_y='center',align='center',color=(255,0,0,255))
+	lawdBless = pyglet.text.Label("bless tha LAWD",font_name='Arial',font_size=32,x=width/2,y=height/2,anchor_x='center',anchor_y='center',align='center',color=(255,0,0,255))
+
+	print("in the church function")
+
+	@window.event
+	def on_draw():
+		window.clear()
+		#pyglet.graphics.draw(4,pyglet.gl.GL_QUADS,('v2f',(width/4-5,height/2+50,width/4-5,height/2-95,width*3/4+5,height/2+50,width*3/4+5,height/2-95)),('c3b',(252,232,131)*4))
+		#pyglet.graphics.draw(4,pyglet.gl.GL_QUADS,('v2f',(width/4,height/2+45,width/4,height/2-90,width*3/4,height/2+45,width*3/4,height/2-90)),('c3b',(131,131,252)*4))
+
+		if not player.alive:
+			reviveQuestion.draw()
+			if notEnoughMoney:
+				noMoney.draw()
+		else:
+			lawdBless.draw()
+
+	@window.event
+	def on_key_press(symbol,modifiers):
+		if symbol == pyglet.window.key.Y and not notEnoughMoney:
 			if player.totalGold >= price:
 				player.alive = True
 				player.health = player.maxHP
 				player.totalGold -= price
+				return
 			else:
-				print("you don't have enough money!\n")
-	elif player.alive:
-		print("bless the LAWD\n")
+				notEnoughMoney = True
+		else:
+			return
 	return
