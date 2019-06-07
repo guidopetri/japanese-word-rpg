@@ -63,7 +63,7 @@ class PlayerCharacter():
             self.total_gold = 0
             self.gold_multiplier = 1.0
             self.dmg_multiplier = 1.0
-            self.status = status_effect.normal
+            self.status = status_effect.normal.value
             self.status_duration = 0
             self.difficulty = 0.93
             self.init_inventory()
@@ -160,5 +160,5 @@ class PlayerCharacter():
     def init_inventory(self):
         self.inventory = {}
         for item in use_items:
-            self.inventory[item] = 0
+            self.inventory[item.name] = 0
         return
