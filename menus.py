@@ -3,8 +3,8 @@
 # python 3.6.4
 
 
-import gameplayFuncs
-from gameEnums import colors
+import gameplay_funcs
+from game_enums import colors
 import backend
 import pygame
 import sys
@@ -90,23 +90,23 @@ def main_menu():
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    gameplayFuncs.battle(play_surface,
-                                         sys_font,
-                                         current_player,
-                                         all_words,
-                                         20)
+                    gameplay_funcs.battle(play_surface,
+                                          sys_font,
+                                          current_player,
+                                          all_words,
+                                          20)
                 elif event.key == pygame.K_2:
-                    gameplayFuncs.shop(play_surface,
-                                       sys_font,
-                                       current_player)
+                    gameplay_funcs.shop(play_surface,
+                                        sys_font,
+                                        current_player)
                 elif event.key == pygame.K_3:
-                    gameplayFuncs.inventory(play_surface,
-                                            sys_font,
-                                            current_player)
+                    gameplay_funcs.inventory(play_surface,
+                                             sys_font,
+                                             current_player)
                 elif event.key == pygame.K_4:
-                    gameplayFuncs.church(play_surface,
-                                         sys_font,
-                                         current_player)
+                    gameplay_funcs.church(play_surface,
+                                          sys_font,
+                                          current_player)
                 elif event.key == pygame.K_0:
                     backend.save_player(player_data,
                                         current_player)

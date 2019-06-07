@@ -4,7 +4,7 @@
 
 
 import random
-from gameEnums import status_effect, use_items, player_classes
+from game_enums import status_effect, use_items, player_classes
 
 
 class enemy_word():
