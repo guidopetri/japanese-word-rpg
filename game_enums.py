@@ -12,10 +12,10 @@ class status_effect(Enum):
     berserk = 2
     slow = 3
     fast = 4
-    givePoison = 5
-    hpUp = 6
-    dmgUp = 7
-    staminaUp = 8
+    give_poison = 5
+    hp_up = 6
+    dmg_up = 7
+    stamina_up = 8
 
 
 class player_classes(Enum):
