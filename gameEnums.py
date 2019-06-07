@@ -7,7 +7,7 @@ from enum import Enum
 import pygame
 
 
-class StatusEffect(Enum):
+class status_effect(Enum):
     normal = 1
     berserk = 2
     slow = 3
@@ -18,14 +18,14 @@ class StatusEffect(Enum):
     staminaUp = 8
 
 
-class playerClasses(Enum):
+class player_classes(Enum):
     fighter = 'fighter'
     rogue = 'rogue'
     wizard = 'wizard'
 
 
-class useItems(Enum):
-    # item name=(identifier,price)
+class use_items(Enum):
+    # item name = (identifier, price)
     potion = ('1', '10')
     coffee = ('2', '50')
     poison_flask = ('3', '50')
@@ -34,7 +34,7 @@ class useItems(Enum):
     energy_bar = ('6', '50')
 
 
-class gameColors(Enum):
+class colors(Enum):
     offwhite = pygame.Color(230, 230, 230)
     offblack = pygame.Color(20, 20, 20)
     offblue = pygame.Color(50, 50, 255)
