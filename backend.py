@@ -7,37 +7,37 @@ import json
 import classes
 
 
-def loadWords():
-    with open('wordsLen.ini', 'r') as file:
-        allWords = json.loads(file.read())
-    return allWords
+def load_words():
+    with open('wordsLen.ini', 'r') as f:
+        all_words = json.loads(f.read())
+    return all_words
 
 
-def loadPlayer():
+def load_player():
     try:
-        with open('player.ini', 'r') as file:
-            playerData = json.loads(file.read())
+        with open('player.ini', 'r') as f:
+            player_data = json.loads(f.read())
 
-        print([x for x in playerData.keys()], sep=' ', end='\n')
-        playerName = 'Sid'  # input("who are you?\n")
+        print([x for x in player_data.keys()], sep=' ', end='\n')
+        player_name = 'Sid'  # input("who are you?\n")
         try:
-            player = classes.PlayerCharacter(playerDict=playerData[playerName])
+            player = classes.PlayerCharacter(playerDict=player_data[player_name])  # noqa
         except KeyError:
             print("player doesn't exist")
-            playerName = input("what's your name?\n")
-            playerClass = input("what's your class?\n")
-            player = classes.PlayerCharacter(playerName=playerName,
-                                             playerClass=playerClass)
+            player_name = input("what's your name?\n")
+            player_class = input("what's your class?\n")
+            player = classes.PlayerCharacter(playerName=player_name,
+                                             playerClass=player_class)
     except FileNotFoundError:
-        playerData = {}
-        playerName = input("what's your name?\n")
-        player = classes.PlayerCharacter(playerName=playerName)
-    return playerData, player
+        player_data = {}
+        player_name = input("what's your name?\n")
+        player = classes.PlayerCharacter(playerName=player_name)
+    return player_data, player
 
 
-def savePlayer(playerData, player):
-    playerData[player.name] = player.toJSON()
+def save_player(player_data, player):
+    player_data[player.name] = player.toJSON()
 
-    with open('player.ini', 'w') as file:
-        json.dump(playerData, file)
+    with open('player.ini', 'w') as f:
+        json.dump(player_data, f)
     return

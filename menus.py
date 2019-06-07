@@ -11,8 +11,8 @@ import sys
 
 
 def main_menu():
-    all_words = backend.loadWords()
-    (player_data, current_player) = backend.loadPlayer()
+    all_words = backend.load_words()
+    (player_data, current_player) = backend.load_player()
 
     init_status = pygame.init()
     print(init_status)
@@ -108,8 +108,8 @@ def main_menu():
                                          sys_font,
                                          current_player)
                 elif event.key == pygame.K_0:
-                    backend.savePlayer(player_data,
-                                       current_player)
+                    backend.save_player(player_data,
+                                        current_player)
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
         pygame.display.flip()
     return
