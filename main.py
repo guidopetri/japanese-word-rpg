@@ -22,4 +22,4 @@ def sort_words_len(all_words):
     return
 
 
-menus.mainMenu()
+menus.main_menu()

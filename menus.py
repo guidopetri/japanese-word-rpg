@@ -4,84 +4,85 @@
 
 
 import gameplayFuncs
-import gameEnums
+from gameEnums import colors
 import backend
 import pygame
 import sys
 
 
-def mainMenu():
-    allWords = backend.loadWords()
-    (playerData, currentPlayer) = backend.loadPlayer()
+def main_menu():
+    all_words = backend.loadWords()
+    (player_data, current_player) = backend.loadPlayer()
 
-    initStatus = pygame.init()
-    print(initStatus)
-    if initStatus[1] > 0:
-        print("had {0} initializing errors, exiting".format(initStatus[1]))
+    init_status = pygame.init()
+    print(init_status)
+    if init_status[1] > 0:
+        print("had {0} initializing errors, exiting".format(init_status[1]))
         sys.exit()
     print("pygame initialized successfully")
 
     width, height = 800, 600
-    playSurface = pygame.display.set_mode((width, height))
+    play_surface = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Word RPG")
-    sysFont = pygame.font.SysFont('Arial', 32)
-    welcomeText = sysFont.render("welcome to Edo",
-                                 True,
-                                 gameEnums.gameColors.offblack.value)
-    welcomeRect = welcomeText.get_rect()
-    welcomeRect.midtop = (width / 2, height / 2 - 135)
+    sys_font = pygame.font.SysFont('Arial', 32)
 
-    battleText = sysFont.render("1: battle",
-                                True,
-                                gameEnums.gameColors.offblack.value)
-    battleRect = battleText.get_rect()
-    battleRect.midtop = (width / 2, height / 2 - 90)
-
-    shopText = sysFont.render("2: shop",
-                              True,
-                              gameEnums.gameColors.offblack.value)
-    shopRect = shopText.get_rect()
-    shopRect.midtop = (width / 2, height / 2 - 45)
-
-    inventoryText = sysFont.render("3: inventory",
+    welcome_text = sys_font.render("welcome to Edo",
                                    True,
-                                   gameEnums.gameColors.offblack.value)
-    inventoryRect = inventoryText.get_rect()
-    inventoryRect.midtop = (width / 2, height / 2)
+                                   colors.offblack.value)
+    welcome_rect = welcome_text.get_rect()
+    welcome_rect.midtop = (width / 2, height / 2 - 135)
 
-    churchText = sysFont.render("4: church",
+    battle_text = sys_font.render("1: battle",
+                                  True,
+                                  colors.offblack.value)
+    battle_rect = battle_text.get_rect()
+    battle_rect.midtop = (width / 2, height / 2 - 90)
+
+    shop_text = sys_font.render("2: shop",
                                 True,
-                                gameEnums.gameColors.offblack.value)
-    churchRect = churchText.get_rect()
-    churchRect.midtop = (width / 2, height / 2 + 45)
+                                colors.offblack.value)
+    shop_rect = shop_text.get_rect()
+    shop_rect.midtop = (width / 2, height / 2 - 45)
 
-    quitText = sysFont.render("0: quit",
-                              True,
-                              gameEnums.gameColors.offblack.value)
-    quitRect = quitText.get_rect()
-    quitRect.midtop = (width / 2, height / 2 + 90)
+    inventory_text = sys_font.render("3: inventory",
+                                     True,
+                                     colors.offblack.value)
+    inventory_rect = inventory_text.get_rect()
+    inventory_rect.midtop = (width / 2, height / 2)
 
-    backgroundSurface = pygame.Surface((welcomeRect.width + 100, 305))
-    backgroundSurface.fill(gameEnums.gameColors.bgblue.value)
-    backgroundRect = backgroundSurface.get_rect()
-    backgroundRect.midtop = (width / 2, height / 2 - 157)
+    church_text = sys_font.render("4: church",
+                                  True,
+                                  colors.offblack.value)
+    church_rect = church_text.get_rect()
+    church_rect.midtop = (width / 2, height / 2 + 45)
 
-    background = pygame.Surface((welcomeRect.width + 90, 295))
-    background.fill(gameEnums.gameColors.bgyellow.value)
-    backgroundRect2 = background.get_rect()
-    backgroundRect2.midtop = (backgroundRect.width / 2, 5)
+    quit_text = sys_font.render("0: quit",
+                                True,
+                                colors.offblack.value)
+    quit_rect = quit_text.get_rect()
+    quit_rect.midtop = (width / 2, height / 2 + 90)
 
-    backgroundSurface.blit(background, backgroundRect2)
+    background_surface = pygame.Surface((welcome_rect.width + 100, 305))
+    background_surface.fill(colors.bgblue.value)
+    background_rect = background_surface.get_rect()
+    background_rect.midtop = (width / 2, height / 2 - 157)
+
+    background = pygame.Surface((welcome_rect.width + 90, 295))
+    background.fill(colors.bgyellow.value)
+    background_rect2 = background.get_rect()
+    background_rect2.midtop = (background_rect.width / 2, 5)
+
+    background_surface.blit(background, background_rect2)
 
     while True:
-        playSurface.fill(gameEnums.gameColors.offblack.value)
-        playSurface.blit(backgroundSurface, backgroundRect)
-        playSurface.blit(welcomeText, welcomeRect)
-        playSurface.blit(battleText, battleRect)
-        playSurface.blit(shopText, shopRect)
-        playSurface.blit(inventoryText, inventoryRect)
-        playSurface.blit(churchText, churchRect)
-        playSurface.blit(quitText, quitRect)
+        play_surface.fill(colors.offblack.value)
+        play_surface.blit(background_surface, background_rect)
+        play_surface.blit(welcome_text, welcome_rect)
+        play_surface.blit(battle_text, battle_rect)
+        play_surface.blit(shop_text, shop_rect)
+        play_surface.blit(inventory_text, inventory_rect)
+        play_surface.blit(church_text, church_rect)
+        play_surface.blit(quit_text, quit_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -89,26 +90,26 @@ def mainMenu():
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    gameplayFuncs.battle(playSurface,
-                                         sysFont,
-                                         currentPlayer,
-                                         allWords,
+                    gameplayFuncs.battle(play_surface,
+                                         sys_font,
+                                         current_player,
+                                         all_words,
                                          20)
                 elif event.key == pygame.K_2:
-                    gameplayFuncs.shop(playSurface,
-                                       sysFont,
-                                       currentPlayer)
+                    gameplayFuncs.shop(play_surface,
+                                       sys_font,
+                                       current_player)
                 elif event.key == pygame.K_3:
-                    gameplayFuncs.inventory(playSurface,
-                                            sysFont,
-                                            currentPlayer)
+                    gameplayFuncs.inventory(play_surface,
+                                            sys_font,
+                                            current_player)
                 elif event.key == pygame.K_4:
-                    gameplayFuncs.church(playSurface,
-                                         sysFont,
-                                         currentPlayer)
+                    gameplayFuncs.church(play_surface,
+                                         sys_font,
+                                         current_player)
                 elif event.key == pygame.K_0:
-                    backend.savePlayer(playerData,
-                                       currentPlayer)
+                    backend.savePlayer(player_data,
+                                       current_player)
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
         pygame.display.flip()
     return
