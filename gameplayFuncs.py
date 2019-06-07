@@ -22,8 +22,8 @@ def battle(game_surface, font, player, all_words, game_time):
             game_time *= 1.5
         elif player.status == status_effect.hp_up:
             oldHP = player.health
-            player.health += 0.5 * player.maxHP
-            player.maxHP *= 1.5
+            player.health += 0.5 * player.max_hp
+            player.max_hp *= 1.5
         elif player.status == status_effect.dmg_up:
             player.dmgMultiplier *= 2
         elif player.status == status_effect.fast:
@@ -99,7 +99,7 @@ def battle(game_surface, font, player, all_words, game_time):
     dead_enemy = False
     finished = False
     exit = False
-    enemy = classes.enemyWord(random.randrange(1, 4))
+    enemy = classes.enemy_word(random.randrange(1, 4))
     monster_choice = random.choice(monster_images_locations)
     current_monster_image = (monster_choice[0], monster_choice[1], 294, 296)
     monster_rect = pygame._rect(0, 0, 294, 296)
@@ -116,8 +116,8 @@ def battle(game_surface, font, player, all_words, game_time):
             if not finished:
                 game_surface.blit(instructions_text, instructions_rect)
                 if not enemy.alive:
-                    player.gainEXP(enemy.exp_yield)
-                    player.gainGold(enemy.gold_yield)
+                    player.gain_exp(enemy.exp_yield)
+                    player.gain_gold(enemy.gold_yield)
 
                     dead_text = font.render("ENEMY LEVEL %s KILLED!! 3 EXTRA SECONDS!!" % enemy.level,  # noqa
                                             True,
@@ -125,7 +125,7 @@ def battle(game_surface, font, player, all_words, game_time):
                     dead_rect = dead_text.get_rect()
                     dead_rect.midtop = (width / 2, 11 * height / 12)
 
-                    enemy = classes.enemyWord(random.randrange(1, 4))
+                    enemy = classes.enemy_word(random.randrange(1, 4))
                     monster_choice = random.choice(monster_images_locations)
                     current_monster_image = (monster_choice[0],
                                              monster_choice[1],
@@ -135,7 +135,7 @@ def battle(game_surface, font, player, all_words, game_time):
                     player.kills += 1
                     dead_enemy = True
                 if new_word:
-                    enemy.pickWord(all_words)
+                    enemy.pick_word(all_words)
                     word_text = font.render("%s" % enemy.word,
                                             True,
                                             colors.offblack.value)
@@ -187,14 +187,14 @@ def battle(game_surface, font, player, all_words, game_time):
                             if score_word(player.difficulty, enemy.word, "".join(typed_word)):  # noqa
                                 gave_hit = True
                                 took_hit = False
-                                player.scorePoints(1)
-                                enemy.takeDamage(player.dmgMultiplier)
+                                player.score_points(1)
+                                enemy.take_damage(player.dmgMultiplier)
                                 if poisonMode:
-                                    enemy.takeDamage(1)
+                                    enemy.take_damage(1)
                             else:
                                 took_hit = True
                                 gave_hit = False
-                                player.takeDamage(1)
+                                player.take_damage(1)
                                 health_text = font.render("HP: %s" % player.health,  # noqa
                                                           True,
                                                           colors.offblack.value)  # noqa
@@ -261,8 +261,8 @@ def battle(game_surface, font, player, all_words, game_time):
                 break
         pygame.display.flip()
     if 'oldHP' in locals():
-        player.health = player.maxHP * (2 / 3) - (player.maxHP - player.health)
-        player.maxHP *= (2 / 3)
+        player.health = player.max_hp * (2 / 3) - (player.max_hp - player.health)  # noqa
+        player.max_hp *= (2 / 3)
     if fast_mode:
         player.difficulty += 0.13
     return
@@ -309,8 +309,8 @@ def inventory(game_surface, font, player):
 def get_effect(player, choice):
     if choice == 'potion':
         player.health += 10
-        if player.health > player.maxHP:
-            player.health = player.maxHP
+        if player.health > player.max_hp:
+            player.health = player.max_hp
     elif choice == 'coffee':
         player.status = status_effect.fast
         player.status_duration = 5
@@ -332,7 +332,7 @@ def get_effect(player, choice):
 def church(game_surface, font, player):
     width = game_surface.get_width()
     height = game_surface.get_height()
-    price = player.maxHP * 1.5
+    price = player.max_hp * 1.5
     revive_text = font.render("would you like to revive for %s gold? y/n" % price,  # noqa
                               True,
                               colors.offblack.value)
@@ -382,7 +382,7 @@ def church(game_surface, font, player):
                 if event.key == pygame.K_y and not player.alive:
                     if player.total_gold >= price:
                         player.alive = True
-                        player.health = player.maxHP
+                        player.health = player.max_hp
                         player.total_gold -= price
                     else:
                         no_money = True

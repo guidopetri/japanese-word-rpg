@@ -4,161 +4,161 @@
 
 
 import random
-import gameEnums
+from gameEnums import status_effect, use_items, player_classes
 
 
-class enemyWord():
+class enemy_word():
     def __init__(self, level):
         self.level = level
-        self.expYield = self.level * random.randrange(5, 11)
-        self.goldYield = self.level * random.randrange(1, 4)
+        self.exp_yield = self.level * random.randrange(5, 11)
+        self.gold_yield = self.level * random.randrange(1, 4)
         self.health = self.level * random.randrange(2, 5)
-        self.maxHP = self.health
-        self.status = gameEnums.StatusEffect.normal
+        self.max_hp = self.health
+        self.status = status_effect.normal
         self.alive = True
         return
 
-    def pickWord(self, wordsDict):
-        allWords = [x for y in wordsDict.values() for x in y]
-        longWords = [x for y in wordsDict.values() for x in y if len(x) > 10]
-        shortWords = [x for y in wordsDict.values() for x in y if len(x) < 6]
-        if self.status == gameEnums.StatusEffect.normal:
-            self.word = random.choice(allWords)
-        elif self.status == gameEnums.StatusEffect.berserk:
-            self.word = random.choice(longWords)
-        elif self.status == gameEnums.StatusEffect.slow:
-            self.word = random.choice(shortWords)
+    def pick_word(self, words_dict):
+        all_words = [x for y in words_dict.values() for x in y]
+        long_words = [x for y in words_dict.values() for x in y if len(x) > 10]
+        short_words = [x for y in words_dict.values() for x in y if len(x) < 6]
+        if self.status == status_effect.normal:
+            self.word = random.choice(all_words)
+        elif self.status == status_effect.berserk:
+            self.word = random.choice(long_words)
+        elif self.status == status_effect.slow:
+            self.word = random.choice(short_words)
         return
 
-    def takeDamage(self, amount):
+    def take_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
             self.alive = False
             return
-        if (self.health < self.maxHP / 2) and (self.health > self.maxHP / 4) and (self.status == gameEnums.StatusEffect.normal):  # noqa
+        if (self.health < self.max_hp / 2) and (self.health > self.max_hp / 4) and (self.status == status_effect.normal):  # noqa
             print(" BERSERK!!")
-            self.status = gameEnums.StatusEffect.berserk
-        if (self.health < self.maxHP / 4) and (self.status == gameEnums.StatusEffect.berserk):  # noqa
-            self.status = gameEnums.StatusEffect.slow
+            self.status = status_effect.berserk
+        if (self.health < self.max_hp / 4) and (self.status == status_effect.berserk):  # noqa
+            self.status = status_effect.slow
             print(" ..... slow .....")
         return
 
-    def printWord(self):
+    def print_word(self):
         print(self.word)
         return
 
 
 class PlayerCharacter():
-    def __init__(self, playerName=None, playerClass=None, playerDict=None):
-        if playerDict is None and playerName is not None:
-            self.name = playerName
-            self.charClass = playerClass
+    def __init__(self, player_name=None, player_class=None, player_dict=None):
+        if player_dict is None and player_name is not None:
+            self.name = player_name
+            self.char_class = player_class
             self.health = 10
-            self.maxHP = 10
+            self.max_hp = 10
             self.level = 1
             self.kills = 0
             self.score = 0
-            self.totalEXP = 0
+            self.total_exp = 0
             self.alive = True
-            self.totalGold = 0
-            self.goldMultiplier = 1.0
-            self.dmgMultiplier = 1.0
-            self.status = gameEnums.StatusEffect.normal
-            self.statusDuration = 0
+            self.total_gold = 0
+            self.gold_multiplier = 1.0
+            self.dmg_multiplier = 1.0
+            self.status = status_effect.normal
+            self.status_duration = 0
             self.difficulty = 0.93
-            self.initInventory()
-            self.calculateClassBonuses()
-        elif playerDict is not None and playerName is None:
-            self.name = playerDict['name']
-            self.charClass = playerDict['charClass']
-            self.health = playerDict['health']
-            self.maxHP = playerDict['maxHP']
-            self.level = playerDict['level']
-            self.kills = playerDict['kills']
-            self.score = playerDict['score']
-            self.totalEXP = playerDict['totalEXP']
-            self.alive = playerDict['alive']
-            self.totalGold = playerDict['totalGold']
-            self.goldMultiplier = playerDict['goldMultiplier']
-            self.dmgMultiplier = playerDict['dmgMultiplier']
-            self.status = playerDict['status']
-            self.statusDuration = playerDict['statusDuration']
-            self.inventory = playerDict['inventory']
-            self.difficulty = playerDict['difficulty']
-        self.calculateScoreMultiplier()
-        self.calculateLevelThreshold()
+            self.init_inventory()
+            self.calculate_class_bonuses()
+        elif player_dict is not None and player_name is None:
+            self.name = player_dict['name']
+            self.char_class = player_dict['char_class']
+            self.health = player_dict['health']
+            self.max_hp = player_dict['max_hp']
+            self.level = player_dict['level']
+            self.kills = player_dict['kills']
+            self.score = player_dict['score']
+            self.total_exp = player_dict['total_exp']
+            self.alive = player_dict['alive']
+            self.total_gold = player_dict['total_gold']
+            self.gold_multiplier = player_dict['gold_multiplier']
+            self.dmg_multiplier = player_dict['dmg_multiplier']
+            self.status = player_dict['status']
+            self.status_duration = player_dict['status_duration']
+            self.inventory = player_dict['inventory']
+            self.difficulty = player_dict['difficulty']
+        self.calculate_score_multiplier()
+        self.calculate_level_threshold()
         return
 
-    def calculateClassBonuses(self):
-        if self.charClass == gameEnums.playerClasses.fighter:
-            self.maxHP = int(self.health * 1.1)
+    def calculate_class_bonuses(self):
+        if self.char_class == player_classes.fighter:
+            self.max_hp = int(self.health * 1.1)
             self.health = int(self.health * 1.1)
-            self.dmgMultiplier *= 1.1
-        elif self.charClass == gameEnums.playerClasses.rogue:
-            self.goldMultiplier *= 1.2
-        elif self.charClass == gameEnums.playerClasses.wizard:
-            self.dmgMultiplier *= 1.3
+            self.dmg_multiplier *= 1.1
+        elif self.char_class == player_classes.rogue:
+            self.gold_multiplier *= 1.2
+        elif self.char_class == player_classes.wizard:
+            self.dmg_multiplier *= 1.3
         return
 
-    def takeDamage(self, amount):
+    def take_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
             self.alive = False
         return
 
-    def gainEXP(self, amount):
-        self.totalEXP += amount
-        if self.EXPThreshold - self.totalEXP <= 0:
-            self.levelUp()
+    def gain_exp(self, amount):
+        self.total_exp += amount
+        if self.exp_threshold - self.total_exp <= 0:
+            self.level_up()
         return
 
-    def gainGold(self, amount):
-        self.totalGold += int(amount * self.goldMultiplier)
+    def gain_gold(self, amount):
+        self.total_gold += int(amount * self.gold_multiplier)
         return
 
-    def levelUp(self):
+    def level_up(self):
         print(" LEVEL UP!!")
         self.level += 1
-        self.health = self.maxHP
-        self.calculateLevelThreshold()
-        print(" NEXT LEVEL AT %s!!" % self.EXPThreshold)
-        self.calculateScoreMultiplier()
+        self.health = self.max_hp
+        self.calculate_level_threshold()
+        print(" NEXT LEVEL AT %s!!" % self.exp_threshold)
+        self.calculate_score_multiplier()
         return
 
-    def calculateScoreMultiplier(self):
-        self.scoreMultiplier = 1.0 * (self.level ** 1.3)
+    def calculate_score_multiplier(self):
+        self.score_multiplier = 1.0 * (self.level ** 1.3)
         return
 
-    def calculateLevelThreshold(self):
-        self.EXPThreshold = 43.65 * ((self.level + 1) ** 3)
+    def calculate_level_threshold(self):
+        self.exp_threshold = 43.65 * ((self.level + 1) ** 3)
         return
 
-    def scorePoints(self, amount):
-        self.score += int(amount * self.scoreMultiplier)
+    def score_points(self, amount):
+        self.score += int(amount * self.score_multiplier)
         return
 
     def toJSON(self):
-        returnDict = {'name': self.name,
-                      'charClass': self.charClass,
-                      'health': self.health,
-                      'maxHP': self.maxHP,
-                      'level': self.level,
-                      'kills': self.kills,
-                      'score': self.score,
-                      'totalEXP': self.totalEXP,
-                      'alive': self.alive,
-                      'totalGold': self.totalGold,
-                      'goldMultiplier': self.goldMultiplier,
-                      'dmgMultiplier': self.dmgMultiplier,
-                      'inventory': self.inventory,
-                      'status': self.status,
-                      'statusDuration': self.statusDuration,
-                      'difficulty': self.difficulty
-                      }
-        return returnDict
+        return_dict = {'name': self.name,
+                       'char_class': self.char_class,
+                       'health': self.health,
+                       'max_hp': self.max_hp,
+                       'level': self.level,
+                       'kills': self.kills,
+                       'score': self.score,
+                       'total_exp': self.total_exp,
+                       'alive': self.alive,
+                       'total_gold': self.total_gold,
+                       'gold_multiplier': self.gold_multiplier,
+                       'dmg_multiplier': self.dmg_multiplier,
+                       'inventory': self.inventory,
+                       'status': self.status,
+                       'status_duration': self.status_duration,
+                       'difficulty': self.difficulty
+                       }
+        return return_dict
 
-    def initInventory(self):
+    def init_inventory(self):
         self.inventory = {}
-        for item in gameEnums.useItems:
+        for item in use_items:
             self.inventory[item] = 0
         return
