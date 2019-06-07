@@ -7,7 +7,7 @@ import classes
 from difflib import SequenceMatcher
 import time
 import random
-from gameEnums import colors, status_effect, use_items
+from game_enums import colors, status_effect, use_items
 import pygame
 import sys
 
