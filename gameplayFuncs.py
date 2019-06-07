@@ -25,7 +25,7 @@ def battle(game_surface, font, player, all_words, game_time):
             player.health += 0.5 * player.max_hp
             player.max_hp *= 1.5
         elif player.status == status_effect.dmg_up:
-            player.dmgMultiplier *= 2
+            player.dmg_multiplier *= 2
         elif player.status == status_effect.fast:
             fast_mode = True
         elif player.status == status_effect.give_poison:
@@ -102,7 +102,7 @@ def battle(game_surface, font, player, all_words, game_time):
     enemy = classes.enemy_word(random.randrange(1, 4))
     monster_choice = random.choice(monster_images_locations)
     current_monster_image = (monster_choice[0], monster_choice[1], 294, 296)
-    monster_rect = pygame._rect(0, 0, 294, 296)
+    monster_rect = pygame.Rect(0, 0, 294, 296)
     monster_rect.midtop = (width / 2, height / 10 - 5)
 
     while True:
@@ -188,7 +188,7 @@ def battle(game_surface, font, player, all_words, game_time):
                                 gave_hit = True
                                 took_hit = False
                                 player.score_points(1)
-                                enemy.take_damage(player.dmgMultiplier)
+                                enemy.take_damage(player.dmg_multiplier)
                                 if poisonMode:
                                     enemy.take_damage(1)
                             else:

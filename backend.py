@@ -21,17 +21,17 @@ def load_player():
         print([x for x in player_data.keys()], sep=' ', end='\n')
         player_name = 'Sid'  # input("who are you?\n")
         try:
-            player = classes.PlayerCharacter(playerDict=player_data[player_name])  # noqa
+            player = classes.PlayerCharacter(player_dict=player_data[player_name])  # noqa
         except KeyError:
             print("player doesn't exist")
             player_name = input("what's your name?\n")
             player_class = input("what's your class?\n")
-            player = classes.PlayerCharacter(playerName=player_name,
-                                             playerClass=player_class)
+            player = classes.PlayerCharacter(player_name=player_name,
+                                             player_class=player_class)
     except FileNotFoundError:
         player_data = {}
         player_name = input("what's your name?\n")
-        player = classes.PlayerCharacter(playerName=player_name)
+        player = classes.PlayerCharacter(player_name=player_name)
     return player_data, player
 
 
