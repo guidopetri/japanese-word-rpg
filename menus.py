@@ -15,11 +15,10 @@ def main_menu():
     (player_data, current_player) = backend.load_player()
 
     init_status = pygame.init()
-    print(init_status)
+
     if init_status[1] > 0:
         print("had {0} initializing errors, exiting".format(init_status[1]))
         sys.exit()
-    print("pygame initialized successfully")
 
     width, height = 800, 600
     play_surface = pygame.display.set_mode((width, height))
