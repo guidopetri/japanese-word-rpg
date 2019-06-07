@@ -16,8 +16,8 @@ def sort_words_len(all_words):
     for word in all_words:
         words_lengths[len(word)].append(word)
 
-    with open('wordsLen.ini', 'w') as file:
-        json.dump(words_lengths, file)
+    with open('wordsLen.ini', 'w') as f:
+        json.dump(words_lengths, f)
 
     return
 
