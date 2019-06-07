@@ -5,34 +5,34 @@
 
 import json
 import classes
+import os
 
 
 def load_words():
     with open('wordsLen.ini', 'r') as f:
-        all_words = json.loads(f.read())
+        all_words = json.load(f)
+
     return all_words
 
 
 def load_player():
-    try:
+    if os.path.exists('player.ini'):
         with open('player.ini', 'r') as f:
-            player_data = json.loads(f.read())
+            data = json.load(f)
+    else:
+        data = {}
 
-        print([x for x in player_data.keys()], sep=' ', end='\n')
-        player_name = 'Sid'  # input("who are you?\n")
-        try:
-            player = classes.PlayerCharacter(player_dict=player_data[player_name])  # noqa
-        except KeyError:
-            print("player doesn't exist")
-            player_name = input("what's your name?\n")
-            player_class = input("what's your class?\n")
-            player = classes.PlayerCharacter(player_name=player_name,
-                                             player_class=player_class)
-    except FileNotFoundError:
-        player_data = {}
-        player_name = input("what's your name?\n")
-        player = classes.PlayerCharacter(player_name=player_name)
-    return player_data, player
+    # name = input('what's your name?\n')
+    name = 'Sid'
+    if name in data:
+        player = classes.PlayerCharacter(player_dict=data[name])
+    else:
+        print("player doesn't exist")
+        player_class = input("what's your class?\n")
+        player = classes.PlayerCharacter(player_name=name,
+                                         player_class=player_class)
+
+    return data, player
 
 
 def save_player(player_data, player):
@@ -40,4 +40,5 @@ def save_player(player_data, player):
 
     with open('player.ini', 'w') as f:
         json.dump(player_data, f)
+
     return
