@@ -16,12 +16,12 @@ def battle(game_surface, font, player, all_words, game_time):
     width = game_surface.get_width()
     height = game_surface.get_height()
     fast_mode = False
-    poisonMode = False
+    poison_mode = False
     if player.status_duration > 0:
         if player.status == status_effect.stamina_up:
             game_time *= 1.5
         elif player.status == status_effect.hp_up:
-            oldHP = player.health
+            old_hp = player.health
             player.health += 0.5 * player.max_hp
             player.max_hp *= 1.5
         elif player.status == status_effect.dmg_up:
@@ -29,7 +29,7 @@ def battle(game_surface, font, player, all_words, game_time):
         elif player.status == status_effect.fast:
             fast_mode = True
         elif player.status == status_effect.give_poison:
-            poisonMode = True
+            poison_mode = True
         player.status_duration -= 1
         if player.status_duration == 0:
             player.status = status_effect.normal
@@ -189,7 +189,7 @@ def battle(game_surface, font, player, all_words, game_time):
                                 took_hit = False
                                 player.score_points(1)
                                 enemy.take_damage(player.dmg_multiplier)
-                                if poisonMode:
+                                if poison_mode:
                                     enemy.take_damage(1)
                             else:
                                 took_hit = True
@@ -260,7 +260,7 @@ def battle(game_surface, font, player, all_words, game_time):
                             exit = True
                 break
         pygame.display.flip()
-    if 'oldHP' in locals():
+    if 'old_hp' in locals():
         player.health = player.max_hp * (2 / 3) - (player.max_hp - player.health)  # noqa
         player.max_hp *= (2 / 3)
     if fast_mode:
