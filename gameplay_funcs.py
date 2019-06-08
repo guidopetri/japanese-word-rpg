@@ -7,16 +7,17 @@ import classes
 from difflib import SequenceMatcher
 import time
 import random
-from game_enums import colors, status_effect, use_items
-import pygame
-import sys
+from game_enums import status_effect  # , use_items
+import pyglet.gl
+import pyglet
 
 
-def battle(game_surface, font, player, all_words, game_time):
-    width = game_surface.get_width()
-    height = game_surface.get_height()
+def battle(window, player, all_words, game_time):
+    if not player.alive:
+        print("you're passed out! you can't battle!\n")
+        return
     fast_mode = False
-    poisonMode = False
+    poison_mode = False
     if player.status_duration > 0:
         if player.status == status_effect.stamina_up:
             game_time *= 1.5
@@ -29,242 +30,60 @@ def battle(game_surface, font, player, all_words, game_time):
         elif player.status == status_effect.fast:
             fast_mode = True
         elif player.status == status_effect.give_poison:
-            poisonMode = True
+            poison_mode = True
         player.status_duration -= 1
         if player.status_duration == 0:
             player.status = status_effect.normal
     if fast_mode:
         player.difficulty -= 0.13
 
-    pass_out_text = font.render("you're passed out! you can't battle!",
-                                True,
-                                colors.offblack.value)
-    pass_out_rect = pass_out_text.get_rect()
-    pass_out_rect.midtop = (width / 2, height / 30)
-
-    instructions_text = font.render("type it out!",
-                                    True,
-                                    colors.offblack.value)
-    instructions_rect = instructions_text.get_rect()
-    instructions_rect.midtop = (width / 2, height / 30)
-
-    health_text = font.render("HP: %s" % player.health,
-                              True,
-                              colors.offblack.value)
-    health_rect = health_text.get_rect()
-    health_rect.midtop = (width / 4, height / 30)
-
-    hit_text = font.render("HIT!!",
-                           True,
-                           colors.offblue.value)
-    hit_rect = hit_text.get_rect()
-    hit_rect.midtop = (width / 2, height / 2 + 45)
-
-    ouch_text = font.render("OUCH!!",
-                            True,
-                            colors.offred.value)
-    ouch_rect = ouch_text.get_rect()
-    ouch_rect.midtop = (width / 2, height / 2 + 45)
-
-    background_surface = pygame.Surface((width * 3 / 4 + 10, height - 20))
-    background_surface.fill(colors.bgblue.value)
-    background_rect = background_surface.get_rect()
-    background_rect.midtop = (width / 2, 10)
-
-    background = pygame.Surface((width * 3 / 4, height - 30))
-    background.fill(colors.bgyellow.value)
-    background_rect2 = background.get_rect()
-    background_rect2.midtop = (background_rect.width / 2, 5)
-
-    background_surface.blit(background, background_rect2)
-
-    # 1176x888
-    # each is 294x296
-    monster_images_locations = [(i, j) for i in [0, 294, 588, 882] for j in [0, 296, 592]]  # noqa
-    current_monster_image = (0, 0, 0, 0)
-
-    monster_images = pygame.image.load('media/monsters.png')
-    monster_pixel_array = pygame.PixelArray(monster_images)
-    monster_pixel_array.replace(colors.magenta.value,
-                                pygame.Color(131, 232, 252), 0.4)  # wat
-    del monster_pixel_array  # what the heck is this
-
+    print("type it out! you have %s seconds!" % game_time)
+    print(player.health)
+    time_limit = game_time
     start_time = time.time()
-    last_time = start_time
-    time_left = game_time
-    new_word = True
-    typed_word = []
-    gave_hit = False
-    took_hit = False
-    dead_enemy = False
     finished = False
-    exit = False
-    enemy = classes.enemy_word(random.randrange(1, 4))
-    monster_choice = random.choice(monster_images_locations)
-    current_monster_image = (monster_choice[0], monster_choice[1], 294, 296)
-    monster_rect = pygame.Rect(0, 0, 294, 296)
-    monster_rect.midtop = (width / 2, height / 10 - 5)
-
-    while True:
-        game_surface.fill(colors.offblack.value)
-        game_surface.blit(background_surface, background_rect)
-        if not player.alive:
-            game_surface.blit(pass_out_text, pass_out_rect)
-            time.sleep(3)
-            break
-        elif player.alive:
-            if not finished:
-                game_surface.blit(instructions_text, instructions_rect)
-                if not enemy.alive:
-                    player.gain_exp(enemy.exp_yield)
-                    player.gain_gold(enemy.gold_yield)
-
-                    dead_text = font.render("ENEMY LEVEL %s KILLED!! 3 EXTRA SECONDS!!" % enemy.level,  # noqa
-                                            True,
-                                            colors.offblack.value)
-                    dead_rect = dead_text.get_rect()
-                    dead_rect.midtop = (width / 2, 11 * height / 12)
-
-                    enemy = classes.enemy_word(random.randrange(1, 4))
-                    monster_choice = random.choice(monster_images_locations)
-                    current_monster_image = (monster_choice[0],
-                                             monster_choice[1],
-                                             294,
-                                             296)
-                    time_left += 3
-                    player.kills += 1
-                    dead_enemy = True
-                if new_word:
-                    enemy.pick_word(all_words)
-                    word_text = font.render("%s" % enemy.word,
-                                            True,
-                                            colors.offblack.value)
-                    word_rect = word_text.get_rect()
-                    word_rect.midtop = (width / 2, height / 2 + 90)
-                    new_word = False
-                    typed_word = []
-                time_left_text = font.render("%ss left" % time_left,
-                                             True,
-                                             colors.offblack.value)
-                time_left_rect = time_left_text.get_rect()
-                time_left_rect.midtop = (3 * width / 4, height / 30)
-
-                game_surface.blit(time_left_text, time_left_rect)
-                game_surface.blit(health_text, health_rect)
-
-                game_surface.blit(monster_images,
-                                  monster_rect,
-                                  current_monster_image)
-
-                typed_text = font.render("".join(typed_word),
-                                         True,
-                                         colors.offblack.value)
-                typed_rect = typed_text.get_rect()
-                typed_rect.midtop = (width / 2, height / 2 + 135)
-
-                game_surface.blit(word_text, word_rect)
-                game_surface.blit(typed_text, typed_rect)
-
-                if gave_hit and not took_hit:
-                    game_surface.blit(hit_text, hit_rect)
-
-                if took_hit and not gave_hit:
-                    game_surface.blit(ouch_text, ouch_rect)
-
-                if dead_enemy:
-                    game_surface.blit(dead_text, dead_rect)
-
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-                    elif event.type == pygame.KEYDOWN:
-                        if event.unicode not in ['1', '2', '3', '4', '5', '6'] and event.key not in (pygame.K_SPACE, pygame.K_BACKSPACE):  # noqa
-                            typed_word.append(event.unicode)
-                        elif event.key == pygame.K_SPACE:
-                            new_word = True
-                            dead_enemy = False
-                            if score_word(player.difficulty, enemy.word, "".join(typed_word)):  # noqa
-                                gave_hit = True
-                                took_hit = False
-                                player.score_points(1)
-                                enemy.take_damage(player.dmg_multiplier)
-                                if poisonMode:
-                                    enemy.take_damage(1)
-                            else:
-                                took_hit = True
-                                gave_hit = False
-                                player.take_damage(1)
-                                health_text = font.render("HP: %s" % player.health,  # noqa
-                                                          True,
-                                                          colors.offblack.value)  # noqa
-                                health_rect = health_text.get_rect()
-                                health_rect.midtop = (width / 4, height / 30)
-                        elif event.key == pygame.K_BACKSPACE:
-                            try:
-                                del typed_word[len(typed_word) - 1]
-                            except IndexError:
-                                pass
-                        elif event.key == pygame.K_1:
-                            # for item usage during battle
-                            pass
-                        elif event.key == pygame.K_2:
-                            pass
-                        elif event.key == pygame.K_3:
-                            pass
-                        elif event.key == pygame.K_4:
-                            pass
-                        elif event.key == pygame.K_5:
-                            pass
-                        elif event.key == pygame.K_6:
-                            pass
-
-                if time.time() - last_time > 1:
-                    last_time = time.time()
-                    time_left -= 1
-                if time_left == 0:
-                    if time.time() - start_time >= game_time or not player.alive:  # noqa
-                        finished = True
-            elif finished:
-                end_text = font.render("your score was %s and you killed %s monsters," % (player.score, player.kills),  # noqa
-                                       True,
-                                       colors.offblack.value)  # noqa
-                end_rect = end_text.get_rect()
-                end_rect.midtop = (width / 2, height / 2)
-
-                end_text2 = font.render("earning your level %s character" % player.level,  # noqa
-                                        True,
-                                        colors.offblack.value)
-                end_rect2 = end_text2.get_rect()
-                end_rect2.midtop = (width / 2, height / 2 + 45)
-
-                end_text3 = font.render("%s exp and %s gold" % (player.total_exp, player.total_gold),  # noqa
-                                        True,
-                                        colors.offblack.value)
-                end_rect3 = end_text3.get_rect()
-                end_rect3.midtop = (width / 2, height / 2 + 90)
-
-                game_surface.blit(end_text, end_rect)
-                game_surface.blit(end_text2, end_rect2)
-                game_surface.blit(end_text3, end_rect3)
-                pygame.display.flip()
-                time.sleep(3)
-                for event in pygame.event.get():  # clear event queue
-                    pass
-                while not exit:
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            pygame.quit()
-                            sys.exit()
-                        elif event.type == pygame.KEYDOWN:
-                            exit = True
+    while not finished:
+        enemy = classes.enemy_word(random.randrange(1, 4))
+        while enemy.alive:
+            enemy.pick_word(all_words)
+            enemy.print_word()
+            user_input = input()
+            if score_word(player.difficulty, enemy.word, user_input):
+                print(" HIT!! %s" % enemy.health)
+                player.score_points(1)
+                enemy.take_damage(player.dmg_multiplier)
+                if poison_mode:
+                    enemy.take_damage(1)
+            else:
+                print(" OUCH!!")
+                player.take_damage(1)
+            if (time.time() - start_time >= time_limit) or (not player.alive):
+                finished = True
                 break
-        pygame.display.flip()
+        time_limit += 3
+        player.gain_exp(enemy.exp_yield)
+        player.gain_gold(enemy.gold_yield)
+        if finished:
+            break
+        print(" ENEMY LEVEL %s KILLED!! 3 EXTRA SECONDS!! %s TIME LEFT!!"
+              % (enemy.level, int(time_limit - time.time() + start_time)))
+        player.kills += 1
+
     if 'oldHP' in locals():
-        player.health = player.max_hp * (2 / 3) - (player.max_hp - player.health)  # noqa
+        player.health = (player.max_hp
+                         * (2 / 3)
+                         - (player.max_hp - player.health)
+                         )
         player.max_hp *= (2 / 3)
     if fast_mode:
         player.difficulty += 0.13
+    print("your score was %s and you killed %s monsters,"
+          " earning your level %s character %s exp and %s gold"
+          % (player.score,
+             player.kills,
+             player.level,
+             player.total_exp,
+             player.total_gold))
     return
 
 
@@ -273,171 +92,173 @@ def score_word(difficulty, word, user_input):
 
 
 def shop(game_surface, font, player):
-    width = game_surface.get_width()
-    height = game_surface.get_height()
+    raise NotImplementedError
+    # width = game_surface.get_width()
+    # height = game_surface.get_height()
 
-    background_surface = pygame.Surface((width * 3 / 4 + 10,
-                                         height * 3 / 4 - 10))
-    background_surface.fill(colors.bgblue.value)
-    background_rect = background_surface.get_rect()
-    background_rect.midtop = (width / 2, height / 6 - 25)
+    # background_surface = pygame.Surface((width * 3 / 4 + 10,
+    #                                      height * 3 / 4 - 10))
+    # background_surface.fill(colors.bgblue.value)
+    # background_rect = background_surface.get_rect()
+    # background_rect.midtop = (width / 2, height / 6 - 25)
 
-    background = pygame.Surface((width * 3 / 4, height * 3 / 4 - 20))
-    background.fill(colors.bgyellow.value)
-    background_rect2 = background.get_rect()
-    background_rect2.midtop = (background_rect.width / 2, 5)
+    # background = pygame.Surface((width * 3 / 4, height * 3 / 4 - 20))
+    # background.fill(colors.bgyellow.value)
+    # background_rect2 = background.get_rect()
+    # background_rect2.midtop = (background_rect.width / 2, 5)
 
-    background_surface.blit(background, background_rect2)
+    # background_surface.blit(background, background_rect2)
 
-    buy_text = font.render("buy somethin', will ya?",
-                           True,
-                           colors.offblack.value)
-    buy_rect = buy_text.get_rect()
-    buy_rect.midtop = (width / 2, height / 6)
+    # buy_text = font.render("buy somethin', will ya?",
+    #                        True,
+    #                        colors.offblack.value)
+    # buy_rect = buy_text.get_rect()
+    # buy_rect.midtop = (width / 2, height / 6)
 
-    gold_amount_text = font.render("Gold: {}".format(player.total_gold),
-                                   True,
-                                   colors.offblack.value)
-    gold_amount_rect = gold_amount_text.get_rect()
-    gold_amount_rect.midtop = (width / 2, height / 6 + 45)
+    # gold_amount_text = font.render("Gold: {}".format(player.total_gold),
+    #                                True,
+    #                                colors.offblack.value)
+    # gold_amount_rect = gold_amount_text.get_rect()
+    # gold_amount_rect.midtop = (width / 2, height / 6 + 45)
 
-    no_money_text = font.render("You don't have enough money for that!"
-                                " Now scram!",
-                                True,
-                                colors.offblack.value)
-    no_money_rect = no_money_text.get_rect()
-    no_money_rect.midtop = (width / 2, height / 6 + 90)
+    # no_money_text = font.render("You don't have enough money for that!"
+    #                             " Now scram!",
+    #                             True,
+    #                             colors.offblack.value)
+    # no_money_rect = no_money_text.get_rect()
+    # no_money_rect.midtop = (width / 2, height / 6 + 90)
 
-    item_texts = {}
+    # item_texts = {}
 
-    i = 90
-    for item in use_items:
-        i += 45
+    # i = 90
+    # for item in use_items:
+    #     i += 45
 
-        key = item.value[0]
-        price = item.value[1]
-        item_str = key + ': ' + item.name.replace('_', ' ') + ': $G' + price
+    #     key = item.value[0]
+    #     price = item.value[1]
+    #     item_str = key + ': ' + item.name.replace('_', ' ') + ': $G' + price
 
-        item_text = font.render(item_str,
-                                True,
-                                colors.offblack.value)
-        item_rect = item_text.get_rect()
-        item_rect.midtop = (width / 2, height / 6 + i)
+    #     item_text = font.render(item_str,
+    #                             True,
+    #                             colors.offblack.value)
+    #     item_rect = item_text.get_rect()
+    #     item_rect.midtop = (width / 2, height / 6 + i)
 
-        item_texts[item_text] = item_rect
+    #     item_texts[item_text] = item_rect
 
-    no_money = False
+    # no_money = False
 
-    while True:
-        game_surface.fill(colors.offblack.value)
-        game_surface.blit(background_surface, background_rect)
-        game_surface.blit(buy_text, buy_rect)
-        game_surface.blit(gold_amount_text, gold_amount_rect)
-        for text, rect in item_texts.items():
-            game_surface.blit(text, rect)
-        if no_money:
-            game_surface.blit(no_money_text, no_money_rect)
+    # while True:
+    #     game_surface.fill(colors.offblack.value)
+    #     game_surface.blit(background_surface, background_rect)
+    #     game_surface.blit(buy_text, buy_rect)
+    #     game_surface.blit(gold_amount_text, gold_amount_rect)
+    #     for text, rect in item_texts.items():
+    #         game_surface.blit(text, rect)
+    #     if no_money:
+    #         game_surface.blit(no_money_text, no_money_rect)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if no_money:
-                    return
-                for item in use_items:
-                    key = item.value[0]
-                    price = int(item.value[1])
-                    if event.unicode == key:
-                        if player.total_gold >= price:
-                            player.total_gold -= price
-                            player.inventory[item.name] += 1
-                            return
-                        else:
-                            no_money = True
-        pygame.display.flip()
-    return
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             pygame.quit()
+    #             sys.exit()
+    #         elif event.type == pygame.KEYDOWN:
+    #             if no_money:
+    #                 return
+    #             for item in use_items:
+    #                 key = item.value[0]
+    #                 price = int(item.value[1])
+    #                 if event.unicode == key:
+    #                     if player.total_gold >= price:
+    #                         player.total_gold -= price
+    #                         player.inventory[item.name] += 1
+    #                         return
+    #                     else:
+    #                         no_money = True
+    #     pygame.display.flip()
+    # return
 
 
 def inventory(game_surface, font, player):
-    width = game_surface.get_width()
-    height = game_surface.get_height()
+    raise NotImplementedError
+    # width = game_surface.get_width()
+    # height = game_surface.get_height()
 
-    background_surface = pygame.Surface((width * 3 / 4 + 10,
-                                         height * 3 / 4 - 10))
-    background_surface.fill(colors.bgblue.value)
-    background_rect = background_surface.get_rect()
-    background_rect.midtop = (width / 2, height / 6 - 25)
+    # background_surface = pygame.Surface((width * 3 / 4 + 10,
+    #                                      height * 3 / 4 - 10))
+    # background_surface.fill(colors.bgblue.value)
+    # background_rect = background_surface.get_rect()
+    # background_rect.midtop = (width / 2, height / 6 - 25)
 
-    background = pygame.Surface((width * 3 / 4, height * 3 / 4 - 20))
-    background.fill(colors.bgyellow.value)
-    background_rect2 = background.get_rect()
-    background_rect2.midtop = (background_rect.width / 2, 5)
+    # background = pygame.Surface((width * 3 / 4, height * 3 / 4 - 20))
+    # background.fill(colors.bgyellow.value)
+    # background_rect2 = background.get_rect()
+    # background_rect2.midtop = (background_rect.width / 2, 5)
 
-    background_surface.blit(background, background_rect2)
+    # background_surface.blit(background, background_rect2)
 
-    player_name_text = font.render("{}'s inventory".format(player.name),
-                                   True,
-                                   colors.offblack.value)
-    player_name_rect = player_name_text.get_rect()
-    player_name_rect.midtop = (width / 2, height / 6)
+    # player_name_text = font.render("{}'s inventory".format(player.name),
+    #                                True,
+    #                                colors.offblack.value)
+    # player_name_rect = player_name_text.get_rect()
+    # player_name_rect.midtop = (width / 2, height / 6)
 
-    gold_amount_text = font.render("Gold: {}".format(player.total_gold),
-                                   True,
-                                   colors.offblack.value)
-    gold_amount_rect = gold_amount_text.get_rect()
-    gold_amount_rect.midtop = (width / 2, height / 6 + 45)
+    # gold_amount_text = font.render("Gold: {}".format(player.total_gold),
+    #                                True,
+    #                                colors.offblack.value)
+    # gold_amount_rect = gold_amount_text.get_rect()
+    # gold_amount_rect.midtop = (width / 2, height / 6 + 45)
 
-    item_texts = {}
+    # item_texts = {}
 
-    i = 90
-    if sum([item for item in player.inventory.values()]) == 0:
-        item_text = font.render("You don't have anything in your inventory!",
-                                True,
-                                colors.offblack.value)
-        item_rect = item_text.get_rect()
-        item_rect.midtop = (width / 2, height / 6 + i)
-        item_texts[item_text] = item_rect
-    else:
-        for item in use_items:
-            if player.inventory[item.name] > 0:
-                i += 45
+    # i = 90
+    # if sum([item for item in player.inventory.values()]) == 0:
+    #     item_text = font.render("You don't have anything in your inventory!",
+    #                             True,
+    #                             colors.offblack.value)
+    #     item_rect = item_text.get_rect()
+    #     item_rect.midtop = (width / 2, height / 6 + i)
+    #     item_texts[item_text] = item_rect
+    # else:
+    #     for item in use_items:
+    #         if player.inventory[item.name] > 0:
+    #             i += 45
 
-                key = item.value[0]
-                item_str = key + ': ' + item.name.replace('_', ' ')
+    #             key = item.value[0]
+    #             item_str = key + ': ' + item.name.replace('_', ' ')
 
-                item_text = font.render(item_str,
-                                        True,
-                                        colors.offblack.value)
-                item_rect = item_text.get_rect()
-                item_rect.midtop = (width / 2, height / 6 + i)
+    #             item_text = font.render(item_str,
+    #                                     True,
+    #                                     colors.offblack.value)
+    #             item_rect = item_text.get_rect()
+    #             item_rect.midtop = (width / 2, height / 6 + i)
 
-                item_texts[item_text] = item_rect
+    #             item_texts[item_text] = item_rect
 
-    while True:
-        game_surface.fill(colors.offblack.value)
-        game_surface.blit(background_surface, background_rect)
-        game_surface.blit(player_name_text, player_name_rect)
-        game_surface.blit(gold_amount_text, gold_amount_rect)
-        for text, rect in item_texts.items():
-            game_surface.blit(text, rect)
+    # while True:
+    #     game_surface.fill(colors.offblack.value)
+    #     game_surface.blit(background_surface, background_rect)
+    #     game_surface.blit(player_name_text, player_name_rect)
+    #     game_surface.blit(gold_amount_text, gold_amount_rect)
+    #     for text, rect in item_texts.items():
+    #         game_surface.blit(text, rect)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                for item in use_items:
-                    key = item.value[0]
-                    if event.unicode == key:
-                        if player.inventory[item.name] >= 1:
-                            player.inventory[item.name] -= 1
-                            get_effect(player, item.name)
-                            return
-                return
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             pygame.quit()
+    #             sys.exit()
+    #         elif event.type == pygame.KEYDOWN:
+    #             for item in use_items:
+    #                 key = item.value[0]
+    #                 if event.unicode == key:
+    #                     if player.inventory[item.name] >= 1:
+    #                         player.inventory[item.name] -= 1
+    #                         get_effect(player, item.name)
+    #                         return
+    #             return
 
-        pygame.display.flip()
-    return
+    #     pygame.display.flip()
+    # return
 
 
 def get_effect(player, choice):
@@ -463,64 +284,68 @@ def get_effect(player, choice):
     return
 
 
-def church(game_surface, font, player):
-    width = game_surface.get_width()
-    height = game_surface.get_height()
+def church(window, player):
+    width, height = window.get_size()
+
     price = player.max_hp * 1.5
-    revive_text = font.render("would you like to revive for %s gold? y/n" % price,  # noqa
-                              True,
-                              colors.offblack.value)
-    revive_rect = revive_text.get_rect()
-    revive_rect.midtop = (width / 2, height / 4)
+    not_enough_money = False
 
-    alive_text = font.render("bless tha LAWD",
-                             True,
-                             colors.offblack.value)
-    alive_rect = alive_text.get_rect()
-    alive_rect.midtop = (width / 2, height / 4)
+    revive_q = pyglet.text.Label("would you like to revive for %s gold?"
+                                 % price,
+                                 font_name='Arial',
+                                 font_size=32,
+                                 x=width / 2,
+                                 y=height / 2,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 align='center',
+                                 color=(255, 0, 0, 255)
+                                 )
+    no_money = pyglet.text.Label("you don't have enough money!",
+                                 font_name='Arial',
+                                 font_size=32,
+                                 x=width / 2,
+                                 y=height / 2 - 45,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 align='center',
+                                 color=(255, 0, 0, 255)
+                                 )
+    lawd_bless = pyglet.text.Label("bless tha LAWD",
+                                   font_name='Arial',
+                                   font_size=32,
+                                   x=width / 2,
+                                   y=height / 2,
+                                   anchor_x='center',
+                                   anchor_y='center',
+                                   align='center',
+                                   color=(255, 0, 0, 255)
+                                   )
 
-    no_money_text = font.render("you don't have enough money!",
-                                True,
-                                colors.offblack.value)
-    no_money_rect = no_money_text.get_rect()
-    no_money_rect.midtop = (width / 2, height / 4 + 45)
+    print("in the church function")
 
-    background_surface = pygame.Surface((width * 3 / 4, height / 4 - 10))
-    background_surface.fill(colors.bgblue.value)
-    background_rect = background_surface.get_rect()
-    background_rect.midtop = (width / 2, height / 4 - 25)
+    @window.event
+    def on_draw():
+        window.clear()
 
-    background = pygame.Surface((width * 3 / 4 - 10, height / 4 - 20))
-    background.fill(colors.bgyellow.value)
-    background_rect2 = background.get_rect()
-    background_rect2.midtop = (background_rect.width / 2, 5)
-
-    background_surface.blit(background, background_rect2)
-
-    no_money = False
-
-    while True:
-        game_surface.fill(colors.offblack.value)
-        game_surface.blit(background_surface, background_rect)
         if not player.alive:
-            game_surface.blit(revive_text, revive_rect)
-            if no_money:
-                game_surface.blit(no_money_text, no_money_rect)
-        elif player.alive:
-            game_surface.blit(alive_text, alive_rect)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_y and not player.alive:
-                    if player.total_gold >= price:
-                        player.alive = True
-                        player.health = player.max_hp
-                        player.total_gold -= price
-                    else:
-                        no_money = True
-                else:
-                    return
-        pygame.display.flip()
+            revive_q.draw()
+            if not_enough_money:
+                no_money.draw()
+        else:
+            lawd_bless.draw()
+
+    @window.event
+    def on_key_press(symbol, modifiers):
+        not_enough_money = False
+        if symbol == pyglet.window.key.Y and not not_enough_money:
+            if player.total_gold >= price:
+                player.alive = True
+                player.health = player.max_hp
+                player.total_gold -= price
+                return
+            else:
+                not_enough_money = True
+        else:
+            return
     return

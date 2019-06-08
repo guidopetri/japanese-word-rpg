@@ -2,113 +2,135 @@
 # -*- coding: utf-8 -*-
 # python 3.6.4
 
-
 import gameplay_funcs
-from game_enums import colors
 import backend
-import pygame
-import sys
+import pyglet
+import pyglet.gl
 
 
 def main_menu():
     all_words = backend.load_words()
     (player_data, current_player) = backend.load_player()
 
-    init_status = pygame.init()
-
-    if init_status[1] > 0:
-        print("had {0} initializing errors, exiting".format(init_status[1]))
-        sys.exit()
-
     width, height = 800, 600
-    play_surface = pygame.display.set_mode((width, height))
-    pygame.display.set_caption("Word RPG")
-    sys_font = pygame.font.SysFont('Arial', 32)
+    window = pyglet.window.Window(width=width,
+                                  height=height,
+                                  caption='Word RPG')
+    # window.push_handlers(pyglet.window.event.WindowEventLogger())
 
-    welcome_text = sys_font.render("welcome to Edo",
-                                   True,
-                                   colors.offblack.value)
-    welcome_rect = welcome_text.get_rect()
-    welcome_rect.midtop = (width / 2, height / 2 - 135)
+    main_batch = pyglet.graphics.Batch()
+    text_edo = pyglet.text.Label("welcome to Edo",  # noqa
+                                 font_name='Arial',
+                                 font_size=36,
+                                 x=width / 2,
+                                 y=height / 2 + 135,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 align='center',
+                                 color=(0, 0, 0, 255),
+                                 batch=main_batch)
+    text_battle = pyglet.text.Label("1: battle",  # noqa
+                                    font_name='Arial',
+                                    font_size=36,
+                                    x=width / 2,
+                                    y=height / 2 + 90,
+                                    anchor_x='center',
+                                    anchor_y='center',
+                                    align='center',
+                                    color=(0, 0, 0, 255),
+                                    batch=main_batch)
+    text_shop = pyglet.text.Label("2: shop",  # noqa
+                                  font_name='Arial',
+                                  font_size=36,
+                                  x=width / 2,
+                                  y=height / 2 + 45,
+                                  anchor_x='center',
+                                  anchor_y='center',
+                                  align='center',
+                                  color=(0, 0, 0, 255),
+                                  batch=main_batch)
+    text_inventory = pyglet.text.Label("3: inventory",  # noqa
+                                       font_name='Arial',
+                                       font_size=36,
+                                       x=width / 2,
+                                       y=height / 2,
+                                       anchor_x='center',
+                                       anchor_y='center',
+                                       align='center',
+                                       color=(0, 0, 0, 255),
+                                       batch=main_batch)
+    text_church = pyglet.text.Label("4: church",  # noqa
+                                    font_name='Arial',
+                                    font_size=36,
+                                    x=width / 2,
+                                    y=height / 2 - 45,
+                                    anchor_x='center',
+                                    anchor_y='center',
+                                    align='center',
+                                    color=(0, 0, 0, 255),
+                                    batch=main_batch)
+    text_quit = pyglet.text.Label("0: quit",  # noqa
+                                  font_name='Arial',
+                                  font_size=36,
+                                  x=width / 2,
+                                  y=height / 2 - 90,
+                                  anchor_x='center',
+                                  anchor_y='center',
+                                  align='center',
+                                  color=(0, 0, 0, 255),
+                                  batch=main_batch)
 
-    battle_text = sys_font.render("1: battle",
-                                  True,
-                                  colors.offblack.value)
-    battle_rect = battle_text.get_rect()
-    battle_rect.midtop = (width / 2, height / 2 - 90)
+    print("in the main function")
 
-    shop_text = sys_font.render("2: shop",
-                                True,
-                                colors.offblack.value)
-    shop_rect = shop_text.get_rect()
-    shop_rect.midtop = (width / 2, height / 2 - 45)
+    @window.event
+    def on_draw():
+        window.clear()
+        pyglet.graphics.draw(4,
+                             pyglet.gl.GL_QUADS,
+                             ('v2f',
+                              (width / 4 - 5,
+                               height / 4 + 5,
+                               width * 3 / 4 + 5,
+                               height / 4 + 5,
+                               width * 3 / 4 + 5,
+                               height * 3 / 4 + 15,
+                               width / 4 - 5,
+                               height * 3 / 4 + 15
+                               )
+                              ),
+                             ('c3B',
+                              (131, 131, 252) * 4)
+                             )
+        pyglet.graphics.draw(4,
+                             pyglet.gl.GL_QUADS,
+                             ('v2f',
+                              (width / 4,
+                               height / 4 + 10,
+                               width * 3 / 4,
+                               height / 4 + 10,
+                               width * 3 / 4,
+                               height * 3 / 4 + 10,
+                               width / 4,
+                               height * 3 / 4 + 10
+                               )
+                              ),
+                             ('c3B',
+                              (252, 232, 131) * 4))
+        main_batch.draw()
 
-    inventory_text = sys_font.render("3: inventory",
-                                     True,
-                                     colors.offblack.value)
-    inventory_rect = inventory_text.get_rect()
-    inventory_rect.midtop = (width / 2, height / 2)
+    @window.event
+    def on_key_press(symbol, modifiers):
+        if symbol == pyglet.window.key._1:
+            gameplay_funcs.battle(window, current_player, all_words, 60)
+        elif symbol == pyglet.window.key._2:
+            gameplay_funcs.shop(current_player)
+        elif symbol == pyglet.window.key._3:
+            gameplay_funcs.inventory(current_player)
+        elif symbol == pyglet.window.key._4:
+            gameplay_funcs.church(window, current_player)
+        elif symbol == pyglet.window.key._0:
+            backend.save_player(player_data, current_player)
+            pyglet.app.exit()
 
-    church_text = sys_font.render("4: church",
-                                  True,
-                                  colors.offblack.value)
-    church_rect = church_text.get_rect()
-    church_rect.midtop = (width / 2, height / 2 + 45)
-
-    quit_text = sys_font.render("0: quit",
-                                True,
-                                colors.offblack.value)
-    quit_rect = quit_text.get_rect()
-    quit_rect.midtop = (width / 2, height / 2 + 90)
-
-    background_surface = pygame.Surface((welcome_rect.width + 100, 305))
-    background_surface.fill(colors.bgblue.value)
-    background_rect = background_surface.get_rect()
-    background_rect.midtop = (width / 2, height / 2 - 157)
-
-    background = pygame.Surface((welcome_rect.width + 90, 295))
-    background.fill(colors.bgyellow.value)
-    background_rect2 = background.get_rect()
-    background_rect2.midtop = (background_rect.width / 2, 5)
-
-    background_surface.blit(background, background_rect2)
-
-    while True:
-        play_surface.fill(colors.offblack.value)
-        play_surface.blit(background_surface, background_rect)
-        play_surface.blit(welcome_text, welcome_rect)
-        play_surface.blit(battle_text, battle_rect)
-        play_surface.blit(shop_text, shop_rect)
-        play_surface.blit(inventory_text, inventory_rect)
-        play_surface.blit(church_text, church_rect)
-        play_surface.blit(quit_text, quit_rect)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
-                    gameplay_funcs.battle(play_surface,
-                                          sys_font,
-                                          current_player,
-                                          all_words,
-                                          20)
-                elif event.key == pygame.K_2:
-                    gameplay_funcs.shop(play_surface,
-                                        sys_font,
-                                        current_player)
-                elif event.key == pygame.K_3:
-                    gameplay_funcs.inventory(play_surface,
-                                             sys_font,
-                                             current_player)
-                elif event.key == pygame.K_4:
-                    gameplay_funcs.church(play_surface,
-                                          sys_font,
-                                          current_player)
-                elif event.key == pygame.K_0:
-                    backend.save_player(player_data,
-                                        current_player)
-                    pygame.event.post(pygame.event.Event(pygame.QUIT))
-        pygame.display.flip()
+    pyglet.app.run()
     return
