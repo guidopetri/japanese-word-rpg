@@ -3,11 +3,11 @@
 # python 3.6.4
 
 
-from enum import Enum
+from enum import Enum, IntEnum
 import pygame
 
 
-class status_effect(Enum):
+class status_effect(IntEnum):
     normal = 1
     berserk = 2
     slow = 3
