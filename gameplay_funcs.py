@@ -360,19 +360,83 @@ def shop(game_surface, font, player):
 
 
 def inventory(game_surface, font, player):
-    print("\n%s's inventory\n" % player.name)
+    width = game_surface.get_width()
+    height = game_surface.get_height()
+
+    background_surface = pygame.Surface((width * 3 / 4 + 10,
+                                         height * 3 / 4 - 10))
+    background_surface.fill(colors.bgblue.value)
+    background_rect = background_surface.get_rect()
+    background_rect.midtop = (width / 2, height / 6 - 25)
+
+    background = pygame.Surface((width * 3 / 4, height * 3 / 4 - 20))
+    background.fill(colors.bgyellow.value)
+    background_rect2 = background.get_rect()
+    background_rect2.midtop = (background_rect.width / 2, 5)
+
+    background_surface.blit(background, background_rect2)
+
+    player_name_text = font.render("{}'s inventory".format(player.name),
+                                   True,
+                                   colors.offblack.value)
+    player_name_rect = player_name_text.get_rect()
+    player_name_rect.midtop = (width / 2, height / 6)
+
+    gold_amount_text = font.render("Gold: {}".format(player.total_gold),
+                                   True,
+                                   colors.offblack.value)
+    gold_amount_rect = gold_amount_text.get_rect()
+    gold_amount_rect.midtop = (width / 2, height / 6 + 45)
+
+    item_texts = {}
+
+    i = 90
     if sum([item for item in player.inventory.values()]) == 0:
-        print("you don't have anything in your inventory!\n")
-        return
-    for item in player.inventory.keys():
-        if player.inventory[item] > 0:
-            print(item + ": " + str(player.inventory[item]))
-    choice = input("what would you like to use?\n")
-    try:
-        player.inventory[choice] -= 1
-        get_effect(player, choice)
-    except KeyError:
-        print("item not recognized!\n")
+        item_text = font.render("You don't have anything in your inventory!",
+                                True,
+                                colors.offblack.value)
+        item_rect = item_text.get_rect()
+        item_rect.midtop = (width / 2, height / 6 + i)
+        item_texts[item_text] = item_rect
+    else:
+        for item in use_items:
+            if player.inventory[item.name] > 0:
+                i += 45
+
+                key = item.value[0]
+                item_str = key + ': ' + item.name.replace('_', ' ')
+
+                item_text = font.render(item_str,
+                                        True,
+                                        colors.offblack.value)
+                item_rect = item_text.get_rect()
+                item_rect.midtop = (width / 2, height / 6 + i)
+
+                item_texts[item_text] = item_rect
+
+    while True:
+        game_surface.fill(colors.offblack.value)
+        game_surface.blit(background_surface, background_rect)
+        game_surface.blit(player_name_text, player_name_rect)
+        game_surface.blit(gold_amount_text, gold_amount_rect)
+        for text, rect in item_texts.items():
+            game_surface.blit(text, rect)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                for item in use_items:
+                    key = item.value[0]
+                    if event.unicode == key:
+                        if player.inventory[item.name] >= 1:
+                            player.inventory[item.name] -= 1
+                            get_effect(player, item.name)
+                            return
+                return
+
+        pygame.display.flip()
     return
 
 
