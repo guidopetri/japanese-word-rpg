@@ -179,9 +179,9 @@ def battle(game_surface, font, player, all_words, game_time):
                         pygame.quit()
                         sys.exit()
                     elif event.type == pygame.KEYDOWN:
-                        if event.unicode not in ['1', '2', '3', '4', '5', '6'] and event.key != pygame.K_RETURN and event.key != pygame.K_BACKSPACE:  # noqa
+                        if event.unicode not in ['1', '2', '3', '4', '5', '6'] and event.key not in (pygame.K_SPACE, pygame.K_BACKSPACE):  # noqa
                             typed_word.append(event.unicode)
-                        elif event.key == pygame.K_RETURN:
+                        elif event.key == pygame.K_SPACE:
                             new_word = True
                             dead_enemy = False
                             if score_word(player.difficulty, enemy.word, "".join(typed_word)):  # noqa
@@ -273,19 +273,89 @@ def score_word(difficulty, word, user_input):
 
 
 def shop(game_surface, font, player):
-    print("buy somethin', will ya?\n")
-    print("Gold: %s\n" % player.total_gold)
+    width = game_surface.get_width()
+    height = game_surface.get_height()
+
+    background_surface = pygame.Surface((width * 3 / 4 + 10,
+                                         height * 3 / 4 - 10))
+    background_surface.fill(colors.bgblue.value)
+    background_rect = background_surface.get_rect()
+    background_rect.midtop = (width / 2, height / 6 - 25)
+
+    background = pygame.Surface((width * 3 / 4, height * 3 / 4 - 20))
+    background.fill(colors.bgyellow.value)
+    background_rect2 = background.get_rect()
+    background_rect2.midtop = (background_rect.width / 2, 5)
+
+    background_surface.blit(background, background_rect2)
+
+    buy_text = font.render("buy somethin', will ya?",
+                           True,
+                           colors.offblack.value)
+    buy_rect = buy_text.get_rect()
+    buy_rect.midtop = (width / 2, height / 6)
+
+    gold_amount_text = font.render("Gold: {}".format(player.total_gold),
+                                   True,
+                                   colors.offblack.value)
+    gold_amount_rect = gold_amount_text.get_rect()
+    gold_amount_rect.midtop = (width / 2, height / 6 + 45)
+
+    no_money_text = font.render("You don't have enough money for that!"
+                                " Now scram!",
+                                True,
+                                colors.offblack.value)
+    no_money_rect = no_money_text.get_rect()
+    no_money_rect.midtop = (width / 2, height / 6 + 90)
+
+    item_texts = {}
+
+    i = 90
     for item in use_items:
-        print(item.value[0], " ", item.name.replace("_", " "), ": $G", item.value[1])  # noqa
-    item_to_buy = input()
-    item_chosen = list(item for item in use_items if item.value[0] == item_to_buy)[0].name  # noqa
-    item_price = int(list(item for item in use_items if item.name == item_chosen)[0].value[1])  # noqa
-    item_count = int(input("how many of %s?\n" % item_chosen))
-    if player.total_gold >= item_price * item_count:
-        player.inventory[item_chosen] += item_count
-        player.total_gold -= item_price * item_count
-    else:
-        print("you don't have enough money for that! now scram!\n")
+        i += 45
+
+        key = item.value[0]
+        price = item.value[1]
+        item_str = key + ': ' + item.name.replace('_', ' ') + ': $G' + price
+
+        item_text = font.render(item_str,
+                                True,
+                                colors.offblack.value)
+        item_rect = item_text.get_rect()
+        item_rect.midtop = (width / 2, height / 6 + i)
+
+        item_texts[item_text] = item_rect
+
+    no_money = False
+
+    while True:
+        game_surface.fill(colors.offblack.value)
+        game_surface.blit(background_surface, background_rect)
+        game_surface.blit(buy_text, buy_rect)
+        game_surface.blit(gold_amount_text, gold_amount_rect)
+        for text, rect in item_texts.items():
+            game_surface.blit(text, rect)
+        if no_money:
+            game_surface.blit(no_money_text, no_money_rect)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if no_money:
+                    return
+                for item in use_items:
+                    key = item.value[0]
+                    price = int(item.value[1])
+                    if event.unicode == key:
+                        if player.total_gold >= price:
+                            player.total_gold -= price
+                            player.inventory[item.name] += 1
+                            return
+                        else:
+                            no_money = True
+        pygame.display.flip()
     return
 
 
