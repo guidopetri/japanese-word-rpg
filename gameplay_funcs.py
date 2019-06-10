@@ -464,63 +464,35 @@ def get_effect(player, choice):
 
 
 def church(game_surface, font, player):
+    from menus import yn_question, message_box, wait_for_input
+
     width = game_surface.get_width()
     height = game_surface.get_height()
-    price = player.max_hp * 1.5
-    revive_text = font.render("would you like to revive for %s gold? y/n" % price,  # noqa
-                              True,
-                              colors.offblack.value)
-    revive_rect = revive_text.get_rect()
-    revive_rect.midtop = (width / 2, height / 4)
 
-    alive_text = font.render("bless tha LAWD",
-                             True,
-                             colors.offblack.value)
-    alive_rect = alive_text.get_rect()
-    alive_rect.midtop = (width / 2, height / 4)
+    # default message
+    message_text = 'Bless tha LAWD'
 
-    no_money_text = font.render("you don't have enough money!",
-                                True,
-                                colors.offblack.value)
-    no_money_rect = no_money_text.get_rect()
-    no_money_rect.midtop = (width / 2, height / 4 + 45)
+    if not player.alive:
+        price = player.max_hp * 1.5
+        question = 'Would you like to revive for %i gold?' % price
+        revive = yn_question(game_surface, question, (width / 2, height / 4))
 
-    background_surface = pygame.Surface((width * 3 / 4, height / 4 - 10))
-    background_surface.fill(colors.bgblue.value)
-    background_rect = background_surface.get_rect()
-    background_rect.midtop = (width / 2, height / 4 - 25)
+        if revive and player.total_gold >= price:
+            player.alive = True
+            player.health = player.max_hp
+            player.total_gold -= price
+            message_text = "Bless tha LAWD, you've been revived!"
+        elif revive:
+            message_text = "You don't have enough money!"
 
-    background = pygame.Surface((width * 3 / 4 - 10, height / 4 - 20))
-    background.fill(colors.bgyellow.value)
-    background_rect2 = background.get_rect()
-    background_rect2.midtop = (background_rect.width / 2, 5)
+    message, message_rect = message_box(message_text,
+                                        (width / 2, height / 4))
 
-    background_surface.blit(background, background_rect2)
+    game_surface.fill(colors.offwhite.value)
+    game_surface.blit(message, message_rect)
 
-    no_money = False
+    pygame.display.flip()
 
-    while True:
-        game_surface.fill(colors.offblack.value)
-        game_surface.blit(background_surface, background_rect)
-        if not player.alive:
-            game_surface.blit(revive_text, revive_rect)
-            if no_money:
-                game_surface.blit(no_money_text, no_money_rect)
-        elif player.alive:
-            game_surface.blit(alive_text, alive_rect)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_y and not player.alive:
-                    if player.total_gold >= price:
-                        player.alive = True
-                        player.health = player.max_hp
-                        player.total_gold -= price
-                    else:
-                        no_money = True
-                else:
-                    return
-        pygame.display.flip()
+    wait_for_input()
+
     return
