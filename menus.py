@@ -8,6 +8,7 @@ import sys
 
 def main_menu():
     import gameplay_funcs
+    from game_enums import colors
     import backend
 
     all_words = backend.load_words()
@@ -26,6 +27,7 @@ def main_menu():
     selected = None
 
     while True:
+        play_surface.fill(colors.offblack.value)
         selected = choose_from_options(play_surface,
                                        'welcome to Edo',
                                        ['battle',
@@ -122,7 +124,6 @@ def choose_from_options(surface, question, options, position, selected=None):
     no_selection = True
 
     while no_selection:
-        surface.fill(colors.offblack.value)
         surface.blit(bg, bg_rect)
 
         arrow_rect.midtop = (arrow_x + option_lefts[selected],

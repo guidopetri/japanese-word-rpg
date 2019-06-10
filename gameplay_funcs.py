@@ -286,13 +286,18 @@ def shop(game_surface, player):
         item_str = item.name.replace('_', ' ') + ': $G' + str(price)
         options.append(item_str)
 
+    gold_text = "Gold: $G{}".format(player.total_gold)
+    gold, gold_rect = message_box(gold_text,
+                                  (width * 5 / 6, height / 6))
+
+    game_surface.fill(colors.offblack.value)
+    game_surface.blit(gold, gold_rect)
+
     selected = choose_from_options(game_surface,
                                    # add the gold amount here
                                    "buy somethin', will ya?",
                                    options,
                                    (width / 2, height / 6))
-
-    # gold_amount_text = "Gold: {}".format(player.total_gold)
 
     if selected == -1:
         return
@@ -338,6 +343,13 @@ def inventory(game_surface, player):
             item_str = '{}x '.format(amount) + item.name.replace('_', ' ')
             items.append(item)
             options.append(item_str)
+
+        gold_text = "Gold: $G{}".format(player.total_gold)
+        gold, gold_rect = message_box(gold_text,
+                                      (width * 5 / 6, height / 6))
+
+        game_surface.fill(colors.offblack.value)
+        game_surface.blit(gold, gold_rect)
 
         selected = choose_from_options(game_surface,
                                        # add gold amount here
