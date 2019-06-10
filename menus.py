@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 # python 3.6.4
 
-
-import gameplay_funcs
-from game_enums import colors
-import backend
 import pygame
 import sys
 
 
 def main_menu():
+    import gameplay_funcs
+    from game_enums import colors
+    import backend
+
     all_words = backend.load_words()
     (player_data, current_player) = backend.load_player()
 
@@ -111,4 +111,104 @@ def main_menu():
                                         current_player)
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
         pygame.display.flip()
+    return
+
+
+def yn_question(surface, question, position):
+    from game_enums import colors
+
+    font = pygame.font.SysFont('Arial', 32)
+
+    x = position[0]
+    y = position[1]
+
+    width = surface.get_width()
+    height = surface.get_height()
+
+    question = font.render(question,
+                           True,
+                           colors.offblack.value)
+    question_rect = question.get_rect()
+    question_rect.midtop = position
+
+    yes = font.render('Yes',
+                      True,
+                      colors.offblack.value)
+    yes_rect = yes.get_rect()
+    yes_rect.midtop = (x, y + font.get_linesize())
+
+    no = font.render('No',
+                     True,
+                     colors.offblack.value)
+    no_rect = no.get_rect()
+    no_rect.midtop = (x, y + (2 * font.get_linesize()))
+
+    arrow = font.render('>',
+                        True,
+                        colors.offblack.value)
+    arrow_rect = arrow.get_rect()
+
+    bg, bg_rect = message_box(width, height)
+
+    selected = 0
+    no_selection = True
+
+    while no_selection:
+        surface.fill(colors.offblack.value)
+        surface.blit(bg, bg_rect)
+
+        arrow_rect.midtop = (x - yes_rect.width,
+                             y + font.get_linesize() * (selected + 1))
+
+        surface.blit(question, question_rect)
+        surface.blit(yes, yes_rect)
+        surface.blit(no, no_rect)
+        surface.blit(arrow, arrow_rect)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    selected = (selected - 1 + 2) % 2
+                elif event.key == pygame.K_DOWN:
+                    selected = (selected + 1) % 2
+                elif event.key == pygame.K_RETURN:
+                    no_selection = False
+
+        pygame.display.flip()
+
+    return not selected
+
+
+def message_box(width, height):
+    from game_enums import colors
+
+    background_surface = pygame.Surface((width * 3 / 4, height / 4 - 10))
+    background_surface.fill(colors.bgblue.value)
+    background_rect = background_surface.get_rect()
+    background_rect.midtop = (width / 2, height / 4 - 25)
+
+    background = pygame.Surface((width * 3 / 4 - 10, height / 4 - 20))
+    background.fill(colors.bgyellow.value)
+    background_rect2 = background.get_rect()
+    background_rect2.midtop = (background_rect.width / 2, 5)
+
+    background_surface.blit(background, background_rect2)
+
+    return background_surface, background_rect
+
+
+def wait_for_input():
+    no_break = True
+
+    while no_break:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                no_break = False
+
     return
