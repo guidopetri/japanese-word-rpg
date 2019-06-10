@@ -23,6 +23,7 @@ def main_menu():
     play_surface = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Word RPG")
     sys_font = pygame.font.SysFont('Arial', 32)
+    selected = None
 
     while True:
         selected = choose_from_options(play_surface,
@@ -32,7 +33,8 @@ def main_menu():
                                         'inventory',
                                         'church',
                                         'quit'],
-                                       (width / 2, height / 4))
+                                       (width / 2, height / 4),
+                                       selected)
 
         if selected == 0:
             gameplay_funcs.battle(play_surface,
@@ -127,7 +129,7 @@ def yn_question(surface, question, position):
     return not selected
 
 
-def choose_from_options(surface, question, options, position):
+def choose_from_options(surface, question, options, position, selected=None):
     from game_enums import colors
 
     font = pygame.font.SysFont('Arial', 32)
@@ -175,7 +177,7 @@ def choose_from_options(surface, question, options, position):
     # some math to later put the arrow next to the option
     arrow_x = x - 10 - bg_rect.width / 2
 
-    selected = 0
+    selected = selected or 0
     no_selection = True
 
     while no_selection:
