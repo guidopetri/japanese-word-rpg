@@ -36,7 +36,9 @@ def main_menu():
                                        (width / 2, height / 4),
                                        selected)
 
-        if selected == 0:
+        if selected == -1:
+            selected = None
+        elif selected == 0:
             gameplay_funcs.battle(play_surface,
                                   sys_font,
                                   current_player,
@@ -139,6 +141,8 @@ def choose_from_options(surface, question, options, position, selected=None):
                     selected = (selected + 1) % k
                 elif event.key == pygame.K_RETURN:
                     no_selection = False
+                elif event.key == pygame.K_BACKSPACE:
+                    return -1
 
         pygame.display.flip()
 
