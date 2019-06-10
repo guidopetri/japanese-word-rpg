@@ -119,46 +119,46 @@ def yn_question(surface, question, position):
 
     font = pygame.font.SysFont('Arial', 32)
 
-    x = position[0]
-    y = position[1]
-
-    width = surface.get_width()
-    height = surface.get_height()
+    x, y = position
 
     question = font.render(question,
                            True,
                            colors.offblack.value)
     question_rect = question.get_rect()
-    question_rect.midtop = position
+    question_rect.midtop = (x, y + 5)
 
     yes = font.render('Yes',
                       True,
                       colors.offblack.value)
     yes_rect = yes.get_rect()
-    yes_rect.midtop = (x, y + font.get_linesize())
+    yes_rect.midtop = (x, y + 5 + font.get_linesize())
 
     no = font.render('No',
                      True,
                      colors.offblack.value)
     no_rect = no.get_rect()
-    no_rect.midtop = (x, y + (2 * font.get_linesize()))
+    no_rect.midtop = (x, y + 5 + (2 * font.get_linesize()))
 
     arrow = font.render('>',
                         True,
                         colors.offblack.value)
     arrow_rect = arrow.get_rect()
 
-    bg, bg_rect = message_box(width, height)
+    size = get_size([question_rect,
+                     yes_rect,
+                     no_rect])
+
+    bg, bg_rect = message_bg(size, position)
 
     selected = 0
     no_selection = True
 
     while no_selection:
-        surface.fill(colors.offblack.value)
+        surface.fill(colors.offwhite.value)
         surface.blit(bg, bg_rect)
 
         arrow_rect.midtop = (x - yes_rect.width,
-                             y + font.get_linesize() * (selected + 1))
+                             y + 5 + font.get_linesize() * (selected + 1))
 
         surface.blit(question, question_rect)
         surface.blit(yes, yes_rect)
@@ -182,22 +182,61 @@ def yn_question(surface, question, position):
     return not selected
 
 
-def message_box(width, height):
+def get_size(rects):
+
+    def find_length(rects, axis):
+        minmax_coords = []
+        for side in axis:
+            coords = []
+            for rect in rects:
+                coords.append(getattr(rect, side))
+            minmax_coords.append(coords)
+        return max(minmax_coords[1]) - min(minmax_coords[0])
+
+    max_height = find_length(rects, ['top', 'bottom'])
+    max_width = find_length(rects, ['left', 'right'])
+
+    return (max_width + 10, max_height + 10)
+
+
+def message_box(text, position):
     from game_enums import colors
 
-    background_surface = pygame.Surface((width * 3 / 4, height / 4 - 10))
-    background_surface.fill(colors.bgblue.value)
-    background_rect = background_surface.get_rect()
-    background_rect.midtop = (width / 2, height / 4 - 25)
+    font = pygame.font.SysFont('Arial', 32)
 
-    background = pygame.Surface((width * 3 / 4 - 10, height / 4 - 20))
-    background.fill(colors.bgyellow.value)
-    background_rect2 = background.get_rect()
-    background_rect2.midtop = (background_rect.width / 2, 5)
+    msg = font.render(text,
+                      True,
+                      colors.offblack.value)
+    msg_rect = msg.get_rect()
 
-    background_surface.blit(background, background_rect2)
+    bg, bg_rect = message_bg((msg_rect.width + 20, msg_rect.height + 10),
+                             position)
+    msg_rect.center = (bg_rect.width / 2, bg_rect.height / 2)
 
-    return background_surface, background_rect
+    bg.blit(msg, msg_rect)
+
+    return bg, bg_rect
+
+
+def message_bg(size, position):
+    from game_enums import colors
+
+    width, height = size
+    x, y = position
+
+    border = pygame.Surface((width, height))
+    border.fill(colors.bgblue.value)
+    border_rect = border.get_rect()
+    border_rect.midtop = (x, y)
+
+    bg = pygame.Surface((width - 10, height - 10))
+    bg.fill(colors.bgyellow.value)
+    bg_rect = bg.get_rect()
+    bg_rect.midtop = (width / 2, 5)
+
+    border.blit(bg, bg_rect)
+
+    return border, border_rect
 
 
 def wait_for_input():

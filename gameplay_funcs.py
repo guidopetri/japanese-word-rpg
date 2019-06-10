@@ -485,16 +485,10 @@ def church(game_surface, font, player):
         elif revive:
             message_text = "You don't have enough money!"
 
-    message = font.render(message_text,
-                          True,
-                          colors.offblack.value)
-    message_rect = message.get_rect()
-    message_rect.midtop = (width / 2, height / 4)
+    message, message_rect = message_box(message_text,
+                                        (width / 2, height / 4))
 
-    bg, bg_rect = message_box(width, height)
-
-    game_surface.fill(colors.offblack.value)
-    game_surface.blit(bg, bg_rect)
+    game_surface.fill(colors.offwhite.value)
     game_surface.blit(message, message_rect)
 
     pygame.display.flip()
