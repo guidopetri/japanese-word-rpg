@@ -271,90 +271,43 @@ def score_word(difficulty, word, user_input):
     return SequenceMatcher(None, word.lower(), user_input.lower()).ratio() >= difficulty  # noqa
 
 
-def shop(game_surface, font, player):
+def shop(game_surface, player):
+    from game_enums import use_items, item_prices
+    from menus import choose_from_options, message_box, wait_for_input
+
     width = game_surface.get_width()
     height = game_surface.get_height()
 
-    background_surface = pygame.Surface((width * 3 / 4 + 10,
-                                         height * 3 / 4 - 10))
-    background_surface.fill(colors.bgblue.value)
-    background_rect = background_surface.get_rect()
-    background_rect.midtop = (width / 2, height / 6 - 25)
-
-    background = pygame.Surface((width * 3 / 4, height * 3 / 4 - 20))
-    background.fill(colors.bgyellow.value)
-    background_rect2 = background.get_rect()
-    background_rect2.midtop = (background_rect.width / 2, 5)
-
-    background_surface.blit(background, background_rect2)
-
-    buy_text = font.render("buy somethin', will ya?",
-                           True,
-                           colors.offblack.value)
-    buy_rect = buy_text.get_rect()
-    buy_rect.midtop = (width / 2, height / 6)
-
-    gold_amount_text = font.render("Gold: {}".format(player.total_gold),
-                                   True,
-                                   colors.offblack.value)
-    gold_amount_rect = gold_amount_text.get_rect()
-    gold_amount_rect.midtop = (width / 2, height / 6 + 45)
-
-    no_money_text = font.render("You don't have enough money for that!"
-                                " Now scram!",
-                                True,
-                                colors.offblack.value)
-    no_money_rect = no_money_text.get_rect()
-    no_money_rect.midtop = (width / 2, height / 6 + 90)
-
-    item_texts = {}
-
-    i = 90
+    options = []
     for item in use_items:
-        i += 45
+        price = item_prices[item.name]
+        item_str = item.name.replace('_', ' ') + ': $G' + str(price)
+        options.append(item_str)
 
-        key = item.value[0]
-        price = item.value[1]
-        item_str = key + ': ' + item.name.replace('_', ' ') + ': $G' + price
+    selected = choose_from_options(game_surface,
+                                   # add the gold amount here
+                                   "buy somethin', will ya?",
+                                   options,
+                                   (width / 2, height / 6))
 
-        item_text = font.render(item_str,
-                                True,
-                                colors.offblack.value)
-        item_rect = item_text.get_rect()
-        item_rect.midtop = (width / 2, height / 6 + i)
+    # gold_amount_text = font.render("Gold: {}".format(player.total_gold),
 
-        item_texts[item_text] = item_rect
+    if player.total_gold >= item_prices[use_items(selected).name]:
+        player.total_gold -= price
+        player.inventory[item.name] += 1
+        return
 
-    no_money = False
+    # implicit else
+    message_text = "You don't have enough money for that! Now scram!"
+    message, message_rect = message_box(message_text,
+                                        (width / 2, height / 4))
 
-    while True:
-        game_surface.fill(colors.offblack.value)
-        game_surface.blit(background_surface, background_rect)
-        game_surface.blit(buy_text, buy_rect)
-        game_surface.blit(gold_amount_text, gold_amount_rect)
-        for text, rect in item_texts.items():
-            game_surface.blit(text, rect)
-        if no_money:
-            game_surface.blit(no_money_text, no_money_rect)
+    game_surface.fill(colors.offwhite.value)
+    game_surface.blit(message, message_rect)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if no_money:
-                    return
-                for item in use_items:
-                    key = item.value[0]
-                    price = int(item.value[1])
-                    if event.unicode == key:
-                        if player.total_gold >= price:
-                            player.total_gold -= price
-                            player.inventory[item.name] += 1
-                            return
-                        else:
-                            no_money = True
-        pygame.display.flip()
+    pygame.display.flip()
+
+    wait_for_input()
     return
 
 

@@ -26,12 +26,25 @@ class player_classes(Enum):
 
 class use_items(Enum):
     # item name = (identifier, price)
-    potion = ('1', '10')
-    coffee = ('2', '50')
-    poison_flask = ('3', '50')
-    protein_shake = ('4', '50')
-    sharpening_oil = ('5', '50')
-    energy_bar = ('6', '50')
+    potion = 0
+    coffee = 1
+    poison_flask = 2
+    protein_shake = 3
+    sharpening_oil = 4
+    energy_bar = 5
+
+
+class __item_prices(dict):
+    potion = 10
+    coffee = 50
+    poison_flask = 50
+    protein_shake = 50
+    sharpening_oil = 50
+    energy_bar = 50
+
+    @classmethod
+    def __getitem__(cls, item):
+        return getattr(cls, item)
 
 
 class colors(Enum):
@@ -44,3 +57,6 @@ class colors(Enum):
     white = pygame.Color(255, 255, 255)
     black = pygame.Color(0, 0, 0)
     magenta = pygame.Color(255, 0, 255)
+
+
+item_prices = __item_prices()

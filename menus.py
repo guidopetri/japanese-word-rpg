@@ -44,7 +44,6 @@ def main_menu():
                                   20)
         elif selected == 1:
             gameplay_funcs.shop(play_surface,
-                                sys_font,
                                 current_player)
         elif selected == 2:
             gameplay_funcs.inventory(play_surface,
