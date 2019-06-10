@@ -294,7 +294,6 @@ def shop(game_surface, player):
     game_surface.blit(gold, gold_rect)
 
     selected = choose_from_options(game_surface,
-                                   # add the gold amount here
                                    "buy somethin', will ya?",
                                    options,
                                    (width / 2, height / 6))
@@ -320,6 +319,9 @@ def shop(game_surface, player):
     pygame.display.flip()
 
     wait_for_input()
+
+    game_surface.fill(colors.offblack.value)
+
     return
 
 
@@ -352,7 +354,6 @@ def inventory(game_surface, player):
         game_surface.blit(gold, gold_rect)
 
         selected = choose_from_options(game_surface,
-                                       # add gold amount here
                                        "{}'s inventory".format(player.name),
                                        options,
                                        (width / 2, height / 6))
@@ -375,6 +376,8 @@ def inventory(game_surface, player):
     pygame.display.flip()
 
     wait_for_input()
+
+    game_surface.fill(colors.offblack.value)
 
     return
 
@@ -436,5 +439,29 @@ def church(game_surface, player):
     pygame.display.flip()
 
     wait_for_input()
+
+    return
+
+
+def castle(game_surface, player):
+    from story import chapters
+    from menus import message_box, wait_for_input
+    from game_enums import colors
+
+    story = chapters[player.story_chapter]
+
+    width = game_surface.get_width()
+    height = game_surface.get_height()
+
+    for msg in story:
+        message_text = msg
+        message, message_rect = message_box(message_text,
+                                            (width / 2, height / 4))
+        game_surface.fill(colors.offblack.value)
+        game_surface.blit(message, message_rect)
+
+        pygame.display.flip()
+
+        wait_for_input()
 
     return

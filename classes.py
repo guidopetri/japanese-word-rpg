@@ -71,6 +71,7 @@ class PlayerCharacter():
             self.status = status_effect.normal.value
             self.status_duration = 0
             self.difficulty = 0.93
+            self.story_chapter = 1
             self.init_inventory()
             self.calculate_class_bonuses()
         elif player_dict is not None and player_name is None:

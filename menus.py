@@ -26,36 +26,42 @@ def main_menu():
     sys_font = pygame.font.SysFont('Arial', 32)
     selected = None
 
+    play_options = ['battle',
+                    'shop',
+                    'inventory',
+                    'castle',
+                    'church',
+                    'quit']
+
     while True:
         play_surface.fill(colors.offblack.value)
         selected = choose_from_options(play_surface,
                                        'welcome to Edo',
-                                       ['battle',
-                                        'shop',
-                                        'inventory',
-                                        'church',
-                                        'quit'],
+                                       play_options,
                                        (width / 2, height / 4),
                                        selected)
 
         if selected == -1:
             selected = None
-        elif selected == 0:
+        elif selected == play_options.index('battle'):
             gameplay_funcs.battle(play_surface,
                                   sys_font,
                                   current_player,
                                   all_words,
                                   20)
-        elif selected == 1:
+        elif selected == play_options.index('shop'):
             gameplay_funcs.shop(play_surface,
                                 current_player)
-        elif selected == 2:
+        elif selected == play_options.index('inventory'):
             gameplay_funcs.inventory(play_surface,
                                      current_player)
-        elif selected == 3:
+        elif selected == play_options.index('church'):
             gameplay_funcs.church(play_surface,
                                   current_player)
-        elif selected == 4:
+        elif selected == play_options.index('castle'):
+            gameplay_funcs.castle(play_surface,
+                                  current_player)
+        elif selected == play_options.index('quit'):
             backend.save_player(player_data,
                                 current_player)
             pygame.quit()
