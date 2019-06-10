@@ -47,7 +47,6 @@ def main_menu():
                                 current_player)
         elif selected == 2:
             gameplay_funcs.inventory(play_surface,
-                                     sys_font,
                                      current_player)
         elif selected == 3:
             gameplay_funcs.church(play_surface,
