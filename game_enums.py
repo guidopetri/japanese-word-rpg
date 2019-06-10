@@ -25,7 +25,7 @@ class player_classes(Enum):
 
 
 class use_items(Enum):
-    # item name = (identifier, price)
+    # item name = identifier
     potion = 0
     coffee = 1
     poison_flask = 2

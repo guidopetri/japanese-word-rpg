@@ -121,7 +121,7 @@ def choose_from_options(surface, question, options, position, selected=None):
     no_selection = True
 
     while no_selection:
-        surface.fill(colors.offwhite.value)
+        surface.fill(colors.offblack.value)
         surface.blit(bg, bg_rect)
 
         arrow_rect.midtop = (arrow_x + option_lefts[selected],

@@ -292,9 +292,11 @@ def shop(game_surface, player):
 
     # gold_amount_text = font.render("Gold: {}".format(player.total_gold),
 
+    selected_name = use_items(selected).name
+    selected_price = item_prices[selected_name]
     if player.total_gold >= item_prices[use_items(selected).name]:
-        player.total_gold -= price
-        player.inventory[item.name] += 1
+        player.total_gold -= selected_price
+        player.inventory[selected_name] += 1
         return
 
     # implicit else
@@ -302,7 +304,7 @@ def shop(game_surface, player):
     message, message_rect = message_box(message_text,
                                         (width / 2, height / 4))
 
-    game_surface.fill(colors.offwhite.value)
+    game_surface.fill(colors.offblack.value)
     game_surface.blit(message, message_rect)
 
     pygame.display.flip()
@@ -355,8 +357,8 @@ def inventory(game_surface, font, player):
             if player.inventory[item.name] > 0:
                 i += 45
 
-                key = item.value[0]
-                item_str = key + ': ' + item.name.replace('_', ' ')
+                key = item.value
+                item_str = str(key) + ': ' + item.name.replace('_', ' ')
 
                 item_text = font.render(item_str,
                                         True,
@@ -380,7 +382,7 @@ def inventory(game_surface, font, player):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 for item in use_items:
-                    key = item.value[0]
+                    key = item.value
                     if event.unicode == key:
                         if player.inventory[item.name] >= 1:
                             player.inventory[item.name] -= 1
@@ -440,7 +442,7 @@ def church(game_surface, player):
     message, message_rect = message_box(message_text,
                                         (width / 2, height / 4))
 
-    game_surface.fill(colors.offwhite.value)
+    game_surface.fill(colors.offblack.value)
     game_surface.blit(message, message_rect)
 
     pygame.display.flip()
