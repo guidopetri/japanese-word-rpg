@@ -469,20 +469,20 @@ def church(game_surface, player):
     height = game_surface.get_height()
 
     # default message
-    message_text = 'Bless tha LAWD'
+    message_text = 'bless tha LAWD'
 
     if not player.alive:
         price = player.max_hp * 1.5
-        question = 'Would you like to revive for %i gold?' % price
+        question = 'would you like to revive for %i gold?' % price
         revive = yn_question(game_surface, question, (width / 2, height / 4))
 
         if revive and player.total_gold >= price:
             player.alive = True
             player.health = player.max_hp
             player.total_gold -= price
-            message_text = "Bless tha LAWD, you've been revived!"
+            message_text = "bless tha LAWD, you've been revived!"
         elif revive:
-            message_text = "You don't have enough money!"
+            message_text = "you don't have enough money!"
 
     message, message_rect = message_box(message_text,
                                         (width / 2, height / 4))
