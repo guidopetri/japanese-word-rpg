@@ -62,70 +62,11 @@ def main_menu():
 
 
 def yn_question(surface, question, position):
-    from game_enums import colors
-
-    font = pygame.font.SysFont('Arial', 32)
-
-    x, y = position
-
-    question = font.render(question,
-                           True,
-                           colors.offblack.value)
-    question_rect = question.get_rect()
-    question_rect.midtop = (x, y + 5)
-
-    yes = font.render('Yes',
-                      True,
-                      colors.offblack.value)
-    yes_rect = yes.get_rect()
-    yes_rect.midtop = (x, y + 5 + font.get_linesize())
-
-    no = font.render('No',
-                     True,
-                     colors.offblack.value)
-    no_rect = no.get_rect()
-    no_rect.midtop = (x, y + 5 + (2 * font.get_linesize()))
-
-    arrow = font.render('>',
-                        True,
-                        colors.offblack.value)
-    arrow_rect = arrow.get_rect()
-
-    size = get_size([question_rect,
-                     yes_rect,
-                     no_rect])
-
-    bg, bg_rect = message_bg(size, position)
-
-    selected = 0
-    no_selection = True
-
-    while no_selection:
-        surface.fill(colors.offwhite.value)
-        surface.blit(bg, bg_rect)
-
-        arrow_rect.midtop = (x - yes_rect.width,
-                             y + 5 + font.get_linesize() * (selected + 1))
-
-        surface.blit(question, question_rect)
-        surface.blit(yes, yes_rect)
-        surface.blit(no, no_rect)
-        surface.blit(arrow, arrow_rect)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    selected = (selected - 1 + 2) % 2
-                elif event.key == pygame.K_DOWN:
-                    selected = (selected + 1) % 2
-                elif event.key == pygame.K_RETURN:
-                    no_selection = False
-
-        pygame.display.flip()
-
+    selected = choose_from_options(surface,
+                                   question,
+                                   ['yes',
+                                    'no'],
+                                   position)
     return not selected
 
 
