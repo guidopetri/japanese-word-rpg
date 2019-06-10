@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # python 3.6.4
 
-
 import classes
 from difflib import SequenceMatcher
 import time
@@ -463,7 +462,7 @@ def get_effect(player, choice):
     return
 
 
-def church(game_surface, font, player):
+def church(game_surface, player):
     from menus import yn_question, message_box, wait_for_input
 
     width = game_surface.get_width()

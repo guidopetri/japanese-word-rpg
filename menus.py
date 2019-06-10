@@ -104,7 +104,6 @@ def main_menu():
                                              current_player)
                 elif event.key == pygame.K_4:
                     gameplay_funcs.church(play_surface,
-                                          sys_font,
                                           current_player)
                 elif event.key == pygame.K_0:
                     backend.save_player(player_data,
