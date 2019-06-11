@@ -23,7 +23,6 @@ def main_menu():
     width, height = 800, 600
     play_surface = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Word RPG")
-    sys_font = pygame.font.SysFont('Arial', 32)
     selected = None
 
     play_options = ['battle',
@@ -45,7 +44,6 @@ def main_menu():
             selected = None
         elif selected == play_options.index('battle'):
             gameplay_funcs.battle(play_surface,
-                                  sys_font,
                                   current_player,
                                   all_words,
                                   20)

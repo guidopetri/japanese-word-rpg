@@ -10,13 +10,14 @@ import pygame
 import sys
 
 
-def battle(game_surface, font, player, all_words, game_time):
+def battle(game_surface, player, all_words, game_time):
     from menus import message_box, wait_for_input, message_bg
     from game_enums import colors, status_effect
 
     width = game_surface.get_width()
     height = game_surface.get_height()
 
+    # make sure player can battle in the first place
     if not player.alive:
         message_text = "you're passed out! you can't battle!"
         message, message_rect = message_box(message_text,
@@ -50,6 +51,8 @@ def battle(game_surface, font, player, all_words, game_time):
             player.status = status_effect.normal
     if fast_mode:
         player.difficulty -= 0.13
+
+    font = pygame.font.SysFont('Arial', 32)
 
     instructions_text = font.render("type it out!",
                                     True,
