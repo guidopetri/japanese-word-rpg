@@ -11,7 +11,7 @@ import sys
 
 
 def battle(game_surface, font, player, all_words, game_time):
-    from menus import message_box, wait_for_input
+    from menus import message_box, wait_for_input, message_bg
     from game_enums import colors, status_effect
 
     width = game_surface.get_width()
@@ -75,17 +75,8 @@ def battle(game_surface, font, player, all_words, game_time):
     ouch_rect = ouch_text.get_rect()
     ouch_rect.midtop = (width / 2, height / 2 + 45)
 
-    background_surface = pygame.Surface((width * 3 / 4 + 10, height - 20))
-    background_surface.fill(colors.bgblue.value)
-    background_rect = background_surface.get_rect()
-    background_rect.midtop = (width / 2, 10)
-
-    background = pygame.Surface((width * 3 / 4, height - 30))
-    background.fill(colors.bgyellow.value)
-    background_rect2 = background.get_rect()
-    background_rect2.midtop = (background_rect.width / 2, 5)
-
-    background_surface.blit(background, background_rect2)
+    bg, bg_rect = message_bg((width * 3 / 4 + 10, height - 20),
+                             (width / 2, 10))
 
     # 1176x888
     # each is 294x296
@@ -116,7 +107,7 @@ def battle(game_surface, font, player, all_words, game_time):
 
     while True:
         game_surface.fill(colors.offblack.value)
-        game_surface.blit(background_surface, background_rect)
+        game_surface.blit(bg, bg_rect)
         if not finished:
             game_surface.blit(instructions_text, instructions_rect)
             if not enemy.alive:
