@@ -46,7 +46,7 @@ def main_menu():
             gameplay_funcs.battle(play_surface,
                                   current_player,
                                   all_words,
-                                  20)
+                                  3)
         elif selected == play_options.index('shop'):
             gameplay_funcs.shop(play_surface,
                                 current_player)
@@ -186,6 +186,33 @@ def message_box(text, position):
     msg_rect.center = (bg_rect.width / 2, bg_rect.height / 2)
 
     bg.blit(msg, msg_rect)
+
+    return bg, bg_rect
+
+
+def multiple_message_box(texts, initial_position):
+    from game_enums import colors
+
+    font = pygame.font.SysFont('Arial', 32)
+    line_size = font.get_linesize()
+
+    size_rects = []
+    for i, text in enumerate(texts):
+        size_rects.append(pygame.Rect(0,
+                                      i * line_size,
+                                      *font.size(text)))
+    size = get_size(size_rects)
+
+    bg, bg_rect = message_bg(size, initial_position)
+
+    for i, text in enumerate(texts):
+        msg = font.render(text,
+                          True,
+                          colors.offblack.value)
+        msg_rect = msg.get_rect()
+        msg_rect.midtop = (bg_rect.width / 2,
+                           5 + i * line_size)
+        bg.blit(msg, msg_rect)
 
     return bg, bg_rect
 

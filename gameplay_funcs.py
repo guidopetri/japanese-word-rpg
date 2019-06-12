@@ -12,6 +12,7 @@ import sys
 
 def battle(game_surface, player, all_words, game_time):
     from menus import message_box, wait_for_input, message_bg
+    from menus import multiple_message_box
     from game_enums import colors, status_effect
 
     width = game_surface.get_width()
@@ -83,8 +84,8 @@ def battle(game_surface, player, all_words, game_time):
 
     # 1176x888
     # each is 294x296
-    monster_images_locations = [(i, j) for i in [0, 294, 588, 882] for j in [0, 296, 592]]  # noqa
-    current_monster_image = (0, 0, 0, 0)
+    img_coords = [(i, j) for i in range(0, 883, 294) for j in [0, 296, 592]]
+    current_img = (0, 0, 0, 0)
 
     monster_images = pygame.image.load('media/monsters.png')
     monster_pixel_array = pygame.PixelArray(monster_images)
@@ -103,158 +104,144 @@ def battle(game_surface, player, all_words, game_time):
     finished = False
     exit = False
     enemy = classes.enemy_word(random.randrange(1, 4))
-    monster_choice = random.choice(monster_images_locations)
-    current_monster_image = (monster_choice[0], monster_choice[1], 294, 296)
+    monster_choice = random.choice(img_coords)
+    current_img = (monster_choice[0], monster_choice[1], 294, 296)
     monster_rect = pygame.Rect(0, 0, 294, 296)
     monster_rect.midtop = (width / 2, height / 10 - 5)
 
-    while True:
+    while not finished:
         game_surface.fill(colors.offblack.value)
         game_surface.blit(bg, bg_rect)
-        if not finished:
-            game_surface.blit(instructions_text, instructions_rect)
-            if not enemy.alive:
-                player.gain_exp(enemy.exp_yield)
-                player.gain_gold(enemy.gold_yield)
+        game_surface.blit(instructions_text, instructions_rect)
+        if not enemy.alive:
+            player.gain_exp(enemy.exp_yield)
+            player.gain_gold(enemy.gold_yield)
 
-                dead_text = font.render("ENEMY LEVEL %s KILLED!! 3 EXTRA SECONDS!!" % enemy.level,  # noqa
-                                        True,
-                                        colors.offblack.value)
-                dead_rect = dead_text.get_rect()
-                dead_rect.midtop = (width / 2, 11 * height / 12)
+            dead_text = font.render("ENEMY LEVEL %s KILLED!!"
+                                    " 3 EXTRA SECONDS!!" % enemy.level,
+                                    True,
+                                    colors.offblack.value)
+            dead_rect = dead_text.get_rect()
+            dead_rect.midtop = (width / 2, 11 * height / 12)
 
-                enemy = classes.enemy_word(random.randrange(1, 4))
-                monster_choice = random.choice(monster_images_locations)
-                current_monster_image = (monster_choice[0],
-                                         monster_choice[1],
-                                         294,
-                                         296)
-                time_left += 3
-                player.kills += 1
-                dead_enemy = True
-            if new_word:
-                enemy.pick_word(all_words)
-                word_text = font.render("%s" % enemy.word,
-                                        True,
-                                        colors.offblack.value)
-                word_rect = word_text.get_rect()
-                word_rect.midtop = (width / 2, height / 2 + 90)
-                new_word = False
-                typed_word = []
-            time_left_text = font.render("%ss left" % time_left,
-                                         True,
-                                         colors.offblack.value)
-            time_left_rect = time_left_text.get_rect()
-            time_left_rect.midtop = (3 * width / 4, height / 30)
-
-            game_surface.blit(time_left_text, time_left_rect)
-            game_surface.blit(health_text, health_rect)
-
-            game_surface.blit(monster_images,
-                              monster_rect,
-                              current_monster_image)
-
-            typed_text = font.render("".join(typed_word),
+            enemy = classes.enemy_word(random.randrange(1, 4))
+            monster_choice = random.choice(img_coords)
+            current_img = (monster_choice[0],
+                           monster_choice[1],
+                           294,
+                           296)
+            time_left += 3
+            player.kills += 1
+            dead_enemy = True
+        if new_word:
+            enemy.pick_word(all_words)
+            word_text = font.render("%s" % enemy.word,
+                                    True,
+                                    colors.offblack.value)
+            word_rect = word_text.get_rect()
+            word_rect.midtop = (width / 2, height / 2 + 90)
+            new_word = False
+            typed_word = []
+        time_left_text = font.render("%ss left" % time_left,
                                      True,
                                      colors.offblack.value)
-            typed_rect = typed_text.get_rect()
-            typed_rect.midtop = (width / 2, height / 2 + 135)
+        time_left_rect = time_left_text.get_rect()
+        time_left_rect.midtop = (3 * width / 4, height / 30)
 
-            game_surface.blit(word_text, word_rect)
-            game_surface.blit(typed_text, typed_rect)
+        game_surface.blit(time_left_text, time_left_rect)
+        game_surface.blit(health_text, health_rect)
 
-            if gave_hit and not took_hit:
-                game_surface.blit(hit_text, hit_rect)
+        game_surface.blit(monster_images,
+                          monster_rect,
+                          current_img)
 
-            if took_hit and not gave_hit:
-                game_surface.blit(ouch_text, ouch_rect)
+        typed_text = font.render("".join(typed_word),
+                                 True,
+                                 colors.offblack.value)
+        typed_rect = typed_text.get_rect()
+        typed_rect.midtop = (width / 2, height / 2 + 135)
 
-            if dead_enemy:
-                game_surface.blit(dead_text, dead_rect)
+        game_surface.blit(word_text, word_rect)
+        game_surface.blit(typed_text, typed_rect)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.unicode not in ['1', '2', '3', '4', '5', '6'] and event.key not in (pygame.K_SPACE, pygame.K_RETURN, pygame.K_BACKSPACE):  # noqa
-                        typed_word.append(event.unicode)
-                    elif event.key in (pygame.K_SPACE, pygame.K_RETURN):
-                        new_word = True
-                        dead_enemy = False
-                        if score_word(player.difficulty, enemy.word, "".join(typed_word)):  # noqa
-                            gave_hit = True
-                            took_hit = False
-                            player.score_points(1)
-                            enemy.take_damage(player.dmg_multiplier)
-                            if poison_mode:
-                                enemy.take_damage(1)
-                        else:
-                            took_hit = True
-                            gave_hit = False
-                            player.take_damage(1)
-                            health_text = font.render("HP: %s" % player.health,  # noqa
-                                                      True,
-                                                      colors.offblack.value)  # noqa
-                            health_rect = health_text.get_rect()
-                            health_rect.midtop = (width / 4, height / 30)
-                    elif event.key == pygame.K_BACKSPACE:
-                        typed_word = typed_word[:-1]
-                    elif event.key == pygame.K_1:
-                        # for item usage during battle
-                        pass
-                    elif event.key == pygame.K_2:
-                        pass
-                    elif event.key == pygame.K_3:
-                        pass
-                    elif event.key == pygame.K_4:
-                        pass
-                    elif event.key == pygame.K_5:
-                        pass
-                    elif event.key == pygame.K_6:
-                        pass
+        if gave_hit:
+            game_surface.blit(hit_text, hit_rect)
 
-            if time.time() - last_time > 1:
-                last_time = time.time()
-                time_left -= 1
-            if time_left == 0:
-                if time.time() - start_time >= game_time or not player.alive:  # noqa
-                    finished = True
-        elif finished:
-            end_text = font.render("your score was %s and you killed %s monsters," % (player.score, player.kills),  # noqa
-                                   True,
-                                   colors.offblack.value)  # noqa
-            end_rect = end_text.get_rect()
-            end_rect.midtop = (width / 2, height / 2)
+        if took_hit:
+            game_surface.blit(ouch_text, ouch_rect)
 
-            end_text2 = font.render("earning your level %s character" % player.level,  # noqa
-                                    True,
-                                    colors.offblack.value)
-            end_rect2 = end_text2.get_rect()
-            end_rect2.midtop = (width / 2, height / 2 + 45)
+        if dead_enemy:
+            game_surface.blit(dead_text, dead_rect)
 
-            end_text3 = font.render("%s exp and %s gold" % (player.total_exp, player.total_gold),  # noqa
-                                    True,
-                                    colors.offblack.value)
-            end_rect3 = end_text3.get_rect()
-            end_rect3.midtop = (width / 2, height / 2 + 90)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_SPACE, pygame.K_RETURN):
+                    new_word = True
+                    dead_enemy = False
+                    if score_word(player.difficulty, enemy.word, "".join(typed_word)):  # noqa
+                        gave_hit = True
+                        took_hit = False
+                        player.score_points(1)
+                        enemy.take_damage(player.dmg_multiplier)
+                        if poison_mode:
+                            enemy.take_damage(1)
+                    else:
+                        took_hit = True
+                        gave_hit = False
+                        player.take_damage(1)
+                        health_text = font.render("HP: %s" % player.health,  # noqa
+                                                  True,
+                                                  colors.offblack.value)  # noqa
+                        health_rect = health_text.get_rect()
+                        health_rect.midtop = (width / 4, height / 30)
+                elif event.key == pygame.K_BACKSPACE:
+                    typed_word = typed_word[:-1]
+                elif event.key == pygame.K_1:
+                    # for item usage during battle
+                    pass
+                elif event.key == pygame.K_2:
+                    pass
+                elif event.key == pygame.K_3:
+                    pass
+                elif event.key == pygame.K_4:
+                    pass
+                elif event.key == pygame.K_5:
+                    pass
+                elif event.key == pygame.K_6:
+                    pass
+                else:
+                    typed_word.append(event.unicode)
 
-            game_surface.blit(end_text, end_rect)
-            game_surface.blit(end_text2, end_rect2)
-            game_surface.blit(end_text3, end_rect3)
-            pygame.display.flip()
-            time.sleep(3)
-            for event in pygame.event.get():  # clear event queue
-                pass
-            while not exit:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-                    elif event.type == pygame.KEYDOWN:
-                        exit = True
-            break
+        if time.time() - last_time > 1:
+            last_time = time.time()
+            time_left -= 1
+        if time_left == 0:
+            if time.time() - start_time >= game_time or not player.alive:
+                finished = True
         pygame.display.flip()
+
+    texts = ["your score was %s" % player.score,
+             "and you killed %s monsters," % player.kills,
+             "earning your level %s character" % player.level,
+             "%s exp and %s gold." % (player.total_exp, player.total_gold)]
+
+    end_text, end_rect = multiple_message_box(texts,
+                                              (width / 2, height / 4))
+
+    game_surface.fill(colors.offblack.value)
+    game_surface.blit(end_text, end_rect)
+    pygame.display.flip()
+
+    time.sleep(3)
+
+    for event in pygame.event.get():  # clear event queue
+        pass
+
+    wait_for_input()
+
     if 'old_hp' in locals():
         player.health = player.max_hp * (2 / 3) - (player.max_hp - player.health)  # noqa
         player.max_hp *= (2 / 3)
