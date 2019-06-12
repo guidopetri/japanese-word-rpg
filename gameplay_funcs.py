@@ -94,15 +94,12 @@ def battle(game_surface, player, all_words, game_time):
     del monster_pixel_array  # what the heck is this
 
     start_time = time.time()
-    last_time = start_time
-    time_left = game_time
     new_word = True
     typed_word = []
     gave_hit = False
     took_hit = False
     dead_enemy = False
     finished = False
-    exit = False
     enemy = classes.enemy_word(random.randrange(1, 4))
     monster_choice = random.choice(img_coords)
     current_img = (monster_choice[0], monster_choice[1], 294, 296)
@@ -130,7 +127,7 @@ def battle(game_surface, player, all_words, game_time):
                            monster_choice[1],
                            294,
                            296)
-            time_left += 3
+            game_time += 3
             player.kills += 1
             dead_enemy = True
         if new_word:
@@ -142,7 +139,9 @@ def battle(game_surface, player, all_words, game_time):
             word_rect.midtop = (width / 2, height / 2 + 90)
             new_word = False
             typed_word = []
-        time_left_text = font.render("%ss left" % time_left,
+        time_left_text = font.render("%is left" % (game_time
+                                                   - time.time()
+                                                   + start_time),
                                      True,
                                      colors.offblack.value)
         time_left_rect = time_left_text.get_rect()
@@ -192,9 +191,9 @@ def battle(game_surface, player, all_words, game_time):
                         took_hit = True
                         gave_hit = False
                         player.take_damage(1)
-                        health_text = font.render("HP: %s" % player.health,  # noqa
+                        health_text = font.render("HP: %s" % player.health,
                                                   True,
-                                                  colors.offblack.value)  # noqa
+                                                  colors.offblack.value)
                         health_rect = health_text.get_rect()
                         health_rect.midtop = (width / 4, height / 30)
                 elif event.key == pygame.K_BACKSPACE:
@@ -215,12 +214,8 @@ def battle(game_surface, player, all_words, game_time):
                 else:
                     typed_word.append(event.unicode)
 
-        if time.time() - last_time > 1:
-            last_time = time.time()
-            time_left -= 1
-        if time_left == 0:
-            if time.time() - start_time >= game_time or not player.alive:
-                finished = True
+        if time.time() - start_time >= game_time or not player.alive:
+            finished = True
         pygame.display.flip()
 
     texts = ["your score was %s" % player.score,

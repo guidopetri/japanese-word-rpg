@@ -46,7 +46,7 @@ def main_menu():
             gameplay_funcs.battle(play_surface,
                                   current_player,
                                   all_words,
-                                  3)
+                                  20)
         elif selected == play_options.index('shop'):
             gameplay_funcs.shop(play_surface,
                                 current_player)
