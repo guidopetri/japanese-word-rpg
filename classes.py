@@ -4,7 +4,7 @@
 
 
 import random
-from game_enums import status_effect, use_items, player_classes
+from game_enums import status_effect, player_classes
 
 
 class enemy_word():
@@ -55,6 +55,7 @@ class enemy_word():
 class PlayerCharacter():
 
     def __init__(self, player_name=None, player_class=None, player_dict=None):
+        from collections import defaultdict
         if player_dict is None and player_name is not None:
             self.name = player_name
             self.char_class = player_class
@@ -72,7 +73,7 @@ class PlayerCharacter():
             self.status_duration = 0
             self.difficulty = 0.93
             self.story_chapter = 1
-            self.init_inventory()
+            self.inventory = defaultdict(int)
             self.calculate_class_bonuses()
         elif player_dict is not None and player_name is None:
             self.__dict__.update(player_dict)
@@ -122,8 +123,3 @@ class PlayerCharacter():
 
     def toJSON(self):
         return self.__dict__
-
-    def init_inventory(self):
-        self.inventory = {}
-        for item in use_items:
-            self.inventory[item.name] = 0
