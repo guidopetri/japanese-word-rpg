@@ -32,26 +32,19 @@ def battle(game_surface, player, all_words, game_time):
         wait_for_input()
         return
 
-    fast_mode = False
     poison_mode = False
-    if player.status_duration > 0:
-        if player.status == status_effect.stamina_up:
-            game_time *= 1.5
-        elif player.status == status_effect.hp_up:
-            old_hp = player.health
-            player.health += 0.5 * player.max_hp
-            player.max_hp *= 1.5
-        elif player.status == status_effect.dmg_up:
-            player.dmg_multiplier *= 2
-        elif player.status == status_effect.fast:
-            fast_mode = True
-        elif player.status == status_effect.give_poison:
-            poison_mode = True
-        player.status_duration -= 1
-        if player.status_duration == 0:
-            player.status = status_effect.normal
-    if fast_mode:
+
+    if player.status == status_effect.stamina_up:
+        game_time *= 1.5
+    elif player.status == status_effect.hp_up:
+        player.health += 0.5 * player.max_hp  # 8 / 10 -> 13 / 15
+        player.max_hp *= 1.5
+    elif player.status == status_effect.dmg_up:
+        player.dmg_multiplier *= 2
+    elif player.status == status_effect.fast:
         player.difficulty -= 0.13
+    elif player.status == status_effect.give_poison:
+        poison_mode = True
 
     font = pygame.font.SysFont('Arial', 32)
 
@@ -237,11 +230,18 @@ def battle(game_surface, player, all_words, game_time):
 
     wait_for_input()
 
-    if 'old_hp' in locals():
-        player.health = player.max_hp * (2 / 3) - (player.max_hp - player.health)  # noqa
-        player.max_hp *= (2 / 3)
-    if fast_mode:
-        player.difficulty += 0.13
+    if player.status_duration > 0:
+        if player.status == status_effect.fast:
+            player.difficulty += 0.13
+        elif player.status == status_effect.hp_up:
+            player.health = int(player.max_hp * (2 / 3)  # 13 / 15 -> 8 / 10
+                                - (player.max_hp - player.health))
+            player.max_hp = int(player.max_hp * (2 / 3))
+        elif player.status == status_effect.dmg_up:
+            player.dmg_multiplier /= 2
+        player.status_duration -= 1
+        if player.status_duration == 0:
+            player.status = status_effect.normal
     return
 
 
