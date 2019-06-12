@@ -237,8 +237,8 @@ def battle(game_surface, player, all_words, game_time):
 
     time.sleep(3)
 
-    for event in pygame.event.get():  # clear event queue
-        pass
+    # clear event queue
+    pygame.event.clear()
 
     wait_for_input()
 
