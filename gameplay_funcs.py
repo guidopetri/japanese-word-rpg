@@ -111,7 +111,7 @@ def battle(game_surface, player, all_words, game_time):
                                  True,
                                  colors.offblack.value)
         typed_rect = typed_text.get_rect()
-        typed_rect.topright = (width / 2, height / 2 + 135)
+        typed_rect.topleft = (word_rect.left, word_rect.top + 45)
 
         game_surface.blit(word_text, word_rect)
         game_surface.blit(typed_text, typed_rect)
@@ -170,7 +170,7 @@ def battle(game_surface, player, all_words, game_time):
     end_time = time.time()
 
     if not enemy.alive:
-        score = round(correct / enemy.word_count, 2)
+        score = round(100 * correct / enemy.word_count)
         cpm = round(60 * (len(typed_words) - 15) / (end_time - start_time))
         wpm = cpm / 5
 
@@ -180,7 +180,7 @@ def battle(game_surface, player, all_words, game_time):
         player.kills += 1
 
         texts = ["ENEMY LEVEL %s KILLED!!" % enemy.level,
-                 "your accuracy was %s" % score,
+                 "your accuracy was %s%%" % score,
                  "with a speed of %s cpm (%s wpm)," % (cpm, wpm),
                  "earning your level %s character" % player.level,
                  "%s exp and %s gold." % (player.total_exp, player.total_gold)]
