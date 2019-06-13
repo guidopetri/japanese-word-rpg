@@ -89,7 +89,7 @@ def battle(game_surface, player, all_words, game_time):
     monster_rect.midtop = (width / 2, height / 10 - 5)
 
     i = 15
-    last_word_index = 15
+    last_word_idx = 15
     correct = 0
     while enemy.alive and player.alive:
         game_surface.blit(bg, bg_rect)
@@ -123,9 +123,9 @@ def battle(game_surface, player, all_words, game_time):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     # i need a better way of comparing words...
-                    last_word = ''.join(typed_words[last_word_index:])
-                    enemy_word = ''.join(enemy.words[last_word_index:i])
-                    last_word_index = i + 1
+                    last_word = ''.join(typed_words[last_word_idx:]).lower()
+                    enemy_word = ''.join(enemy.words[last_word_idx:i]).lower()
+                    last_word_idx = i + 1
                     if score_word(player.difficulty, enemy_word, last_word):
                         correct += 1
                         enemy.take_damage(int(player.dmg_multiplier))
@@ -167,8 +167,9 @@ def battle(game_surface, player, all_words, game_time):
 
         pygame.display.flip()
 
+    end_time = time.time()
+
     if not enemy.alive:
-        end_time = time.time()
         score = round(correct / enemy.word_count, 2)
         cpm = round(60 * (len(typed_words) - 15) / (end_time - start_time))
         wpm = cpm / 5
@@ -214,7 +215,7 @@ def battle(game_surface, player, all_words, game_time):
 
 
 def score_word(difficulty, word, user_input):
-    return SequenceMatcher(None, word.lower(), user_input.lower()).ratio() >= difficulty  # noqa
+    return SequenceMatcher(None, word, user_input).ratio() >= difficulty
 
 
 def shop(game_surface, player):
