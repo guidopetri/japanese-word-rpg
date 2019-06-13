@@ -19,11 +19,10 @@ def battle(game_surface, player, all_words, game_time):
     height = game_surface.get_height()
 
     # make sure player can battle in the first place
+    message_text = "you're passed out! you can't battle!"
+    message, message_rect = message_box(message_text,
+                                        (width / 2, height / 4))
     if not player.alive:
-        message_text = "you're passed out! you can't battle!"
-        message, message_rect = message_box(message_text,
-                                            (width / 2, height / 4))
-
         game_surface.fill(colors.offblack.value)
         game_surface.blit(message, message_rect)
 
@@ -168,29 +167,28 @@ def battle(game_surface, player, all_words, game_time):
 
         pygame.display.flip()
 
-    end_time = time.time()
-    score = round(correct / enemy.word_count, 2)
-    cpm = round(60 * (len(typed_words) - 15) / (end_time - start_time))
-    wpm = cpm / 5
+    if not enemy.alive:
+        end_time = time.time()
+        score = round(correct / enemy.word_count, 2)
+        cpm = round(60 * (len(typed_words) - 15) / (end_time - start_time))
+        wpm = cpm / 5
 
-    # make sure it's because the enemy died, not the player
+        player.gain_exp(int(enemy.exp_yield * score))
+        player.gain_gold(int(enemy.gold_yield * score))
 
-    player.gain_exp(int(enemy.exp_yield * score))
-    player.gain_gold(int(enemy.gold_yield * score))
+        player.kills += 1
 
-    player.kills += 1
+        texts = ["ENEMY LEVEL %s KILLED!!" % enemy.level,
+                 "your accuracy was %s" % score,
+                 "with a speed of %s cpm (%s wpm)," % (cpm, wpm),
+                 "earning your level %s character" % player.level,
+                 "%s exp and %s gold." % (player.total_exp, player.total_gold)]
 
-    texts = ["ENEMY LEVEL %s KILLED!!" % enemy.level,
-             "your accuracy was %s" % score,
-             "with a speed of %s cpm (%s wpm)," % (cpm, wpm),
-             "earning your level %s character" % player.level,
-             "%s exp and %s gold." % (player.total_exp, player.total_gold)]
-
-    end_text, end_rect = multiple_message_box(texts,
-                                              (width / 2, height / 4))
+        message, message_rect = multiple_message_box(texts,
+                                                     (width / 2, height / 4))
 
     game_surface.fill(colors.offblack.value)
-    game_surface.blit(end_text, end_rect)
+    game_surface.blit(message, message_rect)
     pygame.display.flip()
 
     time.sleep(1)
@@ -366,6 +364,7 @@ def church(game_surface, player):
     if not player.alive:
         price = player.max_hp * 1.5
         question = 'would you like to revive for %i gold?' % price
+        game_surface.fill(colors.offblack.value)
         revive = yn_question(game_surface, question, (width / 2, height / 4))
 
         if revive and player.total_gold >= price:
