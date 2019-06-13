@@ -14,7 +14,6 @@ def battle(game_surface, player, all_words, game_time):
     from menus import message_box, wait_for_input, message_bg
     from menus import multiple_message_box
     from game_enums import colors, status_effect
-    from collections import deque
 
     width = game_surface.get_width()
     height = game_surface.get_height()
@@ -38,8 +37,8 @@ def battle(game_surface, player, all_words, game_time):
     if player.status == status_effect.stamina_up:
         game_time *= 1.5
     elif player.status == status_effect.hp_up:
-        player.health += 0.5 * player.max_hp  # 8 / 10 -> 13 / 15
-        player.max_hp *= 1.5
+        player.health += int(0.5 * player.max_hp)  # 8 / 10 -> 13 / 15
+        player.max_hp = int(player.max_hp * 1.5)
     elif player.status == status_effect.dmg_up:
         player.dmg_multiplier *= 2
     elif player.status == status_effect.fast:
@@ -49,32 +48,21 @@ def battle(game_surface, player, all_words, game_time):
 
     font = pygame.font.SysFont('Arial', 32)
 
+    bg, bg_rect = message_bg((width * 3 / 4 + 10, height - 20),
+                             (width / 2, 10))
+
     instructions_text = font.render("type it out!",
                                     True,
                                     colors.offblack.value)
     instructions_rect = instructions_text.get_rect()
-    instructions_rect.midtop = (width / 2, height / 30)
+    instructions_rect.midtop = (bg_rect.width / 2, 10)
+    bg.blit(instructions_text, instructions_rect)
 
     health_text = font.render("HP: %s" % player.health,
                               True,
                               colors.offblack.value)
     health_rect = health_text.get_rect()
     health_rect.midtop = (width / 4, height / 30)
-
-    hit_text = font.render("HIT!!",
-                           True,
-                           colors.offblue.value)
-    hit_rect = hit_text.get_rect()
-    hit_rect.midtop = (width / 2, height / 2 + 45)
-
-    ouch_text = font.render("OUCH!!",
-                            True,
-                            colors.offred.value)
-    ouch_rect = ouch_text.get_rect()
-    ouch_rect.midtop = (width / 2, height / 2 + 45)
-
-    bg, bg_rect = message_bg((width * 3 / 4 + 10, height - 20),
-                             (width / 2, 10))
 
     # 1176x888
     # each is 294x296
@@ -87,88 +75,78 @@ def battle(game_surface, player, all_words, game_time):
                                 pygame.Color(131, 232, 252), 0.4)  # wat
     del monster_pixel_array  # what the heck is this
 
+    game_surface.fill(colors.offblack.value)
     start_time = time.time()
-    typed_word = deque()
-    finished = False
+    typed_words = [' ' for i in range(15)]
 
     enemy = classes.enemy_word(random.randrange(1, 4))
-    enemy.pick_word(all_words)
+
+    for i in range(enemy.max_hp):
+        enemy.pick_word(all_words)
 
     monster_choice = random.choice(img_coords)
-    current_img = (monster_choice[0], monster_choice[1], 294, 296)
+    current_img = (*monster_choice, 294, 296)
     monster_rect = pygame.Rect(0, 0, 294, 296)
     monster_rect.midtop = (width / 2, height / 10 - 5)
 
-    while enemy.alive:
-        game_surface.fill(colors.offblack.value)
+    i = 15
+    last_word_index = 15
+    correct = 0
+    while enemy.alive and player.alive:
         game_surface.blit(bg, bg_rect)
-        game_surface.blit(instructions_text, instructions_rect)
 
-        word_text = font.render("%s" % enemy.word,
+        # this still needs to align properly
+        word_text = font.render(''.join(enemy.words[i - 15:i + 15]),
                                 True,
                                 colors.offblack.value)
         word_rect = word_text.get_rect()
         word_rect.midtop = (width / 2, height / 2 + 90)
 
-        time_left_text = font.render("%is left" % (game_time
-                                                   - time.time()
-                                                   + start_time),
-                                     True,
-                                     colors.offblack.value)
-        time_left_rect = time_left_text.get_rect()
-        time_left_rect.midtop = (3 * width / 4, height / 30)
-
-        game_surface.blit(time_left_text, time_left_rect)
         game_surface.blit(health_text, health_rect)
 
         game_surface.blit(monster_images,
                           monster_rect,
                           current_img)
 
-        typed_text = font.render("".join(typed_word),
+        typed_text = font.render(''.join(typed_words[i - 15:]),
                                  True,
                                  colors.offblack.value)
         typed_rect = typed_text.get_rect()
-        typed_rect.midtop = (width / 2, height / 2 + 135)
+        typed_rect.topright = (width / 2, height / 2 + 135)
 
         game_surface.blit(word_text, word_rect)
         game_surface.blit(typed_text, typed_rect)
-
-        if gave_hit:
-            game_surface.blit(hit_text, hit_rect)
-
-        if took_hit:
-            game_surface.blit(ouch_text, ouch_rect)
-
-        if dead_enemy:
-            game_surface.blit(dead_text, dead_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_SPACE, pygame.K_RETURN):
-                    new_word = True
-                    dead_enemy = False
-                    if score_word(player.difficulty, enemy.word, "".join(typed_word)):  # noqa
-                        gave_hit = True
-                        took_hit = False
-                        player.score_points(1)
-                        enemy.take_damage(player.dmg_multiplier)
+                if event.key == pygame.K_SPACE:
+                    # i need a better way of comparing words...
+                    last_word = ''.join(typed_words[last_word_index:])
+                    enemy_word = ''.join(enemy.words[last_word_index:i])
+                    last_word_index = i + 1
+                    if score_word(player.difficulty, enemy_word, last_word):
+                        correct += 1
+                        enemy.take_damage(int(player.dmg_multiplier))
                         if poison_mode:
                             enemy.take_damage(1)
                     else:
-                        took_hit = True
-                        gave_hit = False
+                        enemy.pick_word(all_words)
                         player.take_damage(1)
                         health_text = font.render("HP: %s" % player.health,
                                                   True,
                                                   colors.offblack.value)
                         health_rect = health_text.get_rect()
                         health_rect.midtop = (width / 4, height / 30)
+                    typed_words.append(' ')
                 elif event.key == pygame.K_BACKSPACE:
-                    typed_word = typed_word[:-1]
+                    # stop backspacing past a space
+                    if typed_words[-1] != ' ':
+                        typed_words = typed_words[:-1]
+                        i -= 1
+                    continue
                 elif event.key == pygame.K_1:
                     # for item usage during battle
                     pass
@@ -182,27 +160,29 @@ def battle(game_surface, player, all_words, game_time):
                     pass
                 elif event.key == pygame.K_6:
                     pass
+                elif event.key == pygame.K_RETURN:
+                    pass
                 else:
-                    typed_word.append(event.unicode)
+                    typed_words.append(event.unicode)
+                i += 1
 
-        if time.time() - start_time >= game_time or not player.alive:
-            finished = True
         pygame.display.flip()
 
-    score = 
+    end_time = time.time()
+    score = round(correct / enemy.word_count, 2)
+    cpm = round(60 * (len(typed_words) - 15) / (end_time - start_time))
+    wpm = cpm / 5
 
-    player.gain_exp(enemy.exp_yield * score)
-    player.gain_gold(enemy.gold_yield * score)
+    # make sure it's because the enemy died, not the player
 
-    dead_text = font.render(,
-                            True,
-                            colors.offblack.value)
-    dead_rect = dead_text.get_rect()
-    dead_rect.midtop = (width / 2, 11 * height / 12)
+    player.gain_exp(int(enemy.exp_yield * score))
+    player.gain_gold(int(enemy.gold_yield * score))
+
     player.kills += 1
 
     texts = ["ENEMY LEVEL %s KILLED!!" % enemy.level,
-             "your score was %s" % score,
+             "your accuracy was %s" % score,
+             "with a speed of %s cpm (%s wpm)," % (cpm, wpm),
              "earning your level %s character" % player.level,
              "%s exp and %s gold." % (player.total_exp, player.total_gold)]
 
@@ -213,7 +193,7 @@ def battle(game_surface, player, all_words, game_time):
     game_surface.blit(end_text, end_rect)
     pygame.display.flip()
 
-    time.sleep(3)
+    time.sleep(1)
 
     # clear event queue
     pygame.event.clear()
