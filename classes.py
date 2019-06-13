@@ -10,6 +10,7 @@ from game_enums import status_effect, player_classes
 class enemy_word():
 
     def __init__(self, level):
+        from collections import deque
         self.level = level
         self.exp_yield = self.level * random.randrange(5, 11)
         self.gold_yield = self.level * random.randrange(1, 4)
@@ -17,6 +18,7 @@ class enemy_word():
         self.max_hp = self.health
         self.status = status_effect.normal
         self.alive = True
+        self.words = deque()
 
     def pick_word(self, words_dict):
 
@@ -29,7 +31,7 @@ class enemy_word():
         elif self.status == status_effect.slow:
             words = [x for y in words_dict.values() for x in y if len(x) < 6]
 
-        self.word = random.choice(words)
+        self.words.extend(random.choice(words))
 
     def take_damage(self, amount):
         self.health -= amount
@@ -49,7 +51,7 @@ class enemy_word():
                 print(" ..... slow .....")
 
     def print_word(self):
-        print(self.word)
+        print(self.words)
 
 
 class PlayerCharacter():

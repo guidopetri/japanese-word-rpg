@@ -14,6 +14,7 @@ def battle(game_surface, player, all_words, game_time):
     from menus import message_box, wait_for_input, message_bg
     from menus import multiple_message_box
     from game_enums import colors, status_effect
+    from collections import deque
 
     width = game_surface.get_width()
     height = game_surface.get_height()
@@ -87,51 +88,28 @@ def battle(game_surface, player, all_words, game_time):
     del monster_pixel_array  # what the heck is this
 
     start_time = time.time()
-    new_word = True
-    typed_word = []
-    gave_hit = False
-    took_hit = False
-    dead_enemy = False
+    typed_word = deque()
     finished = False
+
     enemy = classes.enemy_word(random.randrange(1, 4))
+    enemy.pick_word(all_words)
+
     monster_choice = random.choice(img_coords)
     current_img = (monster_choice[0], monster_choice[1], 294, 296)
     monster_rect = pygame.Rect(0, 0, 294, 296)
     monster_rect.midtop = (width / 2, height / 10 - 5)
 
-    while not finished:
+    while enemy.alive:
         game_surface.fill(colors.offblack.value)
         game_surface.blit(bg, bg_rect)
         game_surface.blit(instructions_text, instructions_rect)
-        if not enemy.alive:
-            player.gain_exp(enemy.exp_yield)
-            player.gain_gold(enemy.gold_yield)
 
-            dead_text = font.render("ENEMY LEVEL %s KILLED!!"
-                                    " 3 EXTRA SECONDS!!" % enemy.level,
-                                    True,
-                                    colors.offblack.value)
-            dead_rect = dead_text.get_rect()
-            dead_rect.midtop = (width / 2, 11 * height / 12)
+        word_text = font.render("%s" % enemy.word,
+                                True,
+                                colors.offblack.value)
+        word_rect = word_text.get_rect()
+        word_rect.midtop = (width / 2, height / 2 + 90)
 
-            enemy = classes.enemy_word(random.randrange(1, 4))
-            monster_choice = random.choice(img_coords)
-            current_img = (monster_choice[0],
-                           monster_choice[1],
-                           294,
-                           296)
-            game_time += 3
-            player.kills += 1
-            dead_enemy = True
-        if new_word:
-            enemy.pick_word(all_words)
-            word_text = font.render("%s" % enemy.word,
-                                    True,
-                                    colors.offblack.value)
-            word_rect = word_text.get_rect()
-            word_rect.midtop = (width / 2, height / 2 + 90)
-            new_word = False
-            typed_word = []
         time_left_text = font.render("%is left" % (game_time
                                                    - time.time()
                                                    + start_time),
@@ -211,8 +189,20 @@ def battle(game_surface, player, all_words, game_time):
             finished = True
         pygame.display.flip()
 
-    texts = ["your score was %s" % player.score,
-             "and you killed %s monsters," % player.kills,
+    score = 
+
+    player.gain_exp(enemy.exp_yield * score)
+    player.gain_gold(enemy.gold_yield * score)
+
+    dead_text = font.render(,
+                            True,
+                            colors.offblack.value)
+    dead_rect = dead_text.get_rect()
+    dead_rect.midtop = (width / 2, 11 * height / 12)
+    player.kills += 1
+
+    texts = ["ENEMY LEVEL %s KILLED!!" % enemy.level,
+             "your score was %s" % score,
              "earning your level %s character" % player.level,
              "%s exp and %s gold." % (player.total_exp, player.total_gold)]
 
