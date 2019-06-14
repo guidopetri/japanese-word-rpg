@@ -102,10 +102,10 @@ def battle(game_surface, player, all_words, game_time):
                                 colors.offblue.value)
         typed_text = font.render(''.join(typed_words),
                                  True,
-                                 colors.offred.value)
+                                 colors.offred.value,
+                                 colors.bgyellow.value)
 
         dest = (width / 4, height / 2 + 90)
-        type_dest = dest
 
         move_by = sum([x[4] for x in font.metrics(''.join(enemy.words[:i]))])
         word_area = pygame.Rect(- width / 4 + move_by,  # left
@@ -121,7 +121,7 @@ def battle(game_surface, player, all_words, game_time):
                                 )
 
         game_surface.blit(word_text, dest, word_area)
-        game_surface.blit(typed_text, type_dest, type_area)
+        game_surface.blit(typed_text, dest, type_area)
 
         game_surface.blit(health_text, health_rect)
 
