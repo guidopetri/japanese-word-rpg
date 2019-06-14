@@ -102,20 +102,26 @@ def battle(game_surface, player, all_words, game_time):
                                 colors.offblue.value)
         typed_text = font.render(''.join(typed_words),
                                  True,
-                                 colors.offblack.value)
+                                 colors.offred.value)
 
         dest = (width / 4, height / 2 + 90)
         type_dest = (dest[0], dest[1] + font.get_linesize())
 
         move_by = sum([x[4] for x in font.metrics(''.join(enemy.words[:i]))])
-        word_rect = pygame.Rect(- width / 4 + move_by,  # left
+        word_area = pygame.Rect(- width / 4 + move_by,  # left
+                                0,  # top
+                                width / 2,  # width
+                                font.get_linesize()  # height
+                                )
+        move_typed = sum([x[4] for x in font.metrics(''.join(typed_words))])
+        type_area = pygame.Rect(- width / 4 + move_typed,  # left
                                 0,  # top
                                 width / 2,  # width
                                 font.get_linesize()  # height
                                 )
 
-        game_surface.blit(word_text, dest, word_rect)
-        game_surface.blit(typed_text, type_dest, word_rect)
+        game_surface.blit(word_text, dest, word_area)
+        game_surface.blit(typed_text, type_dest, type_area)
 
         game_surface.blit(health_text, health_rect)
 
@@ -129,6 +135,7 @@ def battle(game_surface, player, all_words, game_time):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    # move i to next space in enemy.words, if not on space
                     word, typed = get_words(enemy.words, typed_words)
                     if score_word(player.difficulty, word, typed):
                         correct += 1
@@ -169,6 +176,7 @@ def battle(game_surface, player, all_words, game_time):
                     continue
                 else:
                     typed_words.append(event.unicode)
+                    # don't add to i if currently space on enemy.words
                 i += 1
         else:
             # break out of multiple levels of looping
