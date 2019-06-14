@@ -91,7 +91,7 @@ def battle(game_surface, player, all_words, game_time):
     i = 15
     last_word_idx = 15
     correct = 0
-    while enemy.alive and player.alive:
+    while enemy.alive:
         game_surface.blit(bg, bg_rect)
 
         # this still needs to align properly
@@ -134,6 +134,8 @@ def battle(game_surface, player, all_words, game_time):
                     else:
                         enemy.pick_word(all_words)
                         player.take_damage(1)
+                        if not player.alive:
+                            break
                         health_text = font.render("HP: %s" % player.health,
                                                   True,
                                                   colors.offblack.value)
@@ -164,12 +166,14 @@ def battle(game_surface, player, all_words, game_time):
                 else:
                     typed_words.append(event.unicode)
                 i += 1
-
-        pygame.display.flip()
-
-    end_time = time.time()
-
-    if not enemy.alive:
+        else:
+            # break out of multiple levels of looping
+            pygame.display.flip()
+            continue
+        break
+    else:
+        # if the enemy died, not the player
+        end_time = time.time()
         score = round(100 * correct / enemy.word_count)
         cpm = round(60 * (len(typed_words) - 15) / (end_time - start_time))
         wpm = cpm / 5
