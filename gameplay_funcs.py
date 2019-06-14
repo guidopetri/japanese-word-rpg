@@ -105,7 +105,7 @@ def battle(game_surface, player, all_words, game_time):
                                  colors.offred.value)
 
         dest = (width / 4, height / 2 + 90)
-        type_dest = (dest[0], dest[1] + font.get_linesize())
+        type_dest = dest
 
         move_by = sum([x[4] for x in font.metrics(''.join(enemy.words[:i]))])
         word_area = pygame.Rect(- width / 4 + move_by,  # left
@@ -181,7 +181,9 @@ def battle(game_surface, player, all_words, game_time):
                 else:
                     typed_words.append(event.unicode)
                     # don't add to i if currently space on enemy.words
-                    if enemy.words[i] == ' ':
+                    if len(enemy.words) <= i:
+                        continue
+                    elif enemy.words[i] == ' ':
                         continue
                 i += 1
         else:
