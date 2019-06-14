@@ -17,7 +17,7 @@ class enemy_word():
         self.max_hp = self.health
         self.status = status_effect.normal
         self.alive = True
-        self.words = [' ' for i in range(15)]
+        self.words = []
         self.word_count = 0
 
     def pick_word(self, words_dict):
@@ -31,7 +31,7 @@ class enemy_word():
         elif self.status == status_effect.slow:
             words = [x for y in words_dict.values() for x in y if len(x) < 6]
 
-        if self.words[-1] != ' ':
+        if self.words and self.words[-1] != ' ':
             self.words.append(' ')
         self.words.extend(random.choice(words))
         self.word_count += 1

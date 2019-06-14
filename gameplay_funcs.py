@@ -76,7 +76,7 @@ def battle(game_surface, player, all_words, game_time):
 
     game_surface.fill(colors.offblack.value)
     start_time = time.time()
-    typed_words = [' ' for i in range(15)]
+    typed_words = []
 
     enemy = classes.enemy_word(random.randrange(1, 4))
 
@@ -88,18 +88,27 @@ def battle(game_surface, player, all_words, game_time):
     monster_rect = pygame.Rect(0, 0, 294, 296)
     monster_rect.midtop = (width / 2, height / 10 - 5)
 
-    i = 15
-    last_word_idx = 15
+    # create a surface with the same color as bg
+    # use SRCALPHA flag when creating for per-pixel alpha
+    # make sure to set the alpha values to be a gradient
+
+    i = 0
     correct = 0
     while enemy.alive:
         game_surface.blit(bg, bg_rect)
 
-        # this still needs to align properly
-        word_text = font.render(''.join(enemy.words[i - 15:i + 15]),
-                                True,
-                                colors.offblack.value)
-        word_rect = word_text.get_rect()
-        word_rect.midtop = (width / 2, height / 2 + 90)
+        if i < 15:
+            word_text = font.render(''.join(enemy.words)[0:i + 15],
+                                    True,
+                                    colors.offblue.value)
+            word_rect = word_text.get_rect()
+            word_rect.topright = (width * 3 / 4, height / 2 + 90)
+        else:
+            word_text = font.render(''.join(enemy.words)[i - 15:i + 15],
+                                    True,
+                                    colors.offblue.value)
+            word_rect = word_text.get_rect()
+            word_rect.topleft = (width * 1 / 4, height / 2 + 90)
 
         game_surface.blit(health_text, health_rect)
 
@@ -111,7 +120,8 @@ def battle(game_surface, player, all_words, game_time):
                                  True,
                                  colors.offblack.value)
         typed_rect = typed_text.get_rect()
-        typed_rect.topleft = (word_rect.left, word_rect.top + 45)
+        typed_rect.topleft = (word_rect.left,
+                              word_rect.top + font.get_linesize())
 
         game_surface.blit(word_text, word_rect)
         game_surface.blit(typed_text, typed_rect)
@@ -122,11 +132,8 @@ def battle(game_surface, player, all_words, game_time):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    # i need a better way of comparing words...
-                    last_word = ''.join(typed_words[last_word_idx:]).lower()
-                    enemy_word = ''.join(enemy.words[last_word_idx:i]).lower()
-                    last_word_idx = i + 1
-                    if score_word(player.difficulty, enemy_word, last_word):
+                    word, typed = get_words(enemy.words, typed_words)
+                    if score_word(player.difficulty, word, typed):
                         correct += 1
                         enemy.take_damage(int(player.dmg_multiplier))
                         if poison_mode:
@@ -218,7 +225,12 @@ def battle(game_surface, player, all_words, game_time):
     return
 
 
+def get_words(enemy_words, typed_words):
+    raise NotImplementedError
+
+
 def score_word(difficulty, word, user_input):
+    print(word, user_input, flush=True)
     return SequenceMatcher(None, word, user_input).ratio() >= difficulty
 
 
