@@ -135,7 +135,6 @@ def battle(game_surface, player, all_words, game_time):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    # move i to next space in enemy.words, if not on space
                     word, typed = get_words(enemy.words, typed_words)
                     if score_word(player.difficulty, word, typed):
                         correct += 1
@@ -152,6 +151,11 @@ def battle(game_surface, player, all_words, game_time):
                                                   colors.offblack.value)
                         health_rect = health_text.get_rect()
                         health_rect.midtop = (width / 4, height / 30)
+                    try:
+                        # move i to next space in enemy.words, if not on space
+                        i += enemy.words[i:].index(' ')
+                    except ValueError:
+                        pass
                     typed_words.append(' ')
                 elif event.key == pygame.K_BACKSPACE:
                     # stop backspacing past a space
@@ -177,6 +181,8 @@ def battle(game_surface, player, all_words, game_time):
                 else:
                     typed_words.append(event.unicode)
                     # don't add to i if currently space on enemy.words
+                    if enemy.words[i] == ' ':
+                        continue
                 i += 1
         else:
             # break out of multiple levels of looping
