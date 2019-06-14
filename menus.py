@@ -14,11 +14,13 @@ def main_menu():
     all_words = backend.load_words()
     (player_data, current_player) = backend.load_player()
 
-    init_status = pygame.init()
+    # pygame.joystick.init() is breaking my execution for some reason.
+    pygame.cdrom.init()
+    pygame.display.init()
+    pygame.font.init()
+    pygame.mixer.init()
 
-    if init_status[1] > 0:
-        print("had {0} initializing errors, exiting".format(init_status[1]))
-        sys.exit()
+    # init_status = pygame.init()
 
     width, height = 800, 600
     play_surface = pygame.display.set_mode((width, height))

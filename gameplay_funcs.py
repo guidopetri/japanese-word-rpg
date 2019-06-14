@@ -97,34 +97,31 @@ def battle(game_surface, player, all_words, game_time):
     while enemy.alive:
         game_surface.blit(bg, bg_rect)
 
-        if i < 15:
-            word_text = font.render(''.join(enemy.words)[0:i + 15],
-                                    True,
-                                    colors.offblue.value)
-            word_rect = word_text.get_rect()
-            word_rect.topright = (width * 3 / 4, height / 2 + 90)
-        else:
-            word_text = font.render(''.join(enemy.words)[i - 15:i + 15],
-                                    True,
-                                    colors.offblue.value)
-            word_rect = word_text.get_rect()
-            word_rect.topleft = (width * 1 / 4, height / 2 + 90)
+        word_text = font.render(''.join(enemy.words),
+                                True,
+                                colors.offblue.value)
+        typed_text = font.render(''.join(typed_words),
+                                 True,
+                                 colors.offblack.value)
+
+        dest = (width / 4, height / 2 + 90)
+        type_dest = (dest[0], dest[1] + font.get_linesize())
+
+        move_by = sum([x[4] for x in font.metrics(''.join(enemy.words[:i]))])
+        word_rect = pygame.Rect(- width / 4 + move_by,  # left
+                                0,  # top
+                                width / 2,  # width
+                                font.get_linesize()  # height
+                                )
+
+        game_surface.blit(word_text, dest, word_rect)
+        game_surface.blit(typed_text, type_dest, word_rect)
 
         game_surface.blit(health_text, health_rect)
 
         game_surface.blit(monster_images,
                           monster_rect,
                           current_img)
-
-        typed_text = font.render(''.join(typed_words[i - 15:]),
-                                 True,
-                                 colors.offblack.value)
-        typed_rect = typed_text.get_rect()
-        typed_rect.topleft = (word_rect.left,
-                              word_rect.top + font.get_linesize())
-
-        game_surface.blit(word_text, word_rect)
-        game_surface.blit(typed_text, typed_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -157,19 +154,19 @@ def battle(game_surface, player, all_words, game_time):
                     continue
                 elif event.key == pygame.K_1:
                     # for item usage during battle
-                    pass
+                    continue
                 elif event.key == pygame.K_2:
-                    pass
+                    continue
                 elif event.key == pygame.K_3:
-                    pass
+                    continue
                 elif event.key == pygame.K_4:
-                    pass
+                    continue
                 elif event.key == pygame.K_5:
-                    pass
+                    continue
                 elif event.key == pygame.K_6:
-                    pass
+                    continue
                 elif event.key == pygame.K_RETURN:
-                    pass
+                    continue
                 else:
                     typed_words.append(event.unicode)
                 i += 1
@@ -182,7 +179,7 @@ def battle(game_surface, player, all_words, game_time):
         # if the enemy died, not the player
         end_time = time.time()
         score = round(100 * correct / enemy.word_count)
-        cpm = round(60 * (len(typed_words) - 15) / (end_time - start_time))
+        cpm = round(60 * len(typed_words) / (end_time - start_time))
         wpm = cpm / 5
 
         player.gain_exp(int(enemy.exp_yield * score))
@@ -226,11 +223,14 @@ def battle(game_surface, player, all_words, game_time):
 
 
 def get_words(enemy_words, typed_words):
-    raise NotImplementedError
+    typed_wordlist = ''.join(typed_words).split(' ')
+    idx = len(typed_wordlist) - 1
+    last_enemy_word = ''.join(enemy_words).split(' ')[idx]
+    last_typed_word = typed_wordlist[-1]
+    return last_enemy_word, last_typed_word
 
 
 def score_word(difficulty, word, user_input):
-    print(word, user_input, flush=True)
     return SequenceMatcher(None, word, user_input).ratio() >= difficulty
 
 
