@@ -6,6 +6,7 @@
 import json
 import classes
 import os
+import config
 
 
 def load_words():
@@ -31,8 +32,8 @@ def load_player():
         player_class = input("what's your class?\n")
         player = classes.PlayerCharacter(player_name=name,
                                          player_class=player_class)
-
-    return data, player
+    config.player = player
+    return data
 
 
 def save_player(player_data, player):

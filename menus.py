@@ -13,15 +13,13 @@ def main_menu():
     import backend
 
     all_words = backend.load_words()
-    (player_data, current_player) = backend.load_player()
+    player_data = backend.load_player()
+    current_player = config.player
 
     # pygame.joystick.init() is breaking my execution for some reason.
-    pygame.cdrom.init()
     pygame.display.init()
     pygame.font.init()
-    pygame.mixer.init()
-
-    # init_status = pygame.init()
+    # pygame.mixer.init()
 
     width, height = config.width, config.height
     play_surface = pygame.display.set_mode((width, height))
