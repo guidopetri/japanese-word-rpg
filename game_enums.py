@@ -34,7 +34,7 @@ class use_items(Enum):
     energy_bar = 5
 
 
-class __item_prices(dict):
+class _item_prices(dict):
     potion = 10
     coffee = 50
     poison_flask = 50
@@ -59,4 +59,5 @@ class colors(Enum):
     magenta = pygame.Color(255, 0, 255)
 
 
-item_prices = __item_prices()
+item_prices = _item_prices()
+special_items = ['hero trophy']

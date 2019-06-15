@@ -59,29 +59,27 @@ class enemy_word():
 
 class PlayerCharacter():
 
-    def __init__(self, player_name=None, player_class=None, player_dict=None):
+    def __init__(self, player_name=None, player_class=None):
         from collections import defaultdict
-        if player_dict is None and player_name is not None:
-            self.name = player_name
-            self.char_class = player_class
-            self.health = 10
-            self.max_hp = 10
-            self.level = 1
-            self.kills = 0
-            self.score = 0
-            self.total_exp = 0
-            self.alive = True
-            self.total_gold = 0
-            self.gold_multiplier = 1.0
-            self.dmg_multiplier = 1.0
-            self.status = status_effect.normal.value
-            self.status_duration = 0
-            self.difficulty = 0.93
-            self.story_chapter = 1
-            self.inventory = defaultdict(int)
-            self.calculate_class_bonuses()
-        elif player_dict is not None and player_name is None:
-            self.__dict__.update(player_dict)
+
+        self.name = player_name
+        self.char_class = player_class
+        self.health = 10
+        self.max_hp = 10
+        self.level = 1
+        self.kills = 0
+        self.score = 0
+        self.total_exp = 0
+        self.alive = True
+        self.total_gold = 0
+        self.gold_multiplier = 1.0
+        self.dmg_multiplier = 1.0
+        self.status = status_effect.normal
+        self.status_duration = 0
+        self.difficulty = 0.93
+        self.story_chapter = 1
+        self.inventory = defaultdict(int)
+        self.calculate_class_bonuses()
 
         self.calculate_score_multiplier()
         self.calculate_level_threshold()

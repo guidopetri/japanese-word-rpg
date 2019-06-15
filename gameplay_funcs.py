@@ -462,18 +462,27 @@ def church(game_surface):
 
 
 def castle(game_surface):
-    from story import chapters
+    from story import king_story, king_items_given
     from menus import message_box, wait_for_input
-    from game_enums import colors
+    from game_enums import colors, special_items
 
     player = config.player
     width = config.width
     height = config.height
 
-    story = chapters[player.story_chapter]
+    story = king_story[player.story_chapter]
+    items = king_items_given[player.story_chapter]
 
-    for msg in story:
-        message_text = msg
+    for i, msg in enumerate(story + items):
+        if msg in story:
+            message_text = msg
+        if msg in items:
+            if msg in special_items:
+                player.inventory[msg] = True
+            else:
+                player.inventory[msg] += 1
+            message_text = "you got {}".format(msg)
+
         message, message_rect = message_box(message_text,
                                             (width / 2, height / 4))
         game_surface.fill(colors.offblack.value)
