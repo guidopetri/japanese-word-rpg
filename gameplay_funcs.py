@@ -11,11 +11,12 @@ import sys
 import config
 
 
-def battle(game_surface, player, all_words):
+def battle(game_surface, all_words):
     from menus import message_box, wait_for_input, message_bg
     from menus import multiple_message_box
     from game_enums import colors, status_effect
 
+    player = config.player
     width = game_surface.get_width()
     height = game_surface.get_height()
 
@@ -286,10 +287,11 @@ def score_word(difficulty, word, user_input):
     return SequenceMatcher(None, word, user_input).ratio() >= difficulty
 
 
-def shop(game_surface, player):
+def shop(game_surface):
     from game_enums import use_items, item_prices, colors
     from menus import choose_from_options, message_box, wait_for_input
 
+    player = config.player
     width = game_surface.get_width()
     height = game_surface.get_height()
 
@@ -338,10 +340,11 @@ def shop(game_surface, player):
     return
 
 
-def inventory(game_surface, player):
+def inventory(game_surface):
     from game_enums import use_items, colors
     from menus import choose_from_options, message_box, wait_for_input
 
+    player = config.player
     width = game_surface.get_width()
     height = game_surface.get_height()
 
@@ -420,10 +423,11 @@ def get_effect(player, choice):
     return
 
 
-def church(game_surface, player):
+def church(game_surface):
     from menus import yn_question, message_box, wait_for_input
     from game_enums import colors
 
+    player = config.player
     width = game_surface.get_width()
     height = game_surface.get_height()
 
@@ -457,15 +461,16 @@ def church(game_surface, player):
     return
 
 
-def castle(game_surface, player):
+def castle(game_surface):
     from story import chapters
     from menus import message_box, wait_for_input
     from game_enums import colors
 
-    story = chapters[player.story_chapter]
-
+    player = config.player
     width = game_surface.get_width()
     height = game_surface.get_height()
+
+    story = chapters[player.story_chapter]
 
     for msg in story:
         message_text = msg

@@ -14,7 +14,6 @@ def main_menu():
 
     all_words = backend.load_words()
     player_data = backend.load_player()
-    current_player = config.player
 
     # pygame.joystick.init() is breaking my execution for some reason.
     pygame.display.init()
@@ -45,23 +44,17 @@ def main_menu():
             selected = None
         elif selected == play_options.index('battle'):
             gameplay_funcs.battle(play_surface,
-                                  current_player,
                                   all_words)
         elif selected == play_options.index('shop'):
-            gameplay_funcs.shop(play_surface,
-                                current_player)
+            gameplay_funcs.shop(play_surface)
         elif selected == play_options.index('inventory'):
-            gameplay_funcs.inventory(play_surface,
-                                     current_player)
+            gameplay_funcs.inventory(play_surface)
         elif selected == play_options.index('church'):
-            gameplay_funcs.church(play_surface,
-                                  current_player)
+            gameplay_funcs.church(play_surface)
         elif selected == play_options.index('castle'):
-            gameplay_funcs.castle(play_surface,
-                                  current_player)
+            gameplay_funcs.castle(play_surface)
         elif selected == play_options.index('quit'):
-            backend.save_player(player_data,
-                                current_player)
+            backend.save_player(player_data)
             pygame.quit()
             sys.exit()
     return

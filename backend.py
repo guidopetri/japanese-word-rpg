@@ -36,7 +36,8 @@ def load_player():
     return data
 
 
-def save_player(player_data, player):
+def save_player(player_data):
+    player = config.player
     player_data[player.name] = player.toJSON()
 
     with open('player.ini', 'w') as f:
