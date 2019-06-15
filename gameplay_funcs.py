@@ -349,7 +349,7 @@ def inventory(game_surface):
     height = config.height
 
     if sum([item for item in player.inventory.values()]) == 0:
-        message_text = "You don't have anything in your inventory!"
+        message_text = "you don't have anything in your inventory!"
 
     else:
         items = []

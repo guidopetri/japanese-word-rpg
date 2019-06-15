@@ -13,7 +13,7 @@ def main_menu():
     import backend
 
     all_words = backend.load_words()
-    player_data = backend.load_player()
+    backend.load_player()
 
     # pygame.joystick.init() is breaking my execution for some reason.
     pygame.display.init()
@@ -54,7 +54,7 @@ def main_menu():
         elif selected == play_options.index('castle'):
             gameplay_funcs.castle(play_surface)
         elif selected == play_options.index('quit'):
-            backend.save_player(player_data)
+            backend.save_player()
             pygame.quit()
             sys.exit()
     return
