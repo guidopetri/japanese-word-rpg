@@ -4,6 +4,7 @@
 
 import pygame
 import sys
+import config
 
 
 def main_menu():
@@ -22,7 +23,7 @@ def main_menu():
 
     # init_status = pygame.init()
 
-    width, height = 800, 600
+    width, height = config.width, config.height
     play_surface = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Word RPG")
     selected = None
@@ -47,8 +48,7 @@ def main_menu():
         elif selected == play_options.index('battle'):
             gameplay_funcs.battle(play_surface,
                                   current_player,
-                                  all_words,
-                                  20)
+                                  all_words)
         elif selected == play_options.index('shop'):
             gameplay_funcs.shop(play_surface,
                                 current_player)
@@ -81,7 +81,7 @@ def yn_question(surface, question, position):
 def choose_from_options(surface, question, options, position, selected=None):
     from game_enums import colors
 
-    font = pygame.font.SysFont('Arial', 32)
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
 
     x, y = position
 
@@ -176,7 +176,7 @@ def get_size(rects):
 def message_box(text, position):
     from game_enums import colors
 
-    font = pygame.font.SysFont('Arial', 32)
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
 
     msg = font.render(text,
                       True,
@@ -195,7 +195,7 @@ def message_box(text, position):
 def multiple_message_box(texts, initial_position):
     from game_enums import colors
 
-    font = pygame.font.SysFont('Arial', 32)
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
     line_size = font.get_linesize()
 
     size_rects = []

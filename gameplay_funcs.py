@@ -8,9 +8,10 @@ import time
 import random
 import pygame
 import sys
+import config
 
 
-def battle(game_surface, player, all_words, game_time):
+def battle(game_surface, player, all_words):
     from menus import message_box, wait_for_input, message_bg
     from menus import multiple_message_box
     from game_enums import colors, status_effect
@@ -34,7 +35,8 @@ def battle(game_surface, player, all_words, game_time):
     poison_mode = False
 
     if player.status == status_effect.stamina_up:
-        game_time *= 1.5
+        # not sure what to do for an effect yet
+        raise NotImplementedError
     elif player.status == status_effect.hp_up:
         player.health += int(0.5 * player.max_hp)  # 8 / 10 -> 13 / 15
         player.max_hp = int(player.max_hp * 1.5)
@@ -45,7 +47,7 @@ def battle(game_surface, player, all_words, game_time):
     elif player.status == status_effect.give_poison:
         poison_mode = True
 
-    font = pygame.font.SysFont('Arial', 32)
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
 
     bg, bg_rect = message_bg((width * 3 / 4 + 10, height - 20),
                              (width / 2, 10))
