@@ -14,6 +14,7 @@ def battle(game_surface, player, all_words, game_time):
     from menus import message_box, wait_for_input, message_bg
     from menus import multiple_message_box
     from game_enums import colors, status_effect
+    from numpy import full, linspace, concatenate, flip
 
     width = game_surface.get_width()
     height = game_surface.get_height()
@@ -68,11 +69,35 @@ def battle(game_surface, player, all_words, game_time):
     img_coords = [(i, j) for i in range(0, 883, 294) for j in [0, 296, 592]]
     current_img = (0, 0, 0, 0)
 
-    monster_images = pygame.image.load('media/monsters.png')
-    monster_pixel_array = pygame.PixelArray(monster_images)
-    monster_pixel_array.replace(colors.magenta.value,
-                                pygame.Color(131, 232, 252), 0.4)  # wat
-    del monster_pixel_array  # what the heck is this
+    monster_images = pygame.image.load('media/monsters.png').convert()
+    # monster_pixel_array = pygame.PixelArray(monster_images)
+    # monster_pixel_array.replace(colors.magenta.value,
+    #                             pygame.Color(131, 232, 252), 0.1)  # wat
+    # del monster_pixel_array  # what the heck is this
+    monster_images.set_colorkey(colors.magenta.value)
+
+    test_surface = pygame.Surface((width / 2, font.get_linesize()),
+                                  pygame.SRCALPHA)
+    test_surface.fill(colors.bgyellow.value)
+
+    # manipulate alpha values with numpy
+    alpha_array = pygame.surfarray.pixels_alpha(test_surface)
+
+    all_fill = full(test_surface.get_height(), 255)
+    all_empty = full(test_surface.get_height(), 0)
+    left_half = linspace(all_empty,
+                         all_fill,
+                         num=test_surface.get_width() // 3,
+                         dtype='uint8')
+    right_half = flip(left_half, axis=0)
+    center = full((test_surface.get_width() // 3 + 1,
+                   test_surface.get_height()),
+                  255,
+                  dtype='uint8')
+    alpha_array -= concatenate([left_half, center, right_half], axis=0)
+
+    # unlock surface
+    del alpha_array
 
     game_surface.fill(colors.offblack.value)
     start_time = time.time()
@@ -86,7 +111,11 @@ def battle(game_surface, player, all_words, game_time):
     monster_choice = random.choice(img_coords)
     current_img = (*monster_choice, 294, 296)
     monster_rect = pygame.Rect(0, 0, 294, 296)
-    monster_rect.midtop = (width / 2, height / 10 - 5)
+    monster_rect.midtop = (bg_rect.width / 2, 45)
+
+    bg.blit(monster_images,
+            monster_rect,
+            current_img)
 
     # create a surface with the same color as bg
     # use SRCALPHA flag when creating for per-pixel alpha
@@ -124,10 +153,7 @@ def battle(game_surface, player, all_words, game_time):
         game_surface.blit(typed_text, dest, type_area)
 
         game_surface.blit(health_text, health_rect)
-
-        game_surface.blit(monster_images,
-                          monster_rect,
-                          current_img)
+        game_surface.blit(test_surface, dest)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
