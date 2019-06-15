@@ -208,8 +208,8 @@ def battle(game_surface, all_words):
         cpm = round(60 * len(typed_words) / (end_time - start_time))
         wpm = cpm / 5
 
-        player.gain_exp(int(enemy.exp_yield * score))
-        player.gain_gold(int(enemy.gold_yield * score))
+        player.gain_exp(int(enemy.exp_yield * score / 100))
+        player.gain_gold(int(enemy.gold_yield * score / 100))
 
         player.kills += 1
 
