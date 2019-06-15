@@ -38,6 +38,8 @@ def save_player():
 
     player = config.player
 
+    if not os.path.exists('players/'):
+        os.mkdir('players')
     with open('players/{}.sav'.format(player.name), 'wb') as f:
         pickle.dump(player, f, protocol=-1)
 
