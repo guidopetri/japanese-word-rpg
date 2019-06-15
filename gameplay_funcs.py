@@ -17,8 +17,8 @@ def battle(game_surface, all_words):
     from game_enums import colors, status_effect
 
     player = config.player
-    width = game_surface.get_width()
-    height = game_surface.get_height()
+    width = config.width
+    height = config.height
 
     # make sure player can battle in the first place
     message_text = "you're passed out! you can't battle!"
@@ -292,8 +292,8 @@ def shop(game_surface):
     from menus import choose_from_options, message_box, wait_for_input
 
     player = config.player
-    width = game_surface.get_width()
-    height = game_surface.get_height()
+    width = config.width
+    height = config.height
 
     options = []
     for item in use_items:
@@ -345,8 +345,8 @@ def inventory(game_surface):
     from menus import choose_from_options, message_box, wait_for_input
 
     player = config.player
-    width = game_surface.get_width()
-    height = game_surface.get_height()
+    width = config.width
+    height = config.height
 
     if sum([item for item in player.inventory.values()]) == 0:
         message_text = "You don't have anything in your inventory!"
@@ -428,8 +428,8 @@ def church(game_surface):
     from game_enums import colors
 
     player = config.player
-    width = game_surface.get_width()
-    height = game_surface.get_height()
+    width = config.width
+    height = config.height
 
     # default message
     message_text = 'bless tha LAWD'
@@ -467,8 +467,8 @@ def castle(game_surface):
     from game_enums import colors
 
     player = config.player
-    width = game_surface.get_width()
-    height = game_surface.get_height()
+    width = config.width
+    height = config.height
 
     story = chapters[player.story_chapter]
 
