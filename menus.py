@@ -89,12 +89,7 @@ def choose_from_options(surface, question, options, position, selected=None):
     line_size = font.get_linesize()
     all_texts = options + [question]
 
-    size_rects = []
-    for i, text in enumerate(all_texts):
-        size_rects.append(pygame.Rect(0,
-                                      i * line_size,
-                                      *font.size(text)))
-    size = get_size(size_rects)
+    size = max_size_texts(all_texts)
 
     bg, bg_rect = message_bg(size, position)
 
@@ -156,7 +151,7 @@ def choose_from_options(surface, question, options, position, selected=None):
     return selected
 
 
-def get_size(rects):
+def max_size_rects(rects):
 
     def find_length(rects, axis):
         minmax_coords = []
@@ -192,18 +187,24 @@ def message_box(text, position):
     return bg, bg_rect
 
 
+def max_size_texts(texts):
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
+
+    longest_str = max([x for x in texts], key=len)
+    width = font.size(longest_str)[0]  # get only the width
+    width += 50  # some padding
+    height = len(texts) * font.get_linesize() + 10
+
+    return width, height
+
+
 def multiple_message_box(texts, initial_position):
     from game_enums import colors
 
     font = pygame.font.SysFont(config.fontname, config.fontsize)
     line_size = font.get_linesize()
 
-    size_rects = []
-    for i, text in enumerate(texts):
-        size_rects.append(pygame.Rect(0,
-                                      i * line_size,
-                                      *font.size(text)))
-    size = get_size(size_rects)
+    size = max_size_texts(texts)
 
     bg, bg_rect = message_bg(size, initial_position)
 
