@@ -14,7 +14,6 @@ def battle(game_surface, player, all_words, game_time):
     from menus import message_box, wait_for_input, message_bg
     from menus import multiple_message_box
     from game_enums import colors, status_effect
-    from numpy import full, linspace, concatenate, flip
 
     width = game_surface.get_width()
     height = game_surface.get_height()
@@ -76,28 +75,10 @@ def battle(game_surface, player, all_words, game_time):
     # del monster_pixel_array  # what the heck is this
     monster_images.set_colorkey(colors.magenta.value)
 
-    test_surface = pygame.Surface((width / 2, font.get_linesize()),
-                                  pygame.SRCALPHA)
-    test_surface.fill(colors.bgyellow.value)
-
-    # manipulate alpha values with numpy
-    alpha_array = pygame.surfarray.pixels_alpha(test_surface)
-
-    all_fill = full(test_surface.get_height(), 255)
-    all_empty = full(test_surface.get_height(), 0)
-    left_half = linspace(all_empty,
-                         all_fill,
-                         num=test_surface.get_width() // 3,
-                         dtype='uint8')
-    right_half = flip(left_half, axis=0)
-    center = full((test_surface.get_width() // 3 + 1,
-                   test_surface.get_height()),
-                  255,
-                  dtype='uint8')
-    alpha_array -= concatenate([left_half, center, right_half], axis=0)
-
-    # unlock surface
-    del alpha_array
+    bg_gradient = pygame.Surface((width / 2, font.get_linesize()),
+                                 pygame.SRCALPHA)
+    bg_gradient.fill(colors.bgyellow.value)
+    make_bg_gradient(bg_gradient)
 
     game_surface.fill(colors.offblack.value)
     start_time = time.time()
@@ -151,9 +132,9 @@ def battle(game_surface, player, all_words, game_time):
 
         game_surface.blit(word_text, dest, word_area)
         game_surface.blit(typed_text, dest, type_area)
+        game_surface.blit(bg_gradient, dest)
 
         game_surface.blit(health_text, health_rect)
-        game_surface.blit(test_surface, dest)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -270,6 +251,33 @@ def get_words(enemy_words, typed_words):
     last_enemy_word = ''.join(enemy_words).split(' ')[idx]
     last_typed_word = typed_wordlist[-1]
     return last_enemy_word, last_typed_word
+
+
+def make_bg_gradient(surface):
+    from pygame.surfarray import pixels_alpha
+    from numpy import full, linspace, concatenate, flip
+    # manipulate alpha values with numpy
+    grad_width = surface.get_width() // 3
+    grad_height = surface.get_height()
+    alpha_array = pixels_alpha(surface)
+
+    all_fill = full(grad_height,  # single dimension
+                    255)
+    all_empty = full(grad_height,
+                     0)
+    left_half = linspace(all_empty,
+                         all_fill,
+                         num=grad_width,
+                         dtype='uint8')
+    right_half = flip(left_half, axis=0)  # mirrored
+    center = full((surface.get_width() - 2 * grad_width, grad_height),
+                  255,  # fill value
+                  dtype='uint8')
+
+    # operates in place, since we used pixels_alpha and not array_alpha
+    alpha_array -= concatenate([left_half, center, right_half],
+                               axis=0)
+    return
 
 
 def score_word(difficulty, word, user_input):
