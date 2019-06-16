@@ -296,7 +296,9 @@ def shop(game_surface):
     width = config.width
     height = config.height
 
-    options = [(name, item.print_price()) for name, item in use_items.items()]
+    options = [(name, item.print_price())
+               for name, item in use_items.items()
+               if item.unlock_chapter <= config.player.story_chapter]
 
     gold_text = "Gold: $G{}".format(player.total_gold)
     gold, gold_rect = message_box(gold_text,
