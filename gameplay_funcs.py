@@ -101,10 +101,6 @@ def battle(game_surface, all_words):
             monster_rect,
             current_img)
 
-    # create a surface with the same color as bg
-    # use SRCALPHA flag when creating for per-pixel alpha
-    # make sure to set the alpha values to be a gradient
-
     i = 0
     correct = 0
     while enemy.alive:
@@ -119,11 +115,12 @@ def battle(game_surface, all_words):
                                  colors.bgyellow.value)
 
         dest = (width / 4, height / 2 + 90)
+        template_dest = (width / 2, height / 2 + 90)
 
         move_by = sum([x[4] for x in font.metrics(''.join(enemy.words[:i]))])
-        word_area = pygame.Rect(- width / 4 + move_by,  # left
+        word_area = pygame.Rect(move_by,  # left
                                 0,  # top
-                                width / 2,  # width
+                                width / 4,  # width
                                 font.get_linesize()  # height
                                 )
         move_typed = sum([x[4] for x in font.metrics(''.join(typed_words))])
@@ -133,7 +130,7 @@ def battle(game_surface, all_words):
                                 font.get_linesize()  # height
                                 )
 
-        game_surface.blit(word_text, dest, word_area)
+        game_surface.blit(word_text, template_dest, word_area)
         game_surface.blit(typed_text, dest, type_area)
         game_surface.blit(bg_gradient, dest)
 
