@@ -87,8 +87,7 @@ def choose_from_options(surface, question, options, position, selected=None):
     question = font.render(question,
                            True,
                            colors.offblack.value)
-    question_rect = question.get_rect()
-    question_rect.midtop = (bg_rect.width / 2, 5)
+    question_rect = question.get_rect(midtop=(bg_rect.width / 2, 5))
     bg.blit(question, question_rect)
 
     # required for aligning the arrow to the options
@@ -100,8 +99,8 @@ def choose_from_options(surface, question, options, position, selected=None):
         option_text = font.render(text,
                                   True,
                                   colors.offblack.value)
-        option_rect = option_text.get_rect()
-        option_rect.midtop = (bg_rect.width / 2, 5 + n * line_size)
+        option_rect = option_text.get_rect(midtop=(bg_rect.width / 2,
+                                                   5 + n * line_size))
         option_lefts.append(option_rect.left)
         bg.blit(option_text, option_rect)
 
@@ -203,9 +202,8 @@ def multiple_message_box(texts, initial_position):
         msg = font.render(text,
                           True,
                           colors.offblack.value)
-        msg_rect = msg.get_rect()
-        msg_rect.midtop = (bg_rect.width / 2,
-                           5 + i * line_size)
+        msg_rect = msg.get_rect(midtop=(bg_rect.width / 2,
+                                        5 + i * line_size))
         bg.blit(msg, msg_rect)
 
     return bg, bg_rect
@@ -219,13 +217,11 @@ def message_bg(size, position):
 
     border = pygame.Surface((width, height))
     border.fill(colors.bgblue.value)
-    border_rect = border.get_rect()
-    border_rect.midtop = (x, y)
+    border_rect = border.get_rect(midtop=(x, y))
 
     bg = pygame.Surface((width - 10, height - 10))
     bg.fill(colors.bgyellow.value)
-    bg_rect = bg.get_rect()
-    bg_rect.midtop = (width / 2, 5)
+    bg_rect = bg.get_rect(midtop=(width / 2, 5))
 
     border.blit(bg, bg_rect)
 

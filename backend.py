@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # python 3.6.4
 
-
 import json
 import classes
 import os

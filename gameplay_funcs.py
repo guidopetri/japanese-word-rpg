@@ -56,15 +56,14 @@ def battle(game_surface, all_words):
     instructions_text = font.render("type it out!",
                                     True,
                                     colors.offblack.value)
-    instructions_rect = instructions_text.get_rect()
-    instructions_rect.midtop = (bg_rect.width / 2, 10)
+    instructions_rect = instructions_text.get_rect(midtop=(bg_rect.width / 2,
+                                                           10))
     bg.blit(instructions_text, instructions_rect)
 
-    health_text = font.render("HP: %s" % player.health,
-                              True,
-                              colors.offblack.value)
-    health_rect = health_text.get_rect()
-    health_rect.midtop = (width / 4, height / 30)
+    hp_text = font.render("HP: %s" % player.health,
+                          True,
+                          colors.offblack.value)
+    hp_rect = hp_text.get_rect(midtop=(width / 4, height / 30))
 
     # 1176x888
     # each is 294x296
@@ -130,7 +129,7 @@ def battle(game_surface, all_words):
         game_surface.blit(typed_text, dest, type_area)
         game_surface.blit(bg_gradient, dest)
 
-        game_surface.blit(health_text, health_rect)
+        game_surface.blit(hp_text, hp_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -152,11 +151,11 @@ def battle(game_surface, all_words):
                         player.take_damage(1)
                         if not player.alive:
                             break
-                        health_text = font.render("HP: %s" % player.health,
-                                                  True,
-                                                  colors.offblack.value)
-                        health_rect = health_text.get_rect()
-                        health_rect.midtop = (width / 4, height / 30)
+                        hp_text = font.render("HP: %s" % player.health,
+                                              True,
+                                              colors.offblack.value)
+                        hp_rect = hp_text.get_rect(midtop=(width / 4,
+                                                           height / 30))
                     try:
                         # move i to next space in enemy.words, if not on space
                         i += enemy.words[i:].index(' ')
@@ -513,8 +512,7 @@ def castle(game_surface):
                                       (height // 2,  # width
                                        height // 2)  # height
                                       )
-    king_rect = king_img.get_rect()
-    king_rect.midtop = (width / 2, height / 2)
+    king_rect = king_img.get_rect(midtop=(width / 2, height / 2))
 
     for i, msg in enumerate(story + added_items):
         if msg in story:
