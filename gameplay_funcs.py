@@ -81,7 +81,6 @@ def battle(game_surface, all_words):
     make_bg_gradient(bg_gradient)
 
     game_surface.fill(colors.offblack.value)
-    start_time = time.time()
     typed_words = []
 
     enemy = classes.enemy_word(random.randrange(1, 4))
@@ -138,6 +137,9 @@ def battle(game_surface, all_words):
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
+                # start counting towards cpm timer on first keypress
+                if i == 0:
+                    start_time = time.time()
                 if event.key == pygame.K_SPACE:
                     word, typed = get_words(enemy.words, typed_words)
                     if score_word(player.difficulty, word, typed):
