@@ -507,6 +507,15 @@ def castle(game_surface):
     story = king_story[player.story_chapter]
     added_items = king_items_given[player.story_chapter]
 
+    king_img = pygame.image.load('media/edo-king.png').convert()
+    king_img.set_colorkey(colors.magenta.value)
+    king_img = pygame.transform.scale(king_img,
+                                      (height // 2,  # width
+                                       height // 2)  # height
+                                      )
+    king_rect = king_img.get_rect()
+    king_rect.midtop = (width / 2, height / 2)
+
     for i, msg in enumerate(story + added_items):
         if msg in story:
             message_text = msg
@@ -521,6 +530,7 @@ def castle(game_surface):
                                             (width / 2, height / 4))
         game_surface.fill(colors.offblack.value)
         game_surface.blit(message, message_rect)
+        game_surface.blit(king_img, king_rect)
 
         pygame.display.flip()
 
