@@ -241,6 +241,27 @@ def battle(game_surface, all_words):
         player.status_duration -= 1
         if player.status_duration == 0:
             player.status = status_effect.normal
+
+    if player.level_pending:
+        stats_delta = player.level_up()
+
+        tups = [(name, stat - stats_delta[name], stat)
+                for name, stat in player.stats
+                if name in stats_delta]
+
+        texts = ["LEVEL UP!!"]
+        # unpack into formatting text
+        texts.extend(["{}: {} -> {}".format(*tup)
+                     for tup in tups])
+
+        message, message_rect = multiple_message_box(texts,
+                                                     (width / 2, height / 4))
+
+        game_surface.fill(colors.offblack.value)
+        game_surface.blit(message, message_rect)
+        pygame.display.flip()
+        wait_for_input()
+
     return
 
 

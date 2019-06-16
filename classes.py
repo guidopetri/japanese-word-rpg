@@ -78,6 +78,7 @@ class PlayerCharacter():
         self.status_duration = 0
         self.difficulty = 0.93
         self.story_chapter = 1
+        self.level_pending = False
         self.inventory = defaultdict(int)
         self.calculate_class_bonuses()
         self.calculate_score_multiplier()
@@ -101,18 +102,34 @@ class PlayerCharacter():
     def gain_exp(self, amount):
         self.total_exp += amount
         if self.exp_threshold - self.total_exp <= 0:
-            self.level_up()
+            self.level_pending = True
 
     def gain_gold(self, amount):
         self.total_gold += int(amount * self.gold_multiplier)
 
     def level_up(self):
-        print(" LEVEL UP!!")
+        self.level_pending = False
+
         self.level += 1
+
+        hp_increase = random.randrange(1, 4)
+        self.max_hp += hp_increase
         self.health = self.max_hp
+
         self.calculate_level_threshold()
-        print(" NEXT LEVEL AT %s!!" % self.exp_threshold)
         self.calculate_score_multiplier()
+
+        stats_delta = {'level': 1,
+                       'health': hp_increase}
+        return stats_delta
+
+    @property
+    def stats(self):
+        # tuple of stat name, then stat value
+        stats = [('level', self.level),
+                 ('health', self.health),
+                 ]
+        return stats
 
     def calculate_score_multiplier(self):
         self.score_multiplier = 1.0 * (self.level ** 1.3)
@@ -122,9 +139,6 @@ class PlayerCharacter():
 
     def score_points(self, amount):
         self.score += int(amount * self.score_multiplier)
-
-    def toJSON(self):
-        return self.__dict__
 
 
 class Item():
