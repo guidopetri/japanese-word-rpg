@@ -60,11 +60,6 @@ def battle(game_surface, all_words):
                                                            10))
     bg.blit(instructions_text, instructions_rect)
 
-    hp_text = font.render("HP: %s" % player.health,
-                          True,
-                          colors.offblack.value)
-    hp_rect = hp_text.get_rect(midtop=(width / 4, height / 30))
-
     # 1176x888
     # each is 294x296
     img_coords = [(i, j) for i in range(0, 883, 294) for j in [0, 296, 592]]
@@ -100,6 +95,11 @@ def battle(game_surface, all_words):
     correct = 0
     while enemy.alive:
         game_surface.blit(bg, bg_rect)
+
+        hp_text = font.render("HP: %s" % player.health,
+                              True,
+                              colors.offblack.value)
+        hp_rect = hp_text.get_rect(midtop=(width / 4, height / 30))
 
         word_text = font.render(''.join(enemy.words),
                                 True,
@@ -151,11 +151,6 @@ def battle(game_surface, all_words):
                         player.take_damage(1)
                         if not player.alive:
                             break
-                        hp_text = font.render("HP: %s" % player.health,
-                                              True,
-                                              colors.offblack.value)
-                        hp_rect = hp_text.get_rect(midtop=(width / 4,
-                                                           height / 30))
                     try:
                         # move i to next space in enemy.words, if not on space
                         i += enemy.words[i:].index(' ')
@@ -168,18 +163,18 @@ def battle(game_surface, all_words):
                         typed_words = typed_words[:-1]
                         i -= 1
                     continue
-                elif event.key == pygame.K_1:
+                elif event.key in (pygame.K_1,
+                                   pygame.K_2,
+                                   pygame.K_3,
+                                   pygame.K_4,
+                                   pygame.K_5,
+                                   pygame.K_6):
                     # for item usage during battle
-                    continue
-                elif event.key == pygame.K_2:
-                    continue
-                elif event.key == pygame.K_3:
-                    continue
-                elif event.key == pygame.K_4:
-                    continue
-                elif event.key == pygame.K_5:
-                    continue
-                elif event.key == pygame.K_6:
+                    held_idx = int(event.unicode) - 1
+                    use_item = player.held_items[held_idx]
+                    if player.inventory[use_item] > 0:
+                        get_effect(use_item)
+                        player.inventory[use_item] -= 1
                     continue
                 elif event.key == pygame.K_RETURN:
                     continue
@@ -395,7 +390,7 @@ def inventory(game_surface):
                                                    (width * 5 / 6,
                                                     height * 2 / 6))
 
-        current_held = ['{}: {}'.format(i + 1, x)
+        current_held = ['{}: {}'.format(i + 1, x or 'empty')
                         for i, x in enumerate(player.held_items)]
 
         held, held_rect = multiple_message_box(current_held,

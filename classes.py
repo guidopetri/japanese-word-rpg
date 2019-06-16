@@ -86,7 +86,10 @@ class PlayerCharacter():
                                       ])
         self.held_items = ('potion',
                            'poison flask',
-                           'coffee')
+                           'coffee',
+                           None,
+                           None,
+                           None)
         self.calculate_class_bonuses()
         self.calculate_score_multiplier()
         self.calculate_level_threshold()
