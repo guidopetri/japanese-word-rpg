@@ -1,0 +1,60 @@
+#! /usr/bin/env python
+
+from classes import Item
+from collections import OrderedDict
+
+
+# unlock chapter of -1 will help indicate a non-buyable item
+items = OrderedDict([('potion', Item(name='potion',
+                                     price=10,
+                                     is_use=True,
+                                     is_special=False,
+                                     is_equip=False,
+                                     desc='restore 10 hp',
+                                     unlock_chapter=1)),
+                     ('coffee', Item(name='coffee',
+                                     price=50,
+                                     is_use=True,
+                                     is_special=False,
+                                     is_equip=False,
+                                     desc='allow more mistakes',
+                                     unlock_chapter=2)),
+                     ('poison flask', Item(name='poison flask',
+                                           price=50,
+                                           is_use=True,
+                                           is_special=False,
+                                           is_equip=False,
+                                           desc='deal extra poison damage',
+                                           unlock_chapter=2)),
+                     ('protein shake', Item(name='protein shake',
+                                            price=50,
+                                            is_use=True,
+                                            is_special=False,
+                                            is_equip=False,
+                                            desc='temporary hp increase',
+                                            unlock_chapter=2)),
+                     ('sharpening oil', Item(name='sharpening oil',
+                                             price=50,
+                                             is_use=True,
+                                             is_special=False,
+                                             is_equip=False,
+                                             desc='temporary damage increase',
+                                             unlock_chapter=2)),
+                     ('energy bar', Item(name='energy bar',
+                                         price=50,
+                                         is_use=True,
+                                         is_special=False,
+                                         is_equip=False,
+                                         desc='???',
+                                         unlock_chapter=2)),
+                     ('hero trophy', Item(name='hero trophy',
+                                          price=0,
+                                          is_use=False,
+                                          is_special=True,
+                                          is_equip=False,
+                                          desc='present from the king',
+                                          unlock_chapter=-1)),
+                     ])
+
+use_items = OrderedDict([(name, item) for name, item in items.items()
+                         if item.is_use])

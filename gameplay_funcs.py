@@ -288,18 +288,15 @@ def score_word(difficulty, word, user_input):
 
 
 def shop(game_surface):
-    from game_enums import use_items, item_prices, colors
+    from game_enums import colors
     from menus import choose_from_options, message_box, wait_for_input
+    from items import use_items
 
     player = config.player
     width = config.width
     height = config.height
 
-    options = []
-    for item in use_items:
-        price = item_prices[item.name]
-        item_str = item.name.replace('_', ' ') + ': $G' + str(price)
-        options.append(item_str)
+    options = [(name, item.print_price()) for name, item in use_items.items()]
 
     gold_text = "Gold: $G{}".format(player.total_gold)
     gold, gold_rect = message_box(gold_text,
@@ -310,17 +307,18 @@ def shop(game_surface):
 
     selected = choose_from_options(game_surface,
                                    "buy somethin', will ya?",
-                                   options,
+                                   [opt[1] for opt in options],
                                    (width / 2, height / 6))
 
     if selected == -1:
         return
 
-    selected_name = use_items(selected).name
-    selected_price = item_prices[selected_name]
-    if player.total_gold >= item_prices[use_items(selected).name]:
-        player.total_gold -= selected_price
-        player.inventory[selected_name] += 1
+    name = options[selected][0]
+    selected_item = use_items[name]
+    price = selected_item.price
+    if player.total_gold >= price:
+        player.total_gold -= price
+        player.inventory[name] += 1
         return
 
     # implicit else
@@ -341,8 +339,9 @@ def shop(game_surface):
 
 
 def inventory(game_surface):
-    from game_enums import use_items, colors
+    from game_enums import colors
     from menus import choose_from_options, message_box, wait_for_input
+    from items import items
 
     player = config.player
     width = config.width
@@ -352,15 +351,16 @@ def inventory(game_surface):
         message_text = "you don't have anything in your inventory!"
 
     else:
-        items = []
         options = []
-        for item in use_items:
-            amount = player.inventory[item.name]
+        for name, item in items.items():
+            amount = player.inventory[name]
             if amount <= 0:
                 continue
-            item_str = '{}x '.format(amount) + item.name.replace('_', ' ')
-            items.append(item)
-            options.append(item_str)
+            if isinstance(amount, bool):
+                item_str = name
+            else:
+                item_str = '{}x {}'.format(amount, name)
+            options.append((name, item_str))
 
         gold_text = "Gold: $G{}".format(player.total_gold)
         gold, gold_rect = message_box(gold_text,
@@ -371,17 +371,19 @@ def inventory(game_surface):
 
         selected = choose_from_options(game_surface,
                                        "{}'s inventory".format(player.name),
-                                       options,
+                                       [opt[1] for opt in options],
                                        (width / 2, height / 6))
 
         if selected == -1:
             return
 
-        selected_name = items[selected].name
-        player.inventory[selected_name] -= 1
-        get_effect(player, selected_name)
-
-        message_text = "you used {}!".format(selected_name.replace('_', ' '))
+        name = options[selected][0]
+        if items[name].is_use:
+            player.inventory[name] -= 1
+            get_effect(player, name)
+            message_text = "you used {}!".format(name)
+        else:
+            message_text = "you can't use {}!".format(name)
 
     message, message_rect = message_box(message_text,
                                         (width / 2, height / 4))
@@ -464,20 +466,21 @@ def church(game_surface):
 def castle(game_surface):
     from story import king_story, king_items_given
     from menus import message_box, wait_for_input
-    from game_enums import colors, special_items
+    from game_enums import colors
+    from items import items
 
     player = config.player
     width = config.width
     height = config.height
 
     story = king_story[player.story_chapter]
-    items = king_items_given[player.story_chapter]
+    added_items = king_items_given[player.story_chapter]
 
-    for i, msg in enumerate(story + items):
+    for i, msg in enumerate(story + added_items):
         if msg in story:
             message_text = msg
         if msg in items:
-            if msg in special_items:
+            if items[msg].is_special:
                 player.inventory[msg] = True
             else:
                 player.inventory[msg] += 1

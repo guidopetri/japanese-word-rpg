@@ -126,3 +126,26 @@ class PlayerCharacter():
 
     def toJSON(self):
         return self.__dict__
+
+
+class Item():
+
+    id_ = 0
+
+    def __init__(self, name, price, is_use, is_special,
+                 is_equip, desc, unlock_chapter):
+        self.id = Item.id_
+        Item.id_ += 1
+        self.name = name
+        self.price = price
+        self.is_use = is_use
+        self.is_special = is_special
+        self.is_equip = is_equip
+        self.desc = desc
+        self.unlock_chapter = unlock_chapter
+
+    def __eq__(self, other):
+        return self.name == other
+
+    def print_price(self):
+        return '{}: $G{}'.format(self.name, self.price)
