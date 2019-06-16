@@ -223,7 +223,7 @@ def battle(game_surface, all_words):
     game_surface.blit(message, message_rect)
     pygame.display.flip()
 
-    time.sleep(1)
+    time.sleep(0.5)
 
     # clear event queue
     pygame.event.clear()
@@ -410,7 +410,7 @@ def inventory(game_surface):
         name = options[selected][0]
         if items[name].is_use:
             player.inventory[name] -= 1
-            get_effect(player, name)
+            get_effect(name)
             message_text = "you used {}!".format(name)
         else:
             message_text = "you can't use {}!".format(name)
@@ -430,13 +430,13 @@ def inventory(game_surface):
     return
 
 
-def get_effect(player, choice):
+def get_effect(choice):
     from game_enums import status_effect
 
+    player = config.player
+
     if choice == 'potion':
-        player.health += 10
-        if player.health > player.max_hp:
-            player.health = player.max_hp
+        player.health = min(player.health + 10, player.max_hp)
     elif choice == 'coffee':
         player.status = status_effect.fast
         player.status_duration = 5
