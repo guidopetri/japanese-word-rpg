@@ -360,7 +360,8 @@ def shop(game_surface):
 
 def inventory(game_surface):
     from game_enums import colors
-    from menus import choose_from_options, message_box, wait_for_input
+    from menus import choose_from_options, message_box
+    from menus import multiple_message_box, wait_for_input
     from items import items
 
     player = config.player
@@ -386,8 +387,16 @@ def inventory(game_surface):
         gold, gold_rect = message_box(gold_text,
                                       (width * 5 / 6, height / 6))
 
+        current_equipment = ["{}: {}".format(slot, item or 'empty')
+                             for slot, item in player.equipment.items()]
+
+        equips, equips_rect = multiple_message_box(current_equipment,
+                                                   (width * 5 / 6,
+                                                    height * 2 / 6))
+
         game_surface.fill(colors.offblack.value)
         game_surface.blit(gold, gold_rect)
+        game_surface.blit(equips, equips_rect)
 
         selected = choose_from_options(game_surface,
                                        "{}'s inventory".format(player.name),

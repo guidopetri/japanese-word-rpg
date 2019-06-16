@@ -60,7 +60,7 @@ class enemy_word():
 class PlayerCharacter():
 
     def __init__(self, player_name=None, player_class=None):
-        from collections import defaultdict
+        from collections import defaultdict, OrderedDict
 
         self.name = player_name
         self.char_class = player_class
@@ -80,6 +80,11 @@ class PlayerCharacter():
         self.story_chapter = 1
         self.level_pending = False
         self.inventory = defaultdict(int)
+        self.equipment = OrderedDict([('head', None),
+                                      ('body', None),
+                                      ('legs', None),
+                                      ('weapon', None)
+                                      ])
         self.calculate_class_bonuses()
         self.calculate_score_multiplier()
         self.calculate_level_threshold()
