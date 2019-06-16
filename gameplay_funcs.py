@@ -201,9 +201,11 @@ def battle(game_surface, all_words):
         score = round(100 * correct / enemy.word_count)
         cpm = round(60 * len(typed_words) / (end_time - start_time))
         wpm = cpm / 5
+        gained_exp = int(enemy.exp_yield * score / 100)
+        gained_gold = int(enemy.gold_yield * score / 100)
 
-        player.gain_exp(int(enemy.exp_yield * score / 100))
-        player.gain_gold(int(enemy.gold_yield * score / 100))
+        player.gain_exp(gained_exp)
+        player.gain_gold(gained_gold)
 
         player.kills += 1
 
@@ -211,7 +213,7 @@ def battle(game_surface, all_words):
                  "your accuracy was %s%%" % score,
                  "with a speed of %s cpm (%s wpm)," % (cpm, wpm),
                  "earning your level %s character" % player.level,
-                 "%s exp and %s gold." % (player.total_exp, player.total_gold)]
+                 "%i exp and %i gold." % (gained_exp, gained_gold)]
 
         message, message_rect = multiple_message_box(texts,
                                                      (width / 2, height / 4))
