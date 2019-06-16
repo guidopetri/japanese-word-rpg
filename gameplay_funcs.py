@@ -356,7 +356,7 @@ def shop(game_surface):
 
 def inventory(game_surface):
     from game_enums import colors
-    from menus import choose_from_options, message_box
+    from menus import choose_from_options, message_box, item_options
     from menus import multiple_message_box, wait_for_input
     from items import items
 
@@ -411,12 +411,21 @@ def inventory(game_surface):
             return
 
         name = options[selected][0]
-        if items[name].is_use:
-            player.inventory[name] -= 1
-            get_effect(name)
-            message_text = "you used {}!".format(name)
-        else:
-            message_text = "you can't use {}!".format(name)
+        action = item_options(game_surface, name)
+        if action == 'use':
+            if items[name].is_use:
+                player.inventory[name] -= 1
+                get_effect(name)
+                message_text = "you used {}!".format(name)
+            else:
+                message_text = "you can't use {}!".format(name)
+        elif action == 'hold':
+            pass
+        elif action == 'equip':
+            pass
+        elif action == 'discard':
+            # are you sure?
+            pass
 
     message, message_rect = message_box(message_text,
                                         (width / 2, height / 4))

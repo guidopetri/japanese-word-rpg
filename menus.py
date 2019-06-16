@@ -240,3 +240,89 @@ def wait_for_input():
                 no_break = False
 
     return
+
+
+def item_options(surface, item):
+    from game_enums import colors
+
+    width = config.width
+    height = config.height
+
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
+    line_size = font.get_linesize()
+
+    title_text = 'what would you like to do with {}?'.format(item)
+    options = ['use', 'equip', 'hold', 'discard']
+
+    max_width = font.size(title_text)[0]
+
+    size = (max_width + 10, line_size * (1 + (len(options) + 1) // 2))
+
+    bg, bg_rect = message_bg(size,
+                             (width / 2, height / 2))
+
+    title = font.render(title_text,
+                        True,
+                        colors.offblack.value)
+    title_rect = title.get_rect(midtop=(bg_rect.width / 2, 5))
+
+    lefts = []
+
+    for i, text in enumerate(options):
+        msg = font.render(text,
+                          True,
+                          colors.offblack.value)
+        # quick mafs
+        msg_rect = msg.get_rect(midtop=(bg_rect.width * (i % 2 + 1) / 3,
+                                        bg_rect.height * (i // 2 + 1) / 3))
+        lefts.append(msg_rect.left)
+        bg.blit(msg, msg_rect)
+
+    bg.blit(title, title_rect)
+
+    arrow = font.render('>',
+                        True,
+                        colors.offblue.value)
+    arrow_rect = arrow.get_rect()
+    arrow_x = bg_rect.left - 10
+
+    selected = [0, 0]
+    no_selection = True
+
+    while no_selection:
+        surface.blit(bg, bg_rect)
+
+        # TODO: check this math
+        arrow_rect.midtop = ((arrow_x
+                              + lefts[selected[0]
+                                      + 2 * selected[1]]
+                              ),  # width
+                             (bg_rect.height
+                              * ((selected[1]) % 2
+                                 + 1)
+                              / 3)
+                             + height / 2)  # height
+
+        surface.blit(arrow, arrow_rect)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    selected[1] = (selected[1] - 1 + 2) % 2
+                elif event.key == pygame.K_DOWN:
+                    selected[1] = (selected[1] + 1) % 2
+                if event.key == pygame.K_LEFT:
+                    selected[0] = (selected[0] - 1 + 2) % 2
+                elif event.key == pygame.K_RIGHT:
+                    selected[0] = (selected[0] + 1) % 2
+                elif event.key == pygame.K_RETURN:
+                    no_selection = False
+                elif event.key == pygame.K_BACKSPACE:
+                    return -1
+
+        pygame.display.flip()
+
+    return options[selected[0] + 2 * selected[1]]
