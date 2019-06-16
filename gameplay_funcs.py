@@ -165,7 +165,7 @@ def battle(game_surface, all_words):
                     typed_words.append(' ')
                 elif event.key == pygame.K_BACKSPACE:
                     # stop backspacing past a space
-                    if typed_words[-1] != ' ':
+                    if typed_words and typed_words[-1] != ' ':
                         typed_words = typed_words[:-1]
                         i -= 1
                     continue
