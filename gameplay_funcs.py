@@ -71,11 +71,8 @@ def battle(game_surface, all_words):
     img_coords = [(i, j) for i in range(0, 883, 294) for j in [0, 296, 592]]
     current_img = (0, 0, 0, 0)
 
+    # images need to be cleaned up a little
     monster_images = pygame.image.load('media/monsters.png').convert()
-    # monster_pixel_array = pygame.PixelArray(monster_images)
-    # monster_pixel_array.replace(colors.magenta.value,
-    #                             pygame.Color(131, 232, 252), 0.1)  # wat
-    # del monster_pixel_array  # what the heck is this
     monster_images.set_colorkey(colors.magenta.value)
 
     bg_gradient = pygame.Surface((width / 2, font.get_linesize()),
@@ -256,6 +253,7 @@ def get_words(enemy_words, typed_words):
 def make_bg_gradient(surface):
     from pygame.surfarray import pixels_alpha
     from numpy import full, linspace, concatenate, flip
+
     # manipulate alpha values with numpy
     grad_width = surface.get_width() // 3
     grad_height = surface.get_height()
@@ -409,16 +407,16 @@ def get_effect(player, choice):
     elif choice == 'coffee':
         player.status = status_effect.fast
         player.status_duration = 5
-    elif choice == 'poison_flask':
+    elif choice == 'poison flask':
         player.status = status_effect.give_poison
         player.status_duration = 10
-    elif choice == 'protein_shake':
+    elif choice == 'protein shake':
         player.status = status_effect.hp_up
         player.status_duration = 2
-    elif choice == 'sharpening_oil':
+    elif choice == 'sharpening oil':
         player.status = status_effect.dmg_up
         player.status_duration = 2
-    elif choice == 'energy_bar':
+    elif choice == 'energy bar':
         player.status = status_effect.stamina_up
         player.status_duration = 2
     return

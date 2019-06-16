@@ -80,7 +80,6 @@ class PlayerCharacter():
         self.story_chapter = 1
         self.inventory = defaultdict(int)
         self.calculate_class_bonuses()
-
         self.calculate_score_multiplier()
         self.calculate_level_threshold()
 
