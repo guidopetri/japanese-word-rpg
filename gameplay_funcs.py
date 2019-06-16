@@ -395,9 +395,17 @@ def inventory(game_surface):
                                                    (width * 5 / 6,
                                                     height * 2 / 6))
 
+        current_held = ['{}: {}'.format(i + 1, x)
+                        for i, x in enumerate(player.held_items)]
+
+        held, held_rect = multiple_message_box(current_held,
+                                               (width / 6,
+                                                height * 2 / 6))
+
         game_surface.fill(colors.offblack.value)
         game_surface.blit(gold, gold_rect)
         game_surface.blit(equips, equips_rect)
+        game_surface.blit(held, held_rect)
 
         selected = choose_from_options(game_surface,
                                        "{}'s inventory".format(player.name),
