@@ -420,8 +420,19 @@ def inventory(game_surface):
             else:
                 message_text = "you can't use {}!"
         elif action == 'hold':
-            # choose slot
-            message_text = "you held onto {}!"
+            if items[name].is_use:
+                # choose slot
+                selected = choose_from_options(game_surface,
+                                               'which slot?',
+                                               [str(x) for x in range(1, 7)],
+                                               (width / 2, height / 3))
+                if name in player.held_items:
+                    idx = player.held_items.index(name)
+                    player.held_items[idx] = None
+                player.held_items[selected] = name
+                message_text = "you held onto {}!"
+            else:
+                message_text = "you can't hold onto {}!"
         elif action == 'equip':
             message_text = "you equipped {}!"
         elif action == 'discard':

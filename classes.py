@@ -84,12 +84,12 @@ class PlayerCharacter():
                                       ('legs', None),
                                       ('weapon', None)
                                       ])
-        self.held_items = ('potion',
+        self.held_items = ['potion',
                            'poison flask',
                            'coffee',
                            None,
                            None,
-                           None)
+                           None]
         self.calculate_class_bonuses()
         self.calculate_score_multiplier()
         self.calculate_level_threshold()
