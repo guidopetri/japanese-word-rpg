@@ -498,7 +498,7 @@ def get_effect(choice):
 
 
 def church(game_surface):
-    from menus import yn_question, message_box, wait_for_input
+    from menus import yn_question, conversation_box, wait_for_input
     from game_enums import colors
 
     player = config.player
@@ -522,8 +522,8 @@ def church(game_surface):
         elif revive:
             message_text = "you don't have enough money!"
 
-    message, message_rect = message_box(message_text,
-                                        (width / 2, height / 4))
+    message, message_rect = conversation_box('priest',
+                                             message_text)
 
     game_surface.fill(colors.offblack.value)
     game_surface.blit(message, message_rect)
