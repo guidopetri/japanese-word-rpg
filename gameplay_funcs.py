@@ -357,7 +357,7 @@ def shop(game_surface):
 def inventory(game_surface):
     from game_enums import colors
     from menus import choose_from_options, message_box, item_options
-    from menus import multiple_message_box, wait_for_input
+    from menus import multiple_message_box, wait_for_input, yn_question
     from items import items
 
     player = config.player
@@ -416,16 +416,29 @@ def inventory(game_surface):
             if items[name].is_use:
                 player.inventory[name] -= 1
                 get_effect(name)
-                message_text = "you used {}!".format(name)
+                message_text = "you used {}!"
             else:
-                message_text = "you can't use {}!".format(name)
+                message_text = "you can't use {}!"
         elif action == 'hold':
-            pass
+            # choose slot
+            message_text = "you held onto {}!"
         elif action == 'equip':
-            pass
+            message_text = "you equipped {}!"
         elif action == 'discard':
-            # are you sure?
-            pass
+            if not items[name].is_special:
+                # are you sure?
+                sure = yn_question(game_surface,
+                                   'are you sure?',
+                                   (width / 2, height / 2))
+                if sure:
+                    player.inventory[name] -= 1
+                    message_text = "you threw away {}."
+                else:
+                    return
+            else:
+                message_text = "you can't throw {} away! it's too valuable!"
+
+        message_text = message_text.format(name)
 
     message, message_rect = message_box(message_text,
                                         (width / 2, height / 4))
