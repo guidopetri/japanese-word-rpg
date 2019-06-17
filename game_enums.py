@@ -33,3 +33,4 @@ class colors(Enum):
     white = pygame.Color(255, 255, 255)
     black = pygame.Color(0, 0, 0)
     magenta = pygame.Color(255, 0, 255)
+    offpurple = pygame.Color(204, 136, 153)

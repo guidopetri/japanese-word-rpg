@@ -537,13 +537,19 @@ def church(game_surface):
 
 def castle(game_surface):
     from story import king_story, king_items_given
-    from menus import message_box, wait_for_input
+    from menus import conversation_box, message_box, wait_for_input
     from game_enums import colors
     from items import items
 
     player = config.player
     width = config.width
     height = config.height
+
+    # this is all needed just for the king positioning...
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
+    line_size = font.get_linesize()
+
+    box_height = 2 * line_size + 10
 
     story = king_story[player.story_chapter]
     added_items = king_items_given[player.story_chapter]
@@ -554,20 +560,20 @@ def castle(game_surface):
                                       (height // 2,  # width
                                        height // 2)  # height
                                       )
-    king_rect = king_img.get_rect(midtop=(width / 2, height / 2))
+    king_rect = king_img.get_rect(bottomright=(width,
+                                               height - box_height))
 
     for i, msg in enumerate(story + added_items):
         if msg in story:
-            message_text = msg
+            message, message_rect = conversation_box('king', msg)
         if msg in items:
             if items[msg].is_special:
                 player.inventory[msg] = True
             else:
                 player.inventory[msg] += 1
-            message_text = "you got {}".format(msg)
+            message, message_rect = message_box("you got {}".format(msg),
+                                                (width / 2, height / 4))
 
-        message, message_rect = message_box(message_text,
-                                            (width / 2, height / 4))
         game_surface.fill(colors.offblack.value)
         game_surface.blit(message, message_rect)
         game_surface.blit(king_img, king_rect)

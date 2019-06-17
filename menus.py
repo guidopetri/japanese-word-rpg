@@ -209,6 +209,39 @@ def multiple_message_box(texts, initial_position):
     return bg, bg_rect
 
 
+def conversation_box(name_text, text):
+    from game_enums import colors
+
+    width = config.width
+    height = config.height
+
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
+    line_size = font.get_linesize()
+
+    box_height = 2 * line_size + 10
+
+    size = (width, box_height)
+
+    bg, bg_rect = message_bg(size, (width / 2, height - box_height))
+
+    name = font.render(name_text,
+                       True,
+                       colors.offpurple.value)
+    name_rect = name.get_rect(topleft=(10,
+                                       5))
+
+    msg = font.render(text,
+                      True,
+                      colors.offblack.value)
+    msg_rect = msg.get_rect(topleft=(10,
+                                     5 + line_size))
+
+    bg.blit(name, name_rect)
+    bg.blit(msg, msg_rect)
+
+    return bg, bg_rect
+
+
 def message_bg(size, position):
     from game_enums import colors
 
