@@ -156,7 +156,7 @@ class Item():
     id_ = 0
 
     def __init__(self, name, price, is_use, is_special,
-                 is_equip, desc, unlock_chapter):
+                 is_equip, desc, unlock_chapter, equip_type=None):
         self.id = Item.id_
         Item.id_ += 1
         self.name = name
@@ -166,6 +166,7 @@ class Item():
         self.is_equip = is_equip
         self.desc = desc
         self.unlock_chapter = unlock_chapter
+        self.equip_type = equip_type
 
     def __eq__(self, other):
         return self.name == other

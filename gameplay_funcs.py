@@ -304,15 +304,16 @@ def score_word(difficulty, word, user_input):
 def shop(game_surface):
     from game_enums import colors
     from menus import choose_from_options, message_box, wait_for_input
-    from items import use_items
+    from items import items
 
     player = config.player
     width = config.width
     height = config.height
 
     options = [(name, item.print_price())
-               for name, item in use_items.items()
-               if item.unlock_chapter <= config.player.story_chapter]
+               for name, item in items.items()
+               if item.unlock_chapter <= config.player.story_chapter
+               and not item.is_special]
 
     gold_text = "Gold: $G{}".format(player.total_gold)
     gold, gold_rect = message_box(gold_text,
@@ -330,7 +331,7 @@ def shop(game_surface):
         return
 
     name = options[selected][0]
-    selected_item = use_items[name]
+    selected_item = items[name]
     price = selected_item.price
     if player.total_gold >= price:
         player.total_gold -= price
@@ -434,7 +435,12 @@ def inventory(game_surface):
             else:
                 message_text = "you can't hold onto {}!"
         elif action == 'equip':
-            message_text = "you equipped {}!"
+            if items[name].is_equip:
+                player.equipment[items[name].equip_type] = name
+                player.inventory[name] -= 1
+                message_text = "you equipped {}!"
+            else:
+                message_text = "you can't equip {}!"
         elif action == 'discard':
             if not items[name].is_special:
                 # are you sure?
