@@ -306,8 +306,8 @@ def item_options(surface, item):
                           True,
                           colors.offblack.value)
         # quick mafs
-        msg_rect = msg.get_rect(midtop=(bg_rect.width * (i % 2 + 1) / 3,
-                                        bg_rect.height * (i // 2 + 1) / 3))
+        msg_rect = msg.get_rect(midtop=(bg_rect.width * (i // 2 + 1) / 3,
+                                        bg_rect.height * (i % 2 + 1) / 3))
         lefts.append(msg_rect.left)
         bg.blit(msg, msg_rect)
 
@@ -319,22 +319,17 @@ def item_options(surface, item):
     arrow_rect = arrow.get_rect()
     arrow_x = bg_rect.left - 10
 
-    selected = [0, 0]
+    selected = 0
     no_selection = True
 
     while no_selection:
         surface.blit(bg, bg_rect)
 
         # TODO: check this math
-        arrow_rect.midtop = ((arrow_x
-                              + lefts[selected[0]
-                                      + 2 * selected[1]]
-                              ),  # width
-                             (bg_rect.height
-                              * ((selected[1]) % 2
-                                 + 1)
-                              / 3)
-                             + height / 2)  # height
+        arrow_rect.midtop = ((arrow_x + lefts[selected]),  # width
+                             (bg_rect.height * (selected % 2 + 1) / 3)
+                             + height / 2,  # height
+                             )
 
         surface.blit(arrow, arrow_rect)
 
@@ -343,14 +338,10 @@ def item_options(surface, item):
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    selected[1] = (selected[1] - 1 + 2) % 2
-                elif event.key == pygame.K_DOWN:
-                    selected[1] = (selected[1] + 1) % 2
-                if event.key == pygame.K_LEFT:
-                    selected[0] = (selected[0] - 1 + 2) % 2
-                elif event.key == pygame.K_RIGHT:
-                    selected[0] = (selected[0] + 1) % 2
+                if event.key in (pygame.K_UP, pygame.K_DOWN):
+                    selected = (selected + 1) % 2 + (selected // 2) * 2
+                if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
+                    selected = (selected + 2) % 4
                 elif event.key == pygame.K_RETURN:
                     no_selection = False
                 elif event.key == pygame.K_BACKSPACE:
@@ -358,4 +349,4 @@ def item_options(surface, item):
 
         pygame.display.flip()
 
-    return options[selected[0] + 2 * selected[1]]
+    return options[selected]
