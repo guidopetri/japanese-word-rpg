@@ -183,9 +183,7 @@ def battle(game_surface, all_words):
                 else:
                     typed_words.append(event.unicode)
                     # don't add to i if currently space on enemy.words
-                    if len(enemy.words) <= i:
-                        continue
-                    elif enemy.words[i] == ' ':
+                    if len(enemy.words) <= i or enemy.words[i] == ' ':
                         continue
                 i += 1
         else:
