@@ -18,7 +18,7 @@ class enemy_word():
         self.alive = True
         self.words = []
         self.word_count = 0
-        self.atk_ivl = random.randrange(5, 11)
+        self.atk_ivl = random.randrange(1, 4)
 
     def pick_word(self, words_dict):
 
