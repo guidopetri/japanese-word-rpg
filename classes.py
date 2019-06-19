@@ -18,6 +18,7 @@ class enemy_word():
         self.alive = True
         self.words = []
         self.word_count = 0
+        self.atk_ivl = random.randrange(5, 11)
 
     def pick_word(self, words_dict):
 
@@ -41,7 +42,7 @@ class enemy_word():
             self.alive = False
             return
 
-        quarter_hp = int(self.max_hp / 4)
+        quarter_hp = self.max_hp // 4
 
         if self.status == status_effect.normal:
             if self.health in range(quarter_hp, 2 * quarter_hp):

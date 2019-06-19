@@ -93,6 +93,7 @@ def battle(game_surface, all_words):
 
     i = 0
     correct = 0
+    last_atk = time.time()
     while enemy.alive:
         game_surface.blit(bg, bg_rect)
 
@@ -125,6 +126,12 @@ def battle(game_surface, all_words):
                                 font.get_linesize()  # height
                                 )
 
+        if time.time() - last_atk >= enemy.atk_ivl:
+            last_atk = time.time()
+            player.take_damage(1)
+        if not player.alive:
+            break
+
         game_surface.blit(word_text, template_dest, word_area)
         game_surface.blit(typed_text, dest, type_area)
         game_surface.blit(bg_gradient, dest)
@@ -149,8 +156,6 @@ def battle(game_surface, all_words):
                     else:
                         enemy.pick_word(all_words)
                         player.take_damage(1)
-                        if not player.alive:
-                            break
                     try:
                         # move i to next space in enemy.words, if not on space
                         i += enemy.words[i:].index(' ')
@@ -186,11 +191,7 @@ def battle(game_surface, all_words):
                     if len(enemy.words) <= i or enemy.words[i] == ' ':
                         continue
                 i += 1
-        else:
-            # break out of multiple levels of looping
-            pygame.display.flip()
-            continue
-        break
+        pygame.display.flip()
     else:
         # if the enemy died, not the player
         end_time = time.time()
