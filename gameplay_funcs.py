@@ -91,6 +91,12 @@ def battle(game_surface, all_words):
             monster_rect,
             current_img)
 
+    dmg_indicator = pygame.Surface((width / 4, 5))
+    dmg_rect = dmg_indicator.get_rect(midtop=(width / 2,
+                                              (monster_rect.height
+                                               + monster_rect.top
+                                               + bg_rect.top)))
+
     i = 0
     correct = 0
     last_atk = time.time()
@@ -126,6 +132,13 @@ def battle(game_surface, all_words):
                                 font.get_linesize()  # height
                                 )
 
+        dmg_perc = (time.time() - last_atk) / enemy.atk_ivl
+        # interpolating colors
+        dmg_color = tuple([round(color * dmg_perc
+                                 + colors.offgreen.value[i] * (1 - dmg_perc))
+                           for i, color in enumerate(colors.offred.value)])
+        dmg_indicator.fill(dmg_color)
+
         if time.time() - last_atk >= enemy.atk_ivl:
             last_atk = time.time()
             player.take_damage(1)
@@ -136,6 +149,7 @@ def battle(game_surface, all_words):
         game_surface.blit(typed_text, dest, type_area)
         game_surface.blit(bg_gradient, dest)
 
+        game_surface.blit(dmg_indicator, dmg_rect)
         game_surface.blit(hp_text, hp_rect)
 
         for event in pygame.event.get():
