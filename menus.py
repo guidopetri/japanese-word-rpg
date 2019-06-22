@@ -382,10 +382,14 @@ def get_text_split(texts, max_width):
 
 def get_items(surface, added_items):
     from items import items
+    from game_enums import colors
+    from copy import copy
 
     player = config.player
     width = config.width
     height = config.height
+
+    original_surface = copy(surface)
 
     for item in added_items:
         if items[item].is_special:
@@ -394,8 +398,8 @@ def get_items(surface, added_items):
             player.inventory[item] += 1
         message, message_rect = message_box("you got {}".format(item),
                                             (width / 2, height / 4))
-        # TODO: make this surface fillable in black, but keeping the old stuff
-        # so that we don't have possibly overlapping message boxes
+        surface.fill(colors.offblack.value)
+        surface.blit(original_surface, (0, 0))
         surface.blit(message, message_rect)
         pygame.display.flip()
         wait_for_input()
