@@ -9,12 +9,13 @@ from game_enums import status_effect, player_classes
 class enemy_word():
 
     def __init__(self, level):
+        from collections import defaultdict
         self.level = level
         self.exp_yield = self.level * random.randrange(5, 11)
         self.gold_yield = self.level * random.randrange(1, 4)
         self.health = self.level * random.randrange(2, 5)
         self.max_hp = self.health
-        self.status = status_effect.normal
+        self.status = defaultdict(int)
         self.alive = True
         self.words = []
         self.word_count = 0
@@ -24,12 +25,12 @@ class enemy_word():
 
         # TODO: improve below lines to be more efficient
 
-        if self.status == status_effect.normal:
-            words = [x for y in words_dict.values() for x in y]
-        elif self.status == status_effect.berserk:
+        if status_effect.berserk in self.status:
             words = [x for y in words_dict.values() for x in y if len(x) > 10]
-        elif self.status == status_effect.slow:
+        elif status_effect.slow in self.status:
             words = [x for y in words_dict.values() for x in y if len(x) < 6]
+        else:
+            words = [x for y in words_dict.values() for x in y]
 
         if self.words and self.words[-1] != ' ':
             self.words.append(' ')
@@ -44,14 +45,14 @@ class enemy_word():
 
         quarter_hp = self.max_hp // 4
 
-        if self.status == status_effect.normal:
-            if self.health in range(quarter_hp, 2 * quarter_hp):
-                print(" BERSERK!!")
-                self.status = status_effect.berserk
-        if self.status == status_effect.berserk:
+        if status_effect.berserk in self.status:
             if self.health < quarter_hp:
-                self.status = status_effect.slow
+                self.status[status_effect.berserk] = 0
+                self.status[status_effect.slow] = -1
                 print(" ..... slow .....")
+        elif self.health in range(quarter_hp, 2 * quarter_hp):
+            print(" BERSERK!!")
+            self.status[status_effect.berserk] = -1
 
     def print_word(self):
         print(self.words)
@@ -74,8 +75,7 @@ class PlayerCharacter():
         self.total_gold = 0
         self.gold_multiplier = 1.0
         self.dmg_multiplier = 1.0
-        self.status = status_effect.normal
-        self.status_duration = 0
+        self.status = defaultdict(int)
         self.difficulty = 0.93
         self.story_chapter = 1
         self.level_pending = False

@@ -35,17 +35,18 @@ def battle(game_surface, all_words):
 
     poison_mode = False
 
-    if player.status == status_effect.stamina_up:
+    if player.status[status_effect.stamina_up]:
         # not sure what to do for an effect yet
         raise NotImplementedError
-    elif player.status == status_effect.hp_up:
+    if player.status[status_effect.hp_up]:
+        print('hp up', flush=True)
         player.health += int(0.5 * player.max_hp)  # 8 / 10 -> 13 / 15
         player.max_hp = int(player.max_hp * 1.5)
-    elif player.status == status_effect.dmg_up:
+    if player.status[status_effect.dmg_up]:
         player.dmg_multiplier *= 2
-    elif player.status == status_effect.fast:
+    if player.status[status_effect.fast]:
         player.difficulty -= 0.13
-    elif player.status == status_effect.give_poison:
+    if player.status[status_effect.give_poison]:
         poison_mode = True
 
     font = pygame.font.SysFont(config.fontname, config.fontsize)
@@ -244,18 +245,17 @@ def battle(game_surface, all_words):
 
     wait_for_input()
 
-    if player.status_duration > 0:
-        if player.status == status_effect.fast:
-            player.difficulty += 0.13
-        elif player.status == status_effect.hp_up:
-            player.health = int(player.max_hp * (2 / 3)  # 13 / 15 -> 8 / 10
-                                - (player.max_hp - player.health))
-            player.max_hp = int(player.max_hp * (2 / 3))
-        elif player.status == status_effect.dmg_up:
-            player.dmg_multiplier /= 2
-        player.status_duration -= 1
-        if player.status_duration == 0:
-            player.status = status_effect.normal
+    if player.status[status_effect.fast]:
+        player.difficulty += 0.13
+    if player.status[status_effect.hp_up]:
+        print('hp down', flush=True)
+        player.health = int(player.max_hp * (2 / 3)  # 13 / 15 -> 8 / 10
+                            - (player.max_hp - player.health))
+        player.max_hp = int(player.max_hp * (2 / 3))
+    if player.status[status_effect.dmg_up]:
+        player.dmg_multiplier /= 2
+    for key in player.status.keys():
+        player.status[key] = max(player.status[key] - 1, 0)
 
     if player.level_pending:
         stats_delta = player.level_up()
@@ -499,20 +499,15 @@ def get_effect(choice):
     if choice == 'potion':
         player.health = min(player.health + 10, player.max_hp)
     elif choice == 'coffee':
-        player.status = status_effect.fast
-        player.status_duration = 5
+        player.status[status_effect.fast] = 5
     elif choice == 'poison flask':
-        player.status = status_effect.give_poison
-        player.status_duration = 10
+        player.status[status_effect.give_poison] = 10
     elif choice == 'protein shake':
-        player.status = status_effect.hp_up
-        player.status_duration = 2
+        player.status[status_effect.hp_up] = 2
     elif choice == 'sharpening oil':
-        player.status = status_effect.dmg_up
-        player.status_duration = 2
+        player.status[status_effect.dmg_up] = 2
     elif choice == 'energy bar':
-        player.status = status_effect.stamina_up
-        player.status_duration = 2
+        player.status[status_effect.stamina_up] = 2
     return
 
 
