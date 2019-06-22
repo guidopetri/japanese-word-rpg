@@ -184,7 +184,8 @@ def battle(game_surface, all_words):
                     if typed_words and typed_words[-1] != ' ':
                         typed_words = typed_words[:-1]
                         word, typed = get_words(enemy.words, typed_words)
-                        if enemy.words[i] != ' ' or len(word) > len(typed):
+                        if (enemy.words[i:i + 1] not in [[' '], []]
+                           or len(word) > len(typed)):
                             i -= 1
                     continue
                 elif event.key in (pygame.K_1,
