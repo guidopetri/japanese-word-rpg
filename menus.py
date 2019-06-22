@@ -209,8 +209,9 @@ def multiple_message_box(texts, initial_position):
     return bg, bg_rect
 
 
-def conversation_box(name_text, text):
+def conversation_box(name_text, texts):
     from game_enums import colors
+    from copy import copy
 
     width = config.width
     height = config.height
@@ -222,7 +223,7 @@ def conversation_box(name_text, text):
 
     size = (width, box_height)
 
-    bg, bg_rect = message_bg(size, (width / 2, height - box_height))
+    og_bg, og_bg_rect = message_bg(size, (width / 2, height - box_height))
 
     name = font.render(name_text,
                        True,
@@ -230,16 +231,19 @@ def conversation_box(name_text, text):
     name_rect = name.get_rect(topleft=(10,
                                        5))
 
-    msg = font.render(text,
-                      True,
-                      colors.offblack.value)
-    msg_rect = msg.get_rect(topleft=(10,
-                                     5 + line_size))
+    for text in get_text_split(texts, config.width):
+        msg = font.render(text,
+                          True,
+                          colors.offblack.value)
+        msg_rect = msg.get_rect(topleft=(10,
+                                         5 + line_size))
 
-    bg.blit(name, name_rect)
-    bg.blit(msg, msg_rect)
+        bg, bg_rect = copy(og_bg), copy(og_bg_rect)
 
-    return bg, bg_rect
+        bg.blit(name, name_rect)
+        bg.blit(msg, msg_rect)
+
+        yield bg, bg_rect
 
 
 def message_bg(size, position):
@@ -351,3 +355,49 @@ def item_options(surface, item):
         pygame.display.flip()
 
     return options[selected]
+
+
+def get_text_split(texts, max_width):
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
+
+    result = []
+
+    if isinstance(texts, str):
+        texts = [texts]
+
+    for text in texts:
+        while font.size(text)[0] > max_width:
+            dev = font.size(text)[0] / max_width
+            lim = round(len(text) // dev)
+            if ' ' not in text[:lim]:
+                return []
+            last_space = text[:lim].rindex(' ')
+            new_text = text[:last_space]
+            result.append(new_text)
+            text = text[last_space + 1:]
+        result.append(text)
+
+    return result
+
+
+def get_items(surface, added_items):
+    from items import items
+
+    player = config.player
+    width = config.width
+    height = config.height
+
+    for item in added_items:
+        if items[item].is_special:
+            player.inventory[item] = True
+        else:
+            player.inventory[item] += 1
+        message, message_rect = message_box("you got {}".format(item),
+                                            (width / 2, height / 4))
+        # TODO: make this surface fillable in black, but keeping the old stuff
+        # so that we don't have possibly overlapping message boxes
+        surface.blit(message, message_rect)
+        pygame.display.flip()
+        wait_for_input()
+
+    return

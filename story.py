@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
-king_story = {1: ["welcome to edo. we are pleased to have you here.",
-                  "monsters have been attacking us recently.",
+king_story = {1: ["welcome to edo. we are pleased to have you here. "
+                  "monsters have been attacking us recently. "
                   "would you be so kind as to slay some for us?"],
               2: ["it seems the monsters have only been getting stronger.",
                   "there seems to be some sort of spell on a few of them...",

@@ -534,24 +534,21 @@ def church(game_surface):
         elif revive:
             message_text = "you don't have enough money!"
 
-    message, message_rect = conversation_box('priest',
-                                             message_text)
+    for message, message_rect in conversation_box('priest', message_text):
+        game_surface.fill(colors.offblack.value)
+        game_surface.blit(message, message_rect)
 
-    game_surface.fill(colors.offblack.value)
-    game_surface.blit(message, message_rect)
+        pygame.display.flip()
 
-    pygame.display.flip()
-
-    wait_for_input()
+        wait_for_input()
 
     return
 
 
 def castle(game_surface):
     from story import king_story, king_items_given
-    from menus import conversation_box, message_box, wait_for_input
+    from menus import conversation_box, wait_for_input, get_items
     from game_enums import colors
-    from items import items
 
     player = config.player
     width = config.width
@@ -575,23 +572,17 @@ def castle(game_surface):
     king_rect = king_img.get_rect(bottomright=(width,
                                                height - box_height))
 
-    for i, msg in enumerate(story + added_items):
-        if msg in story:
-            message, message_rect = conversation_box('king', msg)
-        if msg in items:
-            if items[msg].is_special:
-                player.inventory[msg] = True
-            else:
-                player.inventory[msg] += 1
-            message, message_rect = message_box("you got {}".format(msg),
-                                                (width / 2, height / 4))
-
+    for message, message_rect in conversation_box('king', story):
         game_surface.fill(colors.offblack.value)
-        game_surface.blit(message, message_rect)
         game_surface.blit(king_img, king_rect)
+        game_surface.blit(message, message_rect)
 
         pygame.display.flip()
 
         wait_for_input()
+
+    game_surface.fill(colors.offblack.value)
+
+    get_items(game_surface, added_items)
 
     return
