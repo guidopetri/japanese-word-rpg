@@ -30,7 +30,7 @@ def battle(game_surface, all_words):
 
         pygame.display.flip()
 
-        wait_for_input()
+        wait_for_input(pygame.K_RETURN)
         return
 
     poison_mode = False
@@ -238,12 +238,10 @@ def battle(game_surface, all_words):
     game_surface.blit(message, message_rect)
     pygame.display.flip()
 
-    time.sleep(0.5)
-
     # clear event queue
     pygame.event.clear()
 
-    wait_for_input()
+    wait_for_input(pygame.K_RETURN)
 
     if player.status[status_effect.fast]:
         player.difficulty += 0.13

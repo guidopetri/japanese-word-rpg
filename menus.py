@@ -261,7 +261,7 @@ def message_bg(size, position):
     return border, border_rect
 
 
-def wait_for_input():
+def wait_for_input(key=None):
     no_break = True
 
     while no_break:
@@ -270,7 +270,8 @@ def wait_for_input():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                no_break = False
+                if key is None or event.key == key:
+                    no_break = False
 
     return
 
