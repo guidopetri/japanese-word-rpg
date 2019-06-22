@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 # python 3.6.4
 
-import json
 import classes
 import os
 import config
 
 
 def load_words():
-    with open('wordsLen.ini', 'r') as f:
-        all_words = json.load(f)
+
+    import pickle
+
+    with open('words.pckl', 'rb') as f:
+        all_words = pickle.load(f)
 
     return all_words
 

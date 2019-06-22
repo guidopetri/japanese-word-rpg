@@ -23,14 +23,14 @@ class enemy_word():
 
     def pick_word(self, words_dict):
 
-        # TODO: improve below lines to be more efficient
-
         if status_effect.berserk in self.status:
-            words = [x for y in words_dict.values() for x in y if len(x) > 10]
+            trimmed = [words_dict[key] for key in words_dict if key > 10]
         elif status_effect.slow in self.status:
-            words = [x for y in words_dict.values() for x in y if len(x) < 6]
+            trimmed = [words_dict[key] for key in words_dict if key < 6]
         else:
-            words = [x for y in words_dict.values() for x in y]
+            trimmed = words_dict.values()
+
+        words = sum(trimmed, [])
 
         if self.words and self.words[-1] != ' ':
             self.words.append(' ')
@@ -45,7 +45,7 @@ class enemy_word():
 
         quarter_hp = self.max_hp // 4
 
-        if status_effect.berserk in self.status:
+        if self.status[status_effect.berserk]:
             if self.health < quarter_hp:
                 self.status[status_effect.berserk] = 0
                 self.status[status_effect.slow] = -1
