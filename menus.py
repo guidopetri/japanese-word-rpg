@@ -7,7 +7,45 @@ import sys
 import config
 
 
-def main_menu():
+def select_player(play_surface):
+    import os
+    import pickle
+    from backend import save_player
+
+    width = config.width
+    height = config.height
+
+    player_names = [file[:-4] for file in os.listdir('players/')]
+    player_names.extend(['new player'])
+
+    selected = -1
+
+    while selected == -1:
+        selected = choose_from_options(play_surface,
+                                       'who are you?',
+                                       player_names,
+                                       (width / 2, height / 4))
+
+    if player_names[selected] == 'new player':
+        create_player(play_surface)
+    else:
+        with open('players/{}.sav'.format(player_names[selected]), 'rb') as f:
+            player = pickle.load(f)
+
+    config.player = player
+
+    save_player()
+
+
+def create_player(play_surface):
+    pass
+
+
+def intro_screen(play_surface):
+    pass
+
+
+def main_menu(play_surface):
     import gameplay_funcs
     from game_enums import colors
     import backend
@@ -15,14 +53,7 @@ def main_menu():
     all_words = backend.load_words()
     backend.load_player()
 
-    # pygame.joystick.init() is breaking my execution for some reason.
-    pygame.display.init()
-    pygame.font.init()
-    # pygame.mixer.init()
-
     width, height = config.width, config.height
-    play_surface = pygame.display.set_mode((width, height))
-    pygame.display.set_caption("Word RPG")
     selected = None
 
     play_options = ['battle',

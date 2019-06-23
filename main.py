@@ -3,23 +3,17 @@
 # python 3.6.4
 
 import menus
+import pygame
+import config
 
+# pygame.joystick.init() is breaking my execution for some reason.
+pygame.display.init()
+pygame.font.init()
+# pygame.mixer.init()
 
-# random.seed(1)
+play_surface = pygame.display.set_mode((config.width, config.height))
+pygame.display.set_caption("Word RPG")
 
-def sort_words_len(all_words):
-    import json
-    from collections import defaultdict
-
-    words_lengths = defaultdict(list)
-
-    for word in all_words:
-        words_lengths[len(word)].append(word)
-
-    with open('wordsLen.ini', 'w') as f:
-        json.dump(words_lengths, f)
-
-    return
-
-
-menus.main_menu()
+menus.intro_screen(play_surface)
+menus.select_player(play_surface)
+menus.main_menu(play_surface)
