@@ -100,7 +100,7 @@ def battle(game_surface, all_words):
 
     i = 0
     correct_count = 0
-    last_atk = time.time()
+    correct = True
     while enemy.alive:
         game_surface.blit(bg, bg_rect)
 
@@ -114,7 +114,7 @@ def battle(game_surface, all_words):
                                 colors.offblue.value)
         typed_text = font.render(''.join(typed_words),
                                  True,
-                                 colors.offred.value,
+                                 colors.deepgreen.value,
                                  colors.bgyellow.value)
 
         dest = (width / 4, height / 2 + 90)
@@ -134,13 +134,14 @@ def battle(game_surface, all_words):
                                 )
 
         if i:
-            dmg_perc = min((time.time() - last_atk) / enemy.atk_ivl, 1)
+            dmg_perc = min((time.time() - last_atk) / enemy.atk_ivl, 1)  # noqa
         else:
             dmg_perc = 0
             last_atk = time.time()
         # interpolating colors
         dmg_color = tuple([round(color * dmg_perc
-                                 + colors.offgreen.value[i] * (1 - dmg_perc))
+                                 + colors.brightgreen.value[i] * (1 - dmg_perc)
+                                 )
                            for i, color in enumerate(colors.offred.value)])
         dmg_indicator.fill(dmg_color)
         dmg_area = (0, 0, width * (1 - dmg_perc) / 4, 5)
@@ -154,6 +155,18 @@ def battle(game_surface, all_words):
 
         game_surface.blit(word_text, template_dest, word_area)
         game_surface.blit(typed_text, dest, type_area)
+
+        word, typed = get_words(enemy.words, typed_words)
+        correct = score_word(player.difficulty, word[:len(typed)], typed)
+
+        if not correct:
+            wrong_word = font.render(typed,
+                                     True,
+                                     colors.offred.value)
+            wrong_dest = wrong_word.get_rect(topright=(width / 2,
+                                                       height / 2 + 90))
+            game_surface.blit(wrong_word, wrong_dest)
+
         game_surface.blit(bg_gradient, dest)
 
         game_surface.blit(dmg_indicator, dmg_rect, dmg_area)
@@ -165,8 +178,6 @@ def battle(game_surface, all_words):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 # start counting towards cpm timer on first keypress
-                word, typed = get_words(enemy.words, typed_words)
-                correct = score_word(player.difficulty, word, typed)
                 if i == 0:
                     start_time = time.time()
                 if event.key == pygame.K_SPACE:
