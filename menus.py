@@ -31,14 +31,72 @@ def select_player(play_surface):
     else:
         with open('players/{}.sav'.format(player_names[selected]), 'rb') as f:
             player = pickle.load(f)
-
-    config.player = player
+            config.player = player
 
     save_player()
 
 
 def create_player(play_surface):
-    pass
+    from game_enums import player_classes, colors
+    from classes import PlayerCharacter
+
+    width = config.width
+    height = config.height
+
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
+    line_size = font.get_linesize()
+
+    pc_classes = [x.value for x in player_classes]
+
+    question = font.render("what's your name?",
+                           True,
+                           colors.offblack.value)
+    question_rect = question.get_rect(midtop=(width / 2, height / 4))
+
+    bg, bg_rect = message_bg((width / 2, line_size * 2 + 10),
+                             (width / 2, height / 4 - 5))
+
+    name_text = []
+    stop = False
+
+    while not stop:
+        name = font.render(''.join(name_text),
+                           True,
+                           colors.offblack.value)
+        name_rect = name.get_rect(midtop=(width / 2,
+                                          height / 4 + line_size))
+
+        play_surface.fill(colors.offblack.value)
+        play_surface.blit(bg, bg_rect)
+        play_surface.blit(question, question_rect)
+        play_surface.blit(name, name_rect)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN and name_text:
+                    stop = True
+                elif event.key == pygame.K_BACKSPACE and name_text:
+                    name_text = name_text[:-1]
+                elif event.unicode.isalnum():
+                    name_text.append(event.unicode)
+        pygame.display.flip()
+
+    play_surface.fill(colors.offblack.value)
+    selected = -1
+
+    while selected == -1:
+        selected = choose_from_options(play_surface,
+                                       'what class is your character?',
+                                       pc_classes,
+                                       (width / 2, height / 4))
+
+    player = PlayerCharacter(player_name=''.join(name_text),
+                             player_class=pc_classes[selected])
+
+    config.player = player
 
 
 def intro_screen(play_surface):
