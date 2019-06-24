@@ -99,7 +99,7 @@ def battle(game_surface, all_words):
                                                     + bg_rect.top)))
 
     i = 0
-    correct = 0
+    correct_count = 0
     last_atk = time.time()
     while enemy.alive:
         game_surface.blit(bg, bg_rect)
@@ -137,6 +137,7 @@ def battle(game_surface, all_words):
             dmg_perc = min((time.time() - last_atk) / enemy.atk_ivl, 1)
         else:
             dmg_perc = 0
+            last_atk = time.time()
         # interpolating colors
         dmg_color = tuple([round(color * dmg_perc
                                  + colors.offgreen.value[i] * (1 - dmg_perc))
@@ -165,12 +166,13 @@ def battle(game_surface, all_words):
             elif event.type == pygame.KEYDOWN:
                 # start counting towards cpm timer on first keypress
                 word, typed = get_words(enemy.words, typed_words)
+                correct = score_word(player.difficulty, word, typed)
                 if i == 0:
                     start_time = time.time()
                 if event.key == pygame.K_SPACE:
                     last_atk = time.time()
-                    if score_word(player.difficulty, word, typed):
-                        correct += 1
+                    if correct:
+                        correct_count += 1
                         enemy.take_damage(int(player.dmg_multiplier))
                         if poison_mode:
                             enemy.take_damage(1)
@@ -217,7 +219,7 @@ def battle(game_surface, all_words):
     else:
         # if the enemy died, not the player
         end_time = time.time()
-        score = round(100 * correct / enemy.word_count)
+        score = round(100 * correct_count / enemy.word_count)
         cpm = round(60 * len(typed_words) / (end_time - start_time))
         wpm = cpm / 5
         gained_exp = int(enemy.exp_yield * score / 100)
