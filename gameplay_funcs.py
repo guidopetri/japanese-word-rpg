@@ -133,7 +133,7 @@ def battle(game_surface, all_words):
                                 font.get_linesize()  # height
                                 )
 
-        dmg_perc = (time.time() - last_atk) / enemy.atk_ivl
+        dmg_perc = min((time.time() - last_atk) / enemy.atk_ivl, 1)
         # interpolating colors
         dmg_color = tuple([round(color * dmg_perc
                                  + colors.offgreen.value[i] * (1 - dmg_perc))
