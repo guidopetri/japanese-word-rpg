@@ -133,7 +133,10 @@ def battle(game_surface, all_words):
                                 font.get_linesize()  # height
                                 )
 
-        dmg_perc = min((time.time() - last_atk) / enemy.atk_ivl, 1)
+        if i:
+            dmg_perc = min((time.time() - last_atk) / enemy.atk_ivl, 1)
+        else:
+            dmg_perc = 0
         # interpolating colors
         dmg_color = tuple([round(color * dmg_perc
                                  + colors.offgreen.value[i] * (1 - dmg_perc))
@@ -142,7 +145,7 @@ def battle(game_surface, all_words):
         dmg_area = (0, 0, width * (1 - dmg_perc) / 4, 5)
         dmg_rect = dmg_rect_full.inflate(- width * dmg_perc / 4, 0)
 
-        if time.time() - last_atk >= enemy.atk_ivl:
+        if i and time.time() - last_atk >= enemy.atk_ivl:
             last_atk = time.time()
             player.take_damage(1)
         if not player.alive:
@@ -161,11 +164,11 @@ def battle(game_surface, all_words):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 # start counting towards cpm timer on first keypress
+                word, typed = get_words(enemy.words, typed_words)
                 if i == 0:
                     start_time = time.time()
                 if event.key == pygame.K_SPACE:
                     last_atk = time.time()
-                    word, typed = get_words(enemy.words, typed_words)
                     if score_word(player.difficulty, word, typed):
                         correct += 1
                         enemy.take_damage(int(player.dmg_multiplier))
