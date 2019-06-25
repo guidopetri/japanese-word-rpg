@@ -114,7 +114,7 @@ def main_menu(play_surface):
     width, height = config.width, config.height
     selected = None
 
-    play_options = ['battle',
+    play_options = ['explore',
                     'shop',
                     'inventory',
                     'castle',
@@ -131,9 +131,9 @@ def main_menu(play_surface):
 
         if selected == -1:
             selected = None
-        elif selected == play_options.index('battle'):
-            gameplay_funcs.battle(play_surface,
-                                  all_words)
+        elif selected == play_options.index('explore'):
+            gameplay_funcs.explore(play_surface,
+                                   all_words)
         elif selected == play_options.index('shop'):
             gameplay_funcs.shop(play_surface)
         elif selected == play_options.index('inventory'):

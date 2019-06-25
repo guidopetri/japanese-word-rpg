@@ -6,7 +6,7 @@ import random
 from game_enums import status_effect, player_classes
 
 
-class enemy_word():
+class enemy_word(object):
 
     def __init__(self, level):
         from collections import defaultdict
@@ -58,7 +58,7 @@ class enemy_word():
         print(self.words)
 
 
-class PlayerCharacter():
+class PlayerCharacter(object):
 
     def __init__(self, player_name=None, player_class=None):
         from collections import defaultdict, OrderedDict
@@ -152,7 +152,7 @@ class PlayerCharacter():
         self.score += int(amount * self.score_multiplier)
 
 
-class Item():
+class Item(object):
 
     id_ = 0
 
@@ -174,3 +174,9 @@ class Item():
 
     def print_price(self):
         return '{}: $G{}'.format(self.name, self.price)
+
+
+class MapLocation(object):
+
+    def __init__(self, kind):
+        self.kind = kind

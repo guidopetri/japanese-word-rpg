@@ -11,6 +11,83 @@ import sys
 import config
 
 
+def explore(game_surface, all_words):
+    player_location = [0, 0]
+
+    enemy_locations = []
+
+    for count in range(random.randint(2, 6)):
+        enemy_locations.append([random.randint(-3, 3), random.randint(-3, 3)])
+
+    while True:
+        if not enemy_locations:
+            break
+
+        draw_map(game_surface, player_location, enemy_locations)
+
+        if player_location in enemy_locations:
+            enemy_locations.remove(player_location)
+            battle(game_surface, all_words)
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    break
+                if event.key == pygame.K_DOWN:
+                    player_location[1] += 1
+                elif event.key == pygame.K_UP:
+                    player_location[1] -= 1
+                elif event.key == pygame.K_LEFT:
+                    player_location[0] -= 1
+                elif event.key == pygame.K_RIGHT:
+                    player_location[0] += 1
+                player_location[0] = max(player_location[0], -3)
+                player_location[0] = min(player_location[0], 3)
+                player_location[1] = max(player_location[1], -3)
+                player_location[1] = min(player_location[1], 3)
+        else:
+            continue
+
+        break
+
+
+def draw_map(surface, player_location, enemy_locations):
+    from menus import message_bg
+    from game_enums import colors
+
+    width = config.width
+    height = config.height
+
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
+
+    bg, bg_rect = message_bg((width / 2, height / 2),
+                             (width / 2, height / 4))
+
+    positions = [[x, y] for x in range(-3, 4) for y in range(-3, 4)]
+
+    surface.fill(colors.offwhite.value)
+    surface.blit(bg, bg_rect)
+
+    for pos in positions:
+        if pos == player_location:
+            character = '@'
+        elif pos in enemy_locations:
+            character = '+'
+        else:
+            character = '.'
+        char = font.render(character,
+                           True,
+                           colors.offblack.value)
+        char_rect = char.get_rect(midtop=(pos[0] * width / 18 + width / 2,
+                                          pos[1] * height / 18 + height / 2))
+        surface.blit(char, char_rect)
+
+
 def battle(game_surface, all_words):
     from menus import message_box, wait_for_input, message_bg
     from menus import multiple_message_box
