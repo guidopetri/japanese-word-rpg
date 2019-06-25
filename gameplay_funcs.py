@@ -19,6 +19,9 @@ def explore(game_surface, all_words):
     for count in range(random.randint(2, 6)):
         enemy_locations.append([random.randint(-3, 3), random.randint(-3, 3)])
 
+    if player_location in enemy_locations:
+        enemy_locations.remove(player_location)
+
     while True:
         if not enemy_locations:
             break
