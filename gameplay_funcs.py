@@ -13,6 +13,7 @@ import config
 
 def explore(game_surface, all_words):
     from map_tiles import location_types
+    from collections import Counter
 
     player_location = [0, 0]
 
@@ -21,16 +22,31 @@ def explore(game_surface, all_words):
     for y in range(7):
         game_map.append([])
         for x in range(7):
-            if x == 0 and y == 0:
-                choices = list(location_types.keys())
-                tile = random.choices(choices)[0]
-            elif x == 3 and y == 3:
-                tile = 'city'
-            else:
-                # weights = defined by neighboring tiles?
-                choices = list(location_types.keys())
-                tile = random.choices(choices)[0]
-            game_map[-1].append(tile)
+            game_map[-1].append('')
+
+    while any(any(game_map[y][x] == ''
+                  for x, a in enumerate(game_map[y]))
+              for y, b in enumerate(game_map)):
+        for y in range(7):
+            for x in range(7):
+                if any(coord == 0 or coord == 7 for coord in [x, y]):
+                    choices = list(location_types.keys())
+                    tile = random.choices(choices)[0]
+                elif x == 3 and y == 3:
+                    tile = 'city'
+                else:
+                    neighbors = [game_map[y - z][x - a]
+                                 for z in range(-1, 2) if y - z < len(game_map)
+                                 for a in range(-1, 2) if x - a < len(game_map)
+                                 ]
+                    neighbors.remove(game_map[y][x])
+                    weights = Counter(neighbors)
+                    weights = [weights[key] for key in location_types.keys()]
+                    choices = list(location_types.keys())
+                    if sum(weights) == 0:
+                        weights = [1 for weight in weights]
+                    tile = random.choices(choices, weights)[0]
+                game_map[y][x] = tile
 
     enemy_locations = []
 
