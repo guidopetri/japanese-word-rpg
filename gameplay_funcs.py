@@ -100,33 +100,51 @@ def draw_map(surface, game_map, player_location, enemy_locations):
     width = config.width
     height = config.height
 
-    font = pygame.font.SysFont(config.fontname, config.fontsize)
-
     bg, bg_rect = message_bg((width / 2, height / 2),
                              (width / 2, height / 4))
 
     positions = [[x, y] for x in range(-3, 4) for y in range(-3, 4)]
 
-    surface.fill(colors.offwhite.value)
+    sprites = {}
+    sprites['player'] = pygame.image.load('media/player-ow.png').convert()
+    sprites['enemy'] = pygame.image.load('media/monster-ow.png').convert()
+
+    tiles = {}
+    tiles['city'] = pygame.image.load('media/city-tile.png').convert()
+    tiles['grass'] = pygame.image.load('media/grass-tile.png').convert()
+    tiles['mountain'] = pygame.image.load('media/mountain-tile.png').convert()
+
+    for img in sprites.values():
+        img.set_colorkey(colors.magenta.value)
+
+    for img in tiles.values():
+        img.set_colorkey(colors.magenta.value)
+
+    surface.fill(colors.offblack.value)
     surface.blit(bg, bg_rect)
 
     for pos in positions:
-        if pos == player_location:
-            character = '@'
-        elif pos in enemy_locations:
-            character = '+'
-        elif game_map[pos[0]][pos[1]] == 'city':
-            character = '='
+        if game_map[pos[0]][pos[1]] == 'city':
+            tile = tiles['city']
         elif game_map[pos[0]][pos[1]] == 'grass':
-            character = 'w'
+            tile = tiles['grass']
         elif game_map[pos[0]][pos[1]] == 'mountain':
-            character = '^'
-        char = font.render(character,
-                           True,
-                           colors.offblack.value)
-        char_rect = char.get_rect(midtop=(pos[0] * width / 18 + width / 2,
-                                          pos[1] * height / 18 + height / 2))
-        surface.blit(char, char_rect)
+            tile = tiles['mountain']
+
+        tile_rect = tile.get_rect(midtop=(pos[0] * 32 + width / 2,
+                                          pos[1] * 32 + height / 2))
+        surface.blit(tile, tile_rect)
+
+        if pos == player_location:
+            sprite = sprites['player']
+            sprite_rect = sprite.get_rect(midtop=(pos[0] * 32 + width / 2,
+                                                  pos[1] * 32 + height / 2))
+            surface.blit(sprite, sprite_rect)
+        elif pos in enemy_locations:
+            sprite = sprites['enemy']
+            sprite_rect = sprite.get_rect(midtop=(pos[0] * 32 + width / 2,
+                                                  pos[1] * 32 + height / 2))
+            surface.blit(sprite, sprite_rect)
 
 
 def battle(game_surface, all_words):
