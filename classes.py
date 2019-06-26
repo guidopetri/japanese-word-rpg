@@ -176,6 +176,15 @@ class Item(object):
         return '{}: $G{}'.format(self.name, self.price)
 
 
+class LocationType(object):
+
+    def __init__(self, name, block_mv, block_fov, level):
+        self.name = name
+        self.block_mv = block_mv
+        self.block_fov = block_fov
+        self.level = level
+
+
 class MapLocation(object):
 
     def __init__(self, kind):

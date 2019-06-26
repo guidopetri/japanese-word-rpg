@@ -12,7 +12,25 @@ import config
 
 
 def explore(game_surface, all_words):
+    from map_tiles import location_types
+
     player_location = [0, 0]
+
+    game_map = []
+
+    for y in range(7):
+        game_map.append([])
+        for x in range(7):
+            if x == 0 and y == 0:
+                choices = list(location_types.keys())
+                tile = random.choices(choices)[0]
+            elif x == 3 and y == 3:
+                tile = 'city'
+            else:
+                # weights = defined by neighboring tiles?
+                choices = list(location_types.keys())
+                tile = random.choices(choices)[0]
+            game_map[-1].append(tile)
 
     enemy_locations = []
 
@@ -26,7 +44,7 @@ def explore(game_surface, all_words):
         if not enemy_locations:
             break
 
-        draw_map(game_surface, player_location, enemy_locations)
+        draw_map(game_surface, game_map, player_location, enemy_locations)
 
         if player_location in enemy_locations:
             enemy_locations.remove(player_location)
@@ -59,7 +77,7 @@ def explore(game_surface, all_words):
         break
 
 
-def draw_map(surface, player_location, enemy_locations):
+def draw_map(surface, game_map, player_location, enemy_locations):
     from menus import message_bg
     from game_enums import colors
 
@@ -81,8 +99,12 @@ def draw_map(surface, player_location, enemy_locations):
             character = '@'
         elif pos in enemy_locations:
             character = '+'
-        else:
-            character = '.'
+        elif game_map[pos[0]][pos[1]] == 'city':
+            character = '='
+        elif game_map[pos[0]][pos[1]] == 'grass':
+            character = 'w'
+        elif game_map[pos[0]][pos[1]] == 'mountain':
+            character = '^'
         char = font.render(character,
                            True,
                            colors.offblack.value)
