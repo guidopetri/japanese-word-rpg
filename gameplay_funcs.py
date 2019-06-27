@@ -12,36 +12,19 @@ import config
 
 
 def explore(game_surface, all_words):
+    from map_tiles import location_types
+
     # TODO: clean up this entire section of code to be more readable
-    player_location = [0, 0]
+    player_loc = [0, 0]
     map_size = 11
-    map_len = map_size // 2
 
     game_map = [['' for x in range(map_size)] for y in range(map_size)]
 
     game_map = generate_map(game_map)
 
-    enemy_locations = []
-
-    for count in range(random.randint(2, 6)):
-        enemy_locations.append([random.randint(- map_len,
-                                               map_size - map_len - 1),
-                                random.randint(map_len,
-                                               map_size - map_len - 1)
-                                ])
-
-    if player_location in enemy_locations:
-        enemy_locations.remove(player_location)
-
     while True:
-        if not enemy_locations:
-            break
 
-        draw_map(game_surface, game_map, player_location, enemy_locations)
-
-        if player_location in enemy_locations:
-            enemy_locations.remove(player_location)
-            battle(game_surface, all_words)
+        draw_map(game_surface, game_map, player_loc)
 
         pygame.display.flip()
 
@@ -54,9 +37,13 @@ def explore(game_surface, all_words):
                     break
                 if event.key in (pygame.K_DOWN, pygame.K_UP,
                                  pygame.K_LEFT, pygame.K_RIGHT):
-                    player_location = move_player(game_map,
-                                                  event.key,
-                                                  player_location)
+                    player_loc = move_player(game_map,
+                                             event.key,
+                                             player_loc)
+                    tile_type = game_map[player_loc[0]][player_loc[1]]
+                    enemy_chance = location_types[tile_type].level + 1
+                    if random.randint(1, 6) <= enemy_chance:
+                        battle(game_surface, all_words)
         else:
             continue
 
@@ -130,7 +117,7 @@ def move_player(game_map, key, player_location):
     return new_location
 
 
-def draw_map(surface, game_map, player_location, enemy_locations):
+def draw_map(surface, game_map, player_location):
     from game_enums import colors
 
     width = config.width
@@ -144,7 +131,7 @@ def draw_map(surface, game_map, player_location, enemy_locations):
 
     sprites = {}
     sprites['player'] = pygame.image.load('media/player-ow.png').convert()
-    sprites['enemy'] = pygame.image.load('media/monster-ow.png').convert()
+    # sprites['enemy'] = pygame.image.load('media/monster-ow.png').convert()
 
     tiles = {}
     tiles['city'] = pygame.image.load('media/city-tile.png').convert()
@@ -173,11 +160,6 @@ def draw_map(surface, game_map, player_location, enemy_locations):
 
         if pos == player_location:
             sprite = sprites['player']
-            sprite_rect = sprite.get_rect(midtop=(pos[0] * 32 + width / 2,
-                                                  pos[1] * 32 + height / 2))
-            surface.blit(sprite, sprite_rect)
-        elif pos in enemy_locations:
-            sprite = sprites['enemy']
             sprite_rect = sprite.get_rect(midtop=(pos[0] * 32 + width / 2,
                                                   pos[1] * 32 + height / 2))
             surface.blit(sprite, sprite_rect)
