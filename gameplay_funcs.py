@@ -15,24 +15,25 @@ def explore(game_surface, all_words):
     from map_tiles import location_types
     from collections import Counter
 
-    player_location = [0, 0]
+    player_location = [-1, -1]
+    map_size = 11
 
     game_map = []
 
-    for y in range(7):
+    for y in range(map_size):
         game_map.append([])
-        for x in range(7):
+        for x in range(map_size):
             game_map[-1].append('')
 
     while any(any(game_map[y][x] == ''
                   for x, a in enumerate(game_map[y]))
               for y, b in enumerate(game_map)):
-        for y in range(7):
-            for x in range(7):
-                if any(coord == 0 or coord == 7 for coord in [x, y]):
+        for y in range(map_size):
+            for x in range(map_size):
+                if any(coord == 0 or coord == map_size for coord in [x, y]):
                     choices = list(location_types.keys())
                     tile = random.choices(choices)[0]
-                elif x == 3 and y == 3:
+                elif x == map_size // 2 and y == map_size // 2:
                     tile = 'city'
                 else:
                     neighbors = [game_map[y - z][x - a]
@@ -51,7 +52,11 @@ def explore(game_surface, all_words):
     enemy_locations = []
 
     for count in range(random.randint(2, 6)):
-        enemy_locations.append([random.randint(-3, 3), random.randint(-3, 3)])
+        enemy_locations.append([random.randint(1 - map_size // 2,
+                                               map_size // 2 - 1),
+                                random.randint(1 - map_size // 2,
+                                               map_size // 2 - 1)
+                                ])
 
     if player_location in enemy_locations:
         enemy_locations.remove(player_location)
@@ -83,10 +88,10 @@ def explore(game_surface, all_words):
                     player_location[0] -= 1
                 elif event.key == pygame.K_RIGHT:
                     player_location[0] += 1
-                player_location[0] = max(player_location[0], -3)
-                player_location[0] = min(player_location[0], 3)
-                player_location[1] = max(player_location[1], -3)
-                player_location[1] = min(player_location[1], 3)
+                player_location[0] = max(player_location[0], -map_size // 2)
+                player_location[0] = min(player_location[0], map_size // 2 - 1)
+                player_location[1] = max(player_location[1], -map_size // 2)
+                player_location[1] = min(player_location[1], map_size // 2 - 1)
         else:
             continue
 
@@ -99,11 +104,14 @@ def draw_map(surface, game_map, player_location, enemy_locations):
 
     width = config.width
     height = config.height
+    map_size = len(game_map)
 
     bg, bg_rect = message_bg((width / 2, height / 2),
                              (width / 2, height / 4))
 
-    positions = [[x, y] for x in range(-3, 4) for y in range(-3, 4)]
+    positions = [[x, y]
+                 for x in range(-map_size // 2, map_size // 2)
+                 for y in range(-map_size // 2, map_size // 2)]
 
     sprites = {}
     sprites['player'] = pygame.image.load('media/player-ow.png').convert()
@@ -120,7 +128,7 @@ def draw_map(surface, game_map, player_location, enemy_locations):
     for img in tiles.values():
         img.set_colorkey(colors.magenta.value)
 
-    surface.fill(colors.offblack.value)
+    surface.fill(colors.offwhite.value)
     surface.blit(bg, bg_rect)
 
     for pos in positions:
