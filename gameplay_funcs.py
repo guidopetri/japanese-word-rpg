@@ -339,7 +339,7 @@ def battle(game_surface, all_words):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN and event.unicode:
                 # start counting towards cpm timer on first keypress
                 if i == 0:
                     start_time = time.time()
