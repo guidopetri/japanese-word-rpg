@@ -15,6 +15,7 @@ def explore(game_surface, all_words):
     from map_tiles import location_types
     from collections import Counter
 
+    # TODO: clean up this entire section of code to be more readable
     player_location = [0, 0]
     map_size = 11
     map_len = map_size // 2
@@ -81,39 +82,58 @@ def explore(game_surface, all_words):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     break
-                if event.key == pygame.K_DOWN:
-                    player_location[1] += 1
-                elif event.key == pygame.K_UP:
-                    player_location[1] -= 1
-                elif event.key == pygame.K_LEFT:
-                    player_location[0] -= 1
-                elif event.key == pygame.K_RIGHT:
-                    player_location[0] += 1
-                player_location[0] = max(player_location[0],
-                                         - map_len)
-                player_location[0] = min(player_location[0],
-                                         map_size - map_len - 1)
-                player_location[1] = max(player_location[1],
-                                         - map_len)
-                player_location[1] = min(player_location[1],
-                                         map_size - map_len - 1)
+                if event.key in (pygame.K_DOWN, pygame.K_UP,
+                                 pygame.K_LEFT, pygame.K_RIGHT):
+                    player_location = move_player(game_map,
+                                                  event.key,
+                                                  player_location)
         else:
             continue
 
         break
 
 
+def move_player(game_map, key, player_location):
+    from map_tiles import location_types
+
+    new_location = list(player_location)  # must copy, not reference
+
+    map_size = len(game_map)
+    map_len = map_size // 2
+
+    if key == pygame.K_DOWN:
+        new_location[1] += 1
+    elif key == pygame.K_UP:
+        new_location[1] -= 1
+    elif key == pygame.K_LEFT:
+        new_location[0] -= 1
+    elif key == pygame.K_RIGHT:
+        new_location[0] += 1
+
+    new_location[0] = max(new_location[0],
+                          - map_len)
+    new_location[0] = min(new_location[0],
+                          map_size - map_len - 1)
+    new_location[1] = max(new_location[1],
+                          - map_len)
+    new_location[1] = min(new_location[1],
+                          map_size - map_len - 1)
+
+    tile_type = game_map[new_location[0]][new_location[1]]
+
+    if location_types[tile_type].block_mv:
+        new_location = list(player_location)
+
+    return new_location
+
+
 def draw_map(surface, game_map, player_location, enemy_locations):
-    from menus import message_bg
     from game_enums import colors
 
     width = config.width
     height = config.height
     map_size = len(game_map)
     map_len = map_size // 2
-
-    bg, bg_rect = message_bg((width / 2, height / 2),
-                             (width / 2, height / 4))
 
     positions = [[x, y]
                  for x in range(- map_len, map_size - map_len)
@@ -135,7 +155,6 @@ def draw_map(surface, game_map, player_location, enemy_locations):
         img.set_colorkey(colors.magenta.value)
 
     surface.fill(colors.offwhite.value)
-    surface.blit(bg, bg_rect)
 
     for pos in positions:
         if game_map[pos[0]][pos[1]] == 'city':
