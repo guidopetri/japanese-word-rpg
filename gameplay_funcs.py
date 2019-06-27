@@ -12,44 +12,14 @@ import config
 
 
 def explore(game_surface, all_words):
-    from map_tiles import location_types
-    from collections import Counter
-
     # TODO: clean up this entire section of code to be more readable
     player_location = [0, 0]
     map_size = 11
     map_len = map_size // 2
 
-    game_map = []
+    game_map = [['' for x in range(map_size)] for y in range(map_size)]
 
-    for y in range(map_size):
-        game_map.append([])
-        for x in range(map_size):
-            game_map[-1].append('')
-
-    while any(any(game_map[y][x] == ''
-                  for x, a in enumerate(game_map[y]))
-              for y, b in enumerate(game_map)):
-        for y in range(map_size):
-            for x in range(map_size):
-                if any(coord == 0 or coord == map_size for coord in [x, y]):
-                    choices = list(location_types.keys())
-                    tile = random.choices(choices)[0]
-                elif x == map_len and y == map_len:
-                    tile = 'city'
-                else:
-                    neighbors = [game_map[y - z][x - a]
-                                 for z in range(-1, 2) if y - z < len(game_map)
-                                 for a in range(-1, 2) if x - a < len(game_map)
-                                 ]
-                    neighbors.remove(game_map[y][x])
-                    weights = Counter(neighbors)
-                    weights = [weights[key] for key in location_types.keys()]
-                    choices = list(location_types.keys())
-                    if sum(weights) == 0:
-                        weights = [1 for weight in weights]
-                    tile = random.choices(choices, weights)[0]
-                game_map[y][x] = tile
+    game_map = generate_map(game_map)
 
     enemy_locations = []
 
@@ -91,6 +61,39 @@ def explore(game_surface, all_words):
             continue
 
         break
+
+
+def generate_map(game_map):
+    from map_tiles import location_types
+    from collections import Counter
+
+    map_size = len(game_map)
+    map_len = map_size // 2
+
+    while any(any(game_map[y][x] == ''
+                  for x, a in enumerate(game_map[y]))
+              for y, b in enumerate(game_map)):
+        for y in range(map_size):
+            for x in range(map_size):
+                if any(coord == 0 or coord == map_size for coord in [x, y]):
+                    choices = list(location_types.keys())
+                    tile = random.choices(choices)[0]
+                elif x == map_len and y == map_len:
+                    tile = 'city'
+                else:
+                    neighbors = [game_map[y - z][x - a]
+                                 for z in range(-1, 2) if y - z < len(game_map)
+                                 for a in range(-1, 2) if x - a < len(game_map)
+                                 ]
+                    neighbors.remove(game_map[y][x])
+                    weights = Counter(neighbors)
+                    weights = [weights[key] for key in location_types.keys()]
+                    choices = list(location_types.keys())
+                    if sum(weights) == 0:
+                        weights = [1 for weight in weights]
+                    tile = random.choices(choices, weights)[0]
+                game_map[y][x] = tile
+    return game_map
 
 
 def move_player(game_map, key, player_location):
