@@ -14,13 +14,12 @@ import config
 def explore(game_surface, all_words):
     from map_tiles import location_types
 
-    # TODO: clean up this entire section of code to be more readable
     player_loc = [0, 0]
     map_size = 11
 
     game_map = [['' for x in range(map_size)] for y in range(map_size)]
 
-    game_map = generate_map(game_map)
+    game_map = generate_map_drunkard_walk(game_map)
 
     while True:
 
@@ -50,36 +49,46 @@ def explore(game_surface, all_words):
         break
 
 
-def generate_map(game_map):
-    from map_tiles import location_types
-    from collections import Counter
-
+def generate_map_drunkard_walk(game_map):
     map_size = len(game_map)
-    map_len = map_size // 2
 
-    while any(any(game_map[y][x] == ''
-                  for x, a in enumerate(game_map[y]))
-              for y, b in enumerate(game_map)):
-        for y in range(map_size):
-            for x in range(map_size):
-                if any(coord == 0 or coord == map_size for coord in [x, y]):
-                    choices = list(location_types.keys())
-                    tile = random.choices(choices)[0]
-                elif x == map_len and y == map_len:
-                    tile = 'city'
-                else:
-                    neighbors = [game_map[y - z][x - a]
-                                 for z in range(-1, 2) if y - z < len(game_map)
-                                 for a in range(-1, 2) if x - a < len(game_map)
-                                 ]
-                    neighbors.remove(game_map[y][x])
-                    weights = Counter(neighbors)
-                    weights = [weights[key] for key in location_types.keys()]
-                    choices = list(location_types.keys())
-                    if sum(weights) == 0:
-                        weights = [1 for weight in weights]
-                    tile = random.choices(choices, weights)[0]
-                game_map[y][x] = tile
+    amts = {'city': 0.03,
+            'mountain': 0.06}
+
+    for tile, amt_perc in amts.items():
+        amt = int(amt_perc * map_size ** 2)
+        count = 0
+
+        random_loc = [random.randint(1, map_size - 1),
+                      random.randint(1, map_size - 1)]
+        current_loc = random_loc
+        game_map[current_loc[0]][current_loc[1]] = tile
+
+        while count < amt:
+            direction = random.choice(['down', 'up', 'right', 'left'])
+            if direction == 'down':
+                current_loc[1] += 1
+            elif direction == 'up':
+                current_loc[1] -= 1
+            elif direction == 'right':
+                current_loc[0] += 1
+            elif direction == 'left':
+                current_loc[0] -= 1
+
+            # don't walk off the edge!
+            current_loc[0] = max(current_loc[0], 0)
+            current_loc[1] = max(current_loc[1], 0)
+            current_loc[0] = min(current_loc[0], map_size - 1)
+            current_loc[1] = min(current_loc[1], map_size - 1)
+
+            game_map[current_loc[0]][current_loc[1]] = tile
+            count += 1
+
+    for y, b in enumerate(game_map):
+        for x, a in enumerate(game_map[y]):
+            if a == '':
+                game_map[y][x] = 'grass'
+
     return game_map
 
 
