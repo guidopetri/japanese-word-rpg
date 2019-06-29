@@ -13,6 +13,12 @@ import config
 
 def explore(game_surface, all_words):
     from map_tiles import location_types
+    from game_enums import colors
+    from menus import message_box, wait_for_input
+
+    player = config.player
+    width = config.width
+    height = config.height
 
     player_loc = [0, 0]
     map_size = 11
@@ -21,7 +27,7 @@ def explore(game_surface, all_words):
 
     game_map = generate_map_drunkard_walk(game_map)
 
-    while True:
+    while player.alive:
 
         draw_map(game_surface, game_map, player_loc)
 
@@ -33,7 +39,7 @@ def explore(game_surface, all_words):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    break
+                    return
                 if event.key in (pygame.K_DOWN, pygame.K_UP,
                                  pygame.K_LEFT, pygame.K_RIGHT):
                     player_loc = move_player(game_map,
@@ -43,10 +49,18 @@ def explore(game_surface, all_words):
                     enemy_chance = location_types[tile_type].level + 1
                     if random.randint(1, 6) <= enemy_chance:
                         battle(game_surface, all_words)
-        else:
-            continue
 
-        break
+    # if player can't battle
+    message_text = "you're passed out! you can't battle!"
+    message, message_rect = message_box(message_text,
+                                        (width / 2, height / 4))
+    game_surface.fill(colors.offblack.value)
+    game_surface.blit(message, message_rect)
+
+    pygame.display.flip()
+
+    wait_for_input(pygame.K_RETURN)
+    return
 
 
 def generate_map_drunkard_walk(game_map):
@@ -175,26 +189,13 @@ def draw_map(surface, game_map, player_location):
 
 
 def battle(game_surface, all_words):
-    from menus import message_box, wait_for_input, message_bg
+    from menus import wait_for_input, message_bg
     from menus import multiple_message_box
     from game_enums import colors, status_effect
 
     player = config.player
     width = config.width
     height = config.height
-
-    # make sure player can battle in the first place
-    message_text = "you're passed out! you can't battle!"
-    message, message_rect = message_box(message_text,
-                                        (width / 2, height / 4))
-    if not player.alive:
-        game_surface.fill(colors.offblack.value)
-        game_surface.blit(message, message_rect)
-
-        pygame.display.flip()
-
-        wait_for_input(pygame.K_RETURN)
-        return
 
     poison_mode = False
 
@@ -314,7 +315,7 @@ def battle(game_surface, all_words):
             last_atk = time.time()
             player.take_damage(1)
         if not player.alive:
-            break
+            return
 
         game_surface.blit(word_text, template_dest, word_area)
         game_surface.blit(typed_text, dest, type_area)
@@ -390,28 +391,28 @@ def battle(game_surface, all_words):
                         continue
                 i += 1
         pygame.display.flip()
-    else:
-        # if the enemy died, not the player
-        end_time = time.time()
-        score = round(100 * correct_count / enemy.word_count)
-        cpm = round(60 * len(typed_words) / (end_time - start_time))
-        wpm = cpm / 5
-        gained_exp = int(enemy.exp_yield * score / 100)
-        gained_gold = int(enemy.gold_yield * score / 100)
 
-        player.gain_exp(gained_exp)
-        player.gain_gold(gained_gold)
+    # if the enemy died
+    end_time = time.time()
+    score = round(100 * correct_count / enemy.word_count)
+    cpm = round(60 * len(typed_words) / (end_time - start_time))
+    wpm = cpm / 5
+    gained_exp = int(enemy.exp_yield * score / 100)
+    gained_gold = int(enemy.gold_yield * score / 100)
 
-        player.kills += 1
+    player.gain_exp(gained_exp)
+    player.gain_gold(gained_gold)
 
-        texts = ["ENEMY LEVEL %s KILLED!!" % enemy.level,
-                 "your accuracy was %s%%" % score,
-                 "with a speed of %s cpm (%s wpm)," % (cpm, wpm),
-                 "earning your level %s character" % player.level,
-                 "%i exp and %i gold." % (gained_exp, gained_gold)]
+    player.kills += 1
 
-        message, message_rect = multiple_message_box(texts,
-                                                     (width / 2, height / 4))
+    texts = ["ENEMY LEVEL %s KILLED!!" % enemy.level,
+             "your accuracy was %s%%" % score,
+             "with a speed of %s cpm (%s wpm)," % (cpm, wpm),
+             "earning your level %s character" % player.level,
+             "%i exp and %i gold." % (gained_exp, gained_gold)]
+
+    message, message_rect = multiple_message_box(texts,
+                                                 (width / 2, height / 4))
 
     game_surface.fill(colors.offblack.value)
     game_surface.blit(message, message_rect)
