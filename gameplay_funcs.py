@@ -326,6 +326,8 @@ def battle(game_surface, enemy_level, all_words):
 
         word, typed = get_words(enemy.words, typed_words)
         correct = score_word(player.difficulty, word[:len(typed)], typed)
+        if correct < 1:
+            mistake_type = spellcheck_word(word[:len(typed)], typed)  # noqa
 
         if not correct:
             wrong_word = font.render(typed,
@@ -502,6 +504,18 @@ def make_bg_gradient(surface):
 
 def score_word(difficulty, word, user_input):
     return SequenceMatcher(None, word, user_input).ratio() >= difficulty
+
+
+def spellcheck_word(word, user_input):
+    if len(user_input) < len(word):
+        return 'deletion'
+    elif len(user_input) > len(word):
+        return 'addition'
+    elif all(c in word for c in user_input):
+        return 'permutation'
+    else:
+        count = len(word) - sum(c in word for c in user_input)  # noqa
+        return 'substitution'
 
 
 def shop(game_surface):
