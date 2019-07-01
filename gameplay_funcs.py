@@ -110,6 +110,7 @@ def generate_map_drunkard_walk(game_map):
 def move_player(game_map, key, player_location):
     from map_tiles import location_types
 
+    player = config.player
     new_location = list(player_location)  # must copy, not reference
 
     map_size = len(game_map)
@@ -135,7 +136,8 @@ def move_player(game_map, key, player_location):
 
     tile_type = game_map[new_location[0]][new_location[1]]
 
-    if location_types[tile_type].block_mv:
+    if (location_types[tile_type].block_mv
+       or (location_types[tile_type].ship_mv and not player.has_ship)):
         new_location = list(player_location)
 
     return new_location, player_location != new_location

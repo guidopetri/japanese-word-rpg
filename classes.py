@@ -78,6 +78,7 @@ class PlayerCharacter(object):
         self.status = defaultdict(int)
         self.difficulty = 0.93
         self.story_chapter = 1
+        self.has_ship = False
         self.level_pending = False
         self.inventory = defaultdict(int)
         self.equipment = OrderedDict([('head', None),
@@ -178,9 +179,10 @@ class Item(object):
 
 class LocationType(object):
 
-    def __init__(self, name, block_mv, block_fov, level):
+    def __init__(self, name, block_mv, ship_mv, block_fov, level):
         self.name = name
         self.block_mv = block_mv
+        self.ship_mv = ship_mv
         self.block_fov = block_fov
         self.level = level
 
