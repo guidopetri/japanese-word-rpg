@@ -48,7 +48,11 @@ def explore(game_surface, all_words):
                     tile_type = game_map[player_loc[0]][player_loc[1]]
                     enemy_chance = location_types[tile_type].level + 1
                     if moved and random.randint(1, 6) <= enemy_chance:
-                        battle(game_surface, all_words)
+                        tile_level = location_types[tile_type].level
+                        if tile_level >= 0:
+                            enemy_level = random.randint(tile_level + 1,
+                                                         tile_level + 2)
+                            battle(game_surface, enemy_level, all_words)
 
     # if player can't battle
     message_text = "you're passed out! you can't battle!"
@@ -188,7 +192,7 @@ def draw_map(surface, game_map, player_location):
             surface.blit(sprite, sprite_rect)
 
 
-def battle(game_surface, all_words):
+def battle(game_surface, enemy_level, all_words):
     from menus import wait_for_input, message_bg
     from menus import multiple_message_box
     from game_enums import colors, status_effect
@@ -242,7 +246,7 @@ def battle(game_surface, all_words):
     game_surface.fill(colors.offblack.value)
     typed_words = []
 
-    enemy = classes.enemy_word(random.randrange(1, 4))
+    enemy = classes.enemy_word(enemy_level)
 
     for i in range(enemy.max_hp):
         enemy.pick_word(all_words)

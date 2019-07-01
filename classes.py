@@ -10,7 +10,7 @@ class enemy_word(object):
 
     def __init__(self, level):
         from collections import defaultdict
-        self.level = level
+        self.level = level or 1
         self.exp_yield = self.level * random.randrange(5, 11)
         self.gold_yield = self.level * random.randrange(1, 4)
         self.health = self.level * random.randrange(2, 5)
