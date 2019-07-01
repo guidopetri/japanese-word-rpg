@@ -269,6 +269,7 @@ def battle(game_surface, enemy_level, all_words):
     i = 0
     correct_count = 0
     correct = True
+    start_time = 0
     while enemy.alive:
         game_surface.blit(bg, bg_rect)
 
@@ -301,7 +302,7 @@ def battle(game_surface, enemy_level, all_words):
                                 font.get_linesize()  # height
                                 )
 
-        if i:
+        if i or start_time:
             dmg_perc = min((time.time() - last_atk) / enemy.atk_ivl, 1)  # noqa
         else:
             dmg_perc = 0
@@ -315,7 +316,7 @@ def battle(game_surface, enemy_level, all_words):
         dmg_area = (0, 0, width * (1 - dmg_perc) / 4, 5)
         dmg_rect = dmg_rect_full.inflate(- width * dmg_perc / 4, 0)
 
-        if i and time.time() - last_atk >= enemy.atk_ivl:
+        if (i or start_time) and time.time() - last_atk >= enemy.atk_ivl:
             last_atk = time.time()
             player.take_damage(1)
         if not player.alive:
@@ -350,7 +351,7 @@ def battle(game_surface, enemy_level, all_words):
                   and event.unicode
                   and event.key not in (pygame.K_ESCAPE, pygame.K_TAB)):
                 # start counting towards cpm timer on first keypress
-                if i == 0:
+                if i == 0 and start_time == 0:
                     start_time = time.time()
                 if event.key == pygame.K_SPACE:
                     correct = score_word(player.difficulty, word, typed)
