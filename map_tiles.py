@@ -15,4 +15,9 @@ location_types = OrderedDict([('grass', LocationType(name='grass',
                               ('mountain', LocationType(name='mountain',
                                                         block_mv=True,
                                                         block_fov=False,
-                                                        level=1))])
+                                                        level=1)),
+                              ('river', LocationType(name='river',
+                                                     block_mv=True,
+                                                     block_fov=False,
+                                                     level=1)),
+                              ])

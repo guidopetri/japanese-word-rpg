@@ -67,7 +67,8 @@ def generate_map_drunkard_walk(game_map):
     map_size = len(game_map)
 
     amts = {'city': 0.03,
-            'mountain': 0.06}
+            'mountain': 0.06,
+            'river': 0.10}
 
     for tile, amt_perc in amts.items():
         amt = int(amt_perc * map_size ** 2)
@@ -160,6 +161,8 @@ def draw_map(surface, game_map, player_location):
     tiles['city'] = pygame.image.load('media/city-tile.png').convert()
     tiles['grass'] = pygame.image.load('media/grass-tile.png').convert()
     tiles['mountain'] = pygame.image.load('media/mountain-tile.png').convert()
+    tiles['river'] = pygame.Surface((32, 32))
+    tiles['river'].fill(colors.riverblue.value)
 
     for img in sprites.values():
         img.set_colorkey(colors.magenta.value)
@@ -170,12 +173,7 @@ def draw_map(surface, game_map, player_location):
     surface.fill(colors.offwhite.value)
 
     for pos in positions:
-        if game_map[pos[0]][pos[1]] == 'city':
-            tile = tiles['city']
-        elif game_map[pos[0]][pos[1]] == 'grass':
-            tile = tiles['grass']
-        elif game_map[pos[0]][pos[1]] == 'mountain':
-            tile = tiles['mountain']
+        tile = tiles[game_map[pos[0]][pos[1]]]
 
         tile_rect = tile.get_rect(midtop=(pos[0] * 32 + width / 2,
                                           pos[1] * 32 + height / 2))
