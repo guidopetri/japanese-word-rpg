@@ -174,7 +174,10 @@ class Item(object):
         return self.name == other
 
     def print_price(self):
-        return '{}: $G{}'.format(self.name, self.price)
+        name = self.name
+        if self.name == 'dyslexia potion':
+            name = ''.join(random.sample(name, k=len(name)))
+        return '{}: $G{}'.format(name, self.price)
 
 
 class LocationType(object):

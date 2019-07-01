@@ -596,6 +596,9 @@ def inventory(game_surface):
             if isinstance(amount, bool):
                 item_str = name
             else:
+                # cutesy dyslexia potion
+                if name == 'dyslexia potion':
+                    name = ''.join(random.sample(name, k=len(name)))
                 item_str = '{}x {}'.format(amount, name)
             options.append((name, item_str))
 
