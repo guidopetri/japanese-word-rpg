@@ -327,10 +327,9 @@ def battle(game_surface, enemy_level, all_words):
 
         word, typed = get_words(enemy.words, typed_words)
         correct = score_word(player.difficulty, word[:len(typed)], typed)
-        if correct < 1:
+        if not correct:
             mistake_type = spellcheck_word(word[:len(typed)], typed)  # noqa
 
-        if not correct:
             wrong_word = font.render(typed,
                                      True,
                                      colors.offred.value)
@@ -355,6 +354,24 @@ def battle(game_surface, enemy_level, all_words):
                     start_time = time.time()
                 if event.key == pygame.K_SPACE:
                     correct = score_word(player.difficulty, word, typed)
+                    if not correct:
+                        mistake_type = spellcheck_word(word, typed)
+                        if (player.status[status_effect.add_protect]
+                           and mistake_type == 'addition'):
+                            correct = True
+                            player.status[status_effect.add_protect] -= 1
+                        if (player.status[status_effect.del_protect]
+                           and mistake_type == 'deletion'):
+                            correct = True
+                            player.status[status_effect.del_protect] -= 1
+                        if (player.status[status_effect.sub_protect]
+                           and mistake_type == 'substitution'):
+                            correct = True
+                            player.status[status_effect.sub_protect] -= 1
+                        if (player.status[status_effect.perm_protect]
+                           and mistake_type == 'permutation'):
+                            correct = True
+                            player.status[status_effect.perm_protect] -= 1
                     last_atk = time.time()
                     if correct:
                         correct_count += 1
@@ -711,6 +728,14 @@ def get_effect(choice):
         player.status[status_effect.dmg_up] = 2
     elif choice == 'energy bar':
         player.status[status_effect.stamina_up] = 2
+    elif choice == 'dyslexia potion':
+        player.status[status_effect.add_protect] = 2
+    elif choice == 'beef jerky':
+        player.status[status_effect.del_protect] = 2
+    elif choice == 'alphabet soup':
+        player.status[status_effect.sub_protect] = 2
+    elif choice == 'sharpie':
+        player.status[status_effect.perm_protect] = 2
     return
 
 

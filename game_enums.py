@@ -15,6 +15,10 @@ class status_effect(IntEnum):
     hp_up = 6
     dmg_up = 7
     stamina_up = 8
+    add_protect = 9
+    del_protect = 10
+    sub_protect = 11
+    perm_protect = 12
 
 
 class player_classes(Enum):
