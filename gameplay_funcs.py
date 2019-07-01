@@ -353,6 +353,7 @@ def battle(game_surface, enemy_level, all_words):
                 if i == 0:
                     start_time = time.time()
                 if event.key == pygame.K_SPACE:
+                    correct = score_word(player.difficulty, word, typed)
                     last_atk = time.time()
                     if correct:
                         correct_count += 1
