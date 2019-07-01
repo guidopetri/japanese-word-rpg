@@ -42,12 +42,12 @@ def explore(game_surface, all_words):
                     return
                 if event.key in (pygame.K_DOWN, pygame.K_UP,
                                  pygame.K_LEFT, pygame.K_RIGHT):
-                    player_loc = move_player(game_map,
-                                             event.key,
-                                             player_loc)
+                    player_loc, moved = move_player(game_map,
+                                                    event.key,
+                                                    player_loc)
                     tile_type = game_map[player_loc[0]][player_loc[1]]
                     enemy_chance = location_types[tile_type].level + 1
-                    if random.randint(1, 6) <= enemy_chance:
+                    if moved and random.randint(1, 6) <= enemy_chance:
                         battle(game_surface, all_words)
 
     # if player can't battle
@@ -138,7 +138,7 @@ def move_player(game_map, key, player_location):
     if location_types[tile_type].block_mv:
         new_location = list(player_location)
 
-    return new_location
+    return new_location, player_location != new_location
 
 
 def draw_map(surface, game_map, player_location):
