@@ -615,8 +615,10 @@ def inventory(game_surface):
             else:
                 # cutesy dyslexia potion
                 if name == 'dyslexia potion':
-                    name = ''.join(random.sample(name, k=len(name)))
-                item_str = '{}x {}'.format(amount, name)
+                    shuffled = ''.join(random.sample(name, k=len(name)))
+                else:
+                    shuffled = name
+                item_str = '{}x {}'.format(amount, shuffled)
             options.append((name, item_str))
 
         gold_text = "Gold: $G{}".format(player.total_gold)
@@ -651,7 +653,11 @@ def inventory(game_surface):
             return
 
         name = options[selected][0]
-        action = item_options(game_surface, name)
+        if name == 'dyslexia potion':
+            shuffled = ''.join(random.sample(name, k=len(name)))
+        else:
+            shuffled = name
+        action = item_options(game_surface, shuffled)
         if action == 'use':
             if items[name].is_use:
                 player.inventory[name] -= 1
@@ -693,8 +699,10 @@ def inventory(game_surface):
                     return
             else:
                 message_text = "you can't throw {} away! it's too valuable!"
+        elif action == -1:
+            return
 
-        message_text = message_text.format(name)
+        message_text = message_text.format(shuffled)
 
     message, message_rect = message_box(message_text,
                                         (width / 2, height / 4))
