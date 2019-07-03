@@ -165,7 +165,8 @@ class Item(object):
                  is_use=False,
                  is_special=False,
                  is_equip=False,
-                 equip_type=None):
+                 equip_type=None,
+                 equip_bonus=None):
         self.id = Item.id_
         Item.id_ += 1
         self.name = name
@@ -176,6 +177,7 @@ class Item(object):
         self.desc = desc
         self.unlock_chapter = unlock_chapter
         self.equip_type = equip_type
+        self.equip_bonus = equip_bonus
 
     def __eq__(self, other):
         return self.name == other
