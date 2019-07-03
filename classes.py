@@ -157,8 +157,15 @@ class Item(object):
 
     id_ = 0
 
-    def __init__(self, name, price, is_use, is_special,
-                 is_equip, desc, unlock_chapter, equip_type=None):
+    def __init__(self,
+                 name,
+                 price,
+                 desc,
+                 unlock_chapter,
+                 is_use=False,
+                 is_special=False,
+                 is_equip=False,
+                 equip_type=None):
         self.id = Item.id_
         Item.id_ += 1
         self.name = name
