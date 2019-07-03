@@ -107,7 +107,12 @@ class PlayerCharacter(object):
             self.dmg_multiplier *= 1.3
 
     def take_damage(self, amount):
-        self.health -= amount
+        deductions = (self.equipment['head'].equip_bonus
+                      + self.equipment['body'].equip_bonus
+                      + self.equipment['legs'].equip_bonus
+                      )
+        dmg = max(amount - deductions, 1)  # minimum of 1 damage
+        self.health -= dmg
         if self.health <= 0:
             self.alive = False
 
