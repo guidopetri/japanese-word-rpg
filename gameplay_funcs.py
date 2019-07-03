@@ -318,7 +318,7 @@ def battle(game_surface, enemy_level, all_words):
 
         if (i or start_time) and time.time() - last_atk >= enemy.atk_ivl:
             last_atk = time.time()
-            player.take_damage(1)
+            player.take_damage(enemy.atk)
         if not player.alive:
             return
 
@@ -380,7 +380,7 @@ def battle(game_surface, enemy_level, all_words):
                             enemy.take_damage(1)
                     else:
                         enemy.pick_word(all_words)
-                        player.take_damage(1)
+                        player.take_damage(enemy.atk)
                     try:
                         # move i to next space in enemy.words, if not on space
                         i += enemy.words[i:].index(' ')

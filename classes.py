@@ -19,7 +19,8 @@ class enemy_word(object):
         self.alive = True
         self.words = []
         self.word_count = 0
-        self.atk_ivl = random.randrange(3, 8) // self.level
+        self.atk_ivl = max(random.randrange(3, 8) // self.level, 2)
+        self.atk = random.randrange(1, 2) * self.level
 
     def pick_word(self, words_dict):
 
@@ -107,9 +108,9 @@ class PlayerCharacter(object):
             self.dmg_multiplier *= 1.3
 
     def take_damage(self, amount):
-        deductions = (self.equipment['head'].equip_bonus
-                      + self.equipment['body'].equip_bonus
-                      + self.equipment['legs'].equip_bonus
+        deductions = (getattr(self.equipment['head'], 'equip_bonus', 0)
+                      + getattr(self.equipment['body'], 'equip_bonus', 0)
+                      + getattr(self.equipment['legs'], 'equip_bonus', 0)
                       )
         dmg = max(amount - deductions, 1)  # minimum of 1 damage
         self.health -= dmg
