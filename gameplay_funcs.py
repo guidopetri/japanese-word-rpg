@@ -681,6 +681,9 @@ def inventory(game_surface):
                 message_text = "you can't hold onto {}!"
         elif action == 'equip':
             if items[name].is_equip:
+                currently_equipped = player.equipment[items[name].equip_type]
+                if currently_equipped is not None:
+                    player.inventory[currently_equipped] += 1
                 player.equipment[items[name].equip_type] = name
                 player.inventory[name] -= 1
                 message_text = "you equipped {}!"
