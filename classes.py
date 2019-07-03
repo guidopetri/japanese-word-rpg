@@ -191,7 +191,12 @@ class Item(object):
 
 class LocationType(object):
 
-    def __init__(self, name, block_mv, ship_mv, block_fov, level):
+    def __init__(self,
+                 name,
+                 level,
+                 block_mv=False,
+                 ship_mv=False,
+                 block_fov=False):
         self.name = name
         self.block_mv = block_mv
         self.ship_mv = ship_mv
