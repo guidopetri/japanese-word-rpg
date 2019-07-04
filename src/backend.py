@@ -11,7 +11,7 @@ def load_words():
 
     import pickle
 
-    with open('words.pckl', 'rb') as f:
+    with open('src/words.pckl', 'rb') as f:
         all_words = pickle.load(f)
 
     return all_words
@@ -22,8 +22,8 @@ def load_player():
 
     # name = input('what's your name?\n')
     name = 'Sid'
-    if os.path.exists('players/{}.sav'.format(name)):
-        with open('players/{}.sav'.format(name), 'rb') as f:
+    if os.path.exists('src/players/{}.sav'.format(name)):
+        with open('src/players/{}.sav'.format(name), 'rb') as f:
             player = pickle.load(f)
     else:
         print("player doesn't exist")
@@ -39,9 +39,9 @@ def save_player():
 
     player = config.player
 
-    if not os.path.exists('players/'):
-        os.mkdir('players')
-    with open('players/{}.sav'.format(player.name), 'wb') as f:
+    if not os.path.exists('src/players/'):
+        os.mkdir('src/players')
+    with open('src/players/{}.sav'.format(player.name), 'wb') as f:
         pickle.dump(player, f, protocol=-1)
 
     return

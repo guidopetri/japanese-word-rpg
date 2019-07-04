@@ -160,13 +160,13 @@ def draw_map(surface, game_map, player_location):
                  for y in range(- map_len, map_size - map_len)]
 
     sprites = {}
-    sprites['player'] = pygame.image.load('media/player-ow.png').convert()
+    sprites['player'] = pygame.image.load('src/media/player-ow.png').convert()
     # sprites['enemy'] = pygame.image.load('media/monster-ow.png').convert()
 
     tiles = {}
-    tiles['city'] = pygame.image.load('media/city-tile.png').convert()
-    tiles['grass'] = pygame.image.load('media/grass-tile.png').convert()
-    tiles['mountain'] = pygame.image.load('media/mountain-tile.png').convert()
+    tiles['city'] = pygame.image.load('src/media/city-tile.png').convert()
+    tiles['grass'] = pygame.image.load('src/media/grass-tile.png').convert()
+    tiles['mountain'] = pygame.image.load('src/media/mountain-tile.png').convert()  # noqa
     tiles['river'] = pygame.Surface((32, 32))
     tiles['river'].fill(colors.riverblue.value)
 
@@ -235,7 +235,7 @@ def battle(game_surface, enemy_level, all_words):
     current_img = (0, 0, 0, 0)
 
     # images need to be cleaned up a little
-    monster_images = pygame.image.load('media/monsters.png').convert()
+    monster_images = pygame.image.load('src/media/monsters.png').convert()
     monster_images.set_colorkey(colors.magenta.value)
 
     bg_gradient = pygame.Surface((width / 2, font.get_linesize()),
@@ -453,7 +453,6 @@ def battle(game_surface, enemy_level, all_words):
     if player.status[status_effect.fast]:
         player.difficulty += 0.13
     if player.status[status_effect.hp_up]:
-        print('hp down', flush=True)
         player.health = int(player.max_hp * (2 / 3)  # 13 / 15 -> 8 / 10
                             - (player.max_hp - player.health))
         player.max_hp = int(player.max_hp * (2 / 3))
@@ -551,7 +550,7 @@ def shop(game_surface):
                if item.unlock_chapter <= config.player.story_chapter
                and not item.is_special]
 
-    gold_text = "Gold: $G{}".format(player.total_gold)
+    gold_text = "gold: $g{}".format(player.total_gold)
     gold, gold_rect = message_box(gold_text,
                                   (width * 5 / 6, height / 6))
 
@@ -621,7 +620,7 @@ def inventory(game_surface):
                 item_str = '{}x {}'.format(amount, shuffled)
             options.append((name, item_str))
 
-        gold_text = "Gold: $G{}".format(player.total_gold)
+        gold_text = "gold: $g{}".format(player.total_gold)
         gold, gold_rect = message_box(gold_text,
                                       (width * 5 / 6, height / 6))
 
@@ -804,7 +803,7 @@ def castle(game_surface):
     story = king_story[player.story_chapter]
     added_items = king_items_given[player.story_chapter]
 
-    king_img = pygame.image.load('media/edo-king.png').convert()
+    king_img = pygame.image.load('src/media/edo-king.png').convert()
     king_img.set_colorkey(colors.magenta.value)
     king_img = pygame.transform.scale(king_img,
                                       (height // 2,  # width

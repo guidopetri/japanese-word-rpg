@@ -15,7 +15,7 @@ def select_player(play_surface):
     width = config.width
     height = config.height
 
-    player_names = [file[:-4] for file in os.listdir('players/')]
+    player_names = [file[:-4] for file in os.listdir('src/players/')]
     player_names.extend(['new player'])
 
     selected = -1
@@ -29,7 +29,8 @@ def select_player(play_surface):
     if player_names[selected] == 'new player':
         create_player(play_surface)
     else:
-        with open('players/{}.sav'.format(player_names[selected]), 'rb') as f:
+        with open('src/players/{}.sav'.format(player_names[selected]),
+                  'rb') as f:
             player = pickle.load(f)
             config.player = player
 
@@ -106,7 +107,7 @@ def splash_screen(play_surface):
     width = config.width
     height = config.height
 
-    edo_text = font.render('E D O',
+    edo_text = font.render('e d o',
                            True,
                            colors.offred.value)
     edo_rect = edo_text.get_rect(center=(width / 2,
@@ -144,7 +145,7 @@ def main_menu(play_surface):
     while True:
         play_surface.fill(colors.offblack.value)
         selected = choose_from_options(play_surface,
-                                       'welcome to Edo',
+                                       'welcome to edo',
                                        play_options,
                                        (width / 2, height / 4),
                                        selected)
