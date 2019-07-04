@@ -14,6 +14,6 @@ pygame.font.init()
 play_surface = pygame.display.set_mode((config.width, config.height))
 pygame.display.set_caption("Word RPG")
 
-menus.intro_screen(play_surface)
+menus.splash_screen(play_surface)
 menus.select_player(play_surface)
 menus.main_menu(play_surface)

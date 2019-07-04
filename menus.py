@@ -99,8 +99,28 @@ def create_player(play_surface):
     config.player = player
 
 
-def intro_screen(play_surface):
-    pass
+def splash_screen(play_surface):
+    from game_enums import colors
+
+    font = pygame.font.SysFont(config.fontname, config.fontsize)
+    width = config.width
+    height = config.height
+
+    edo_text = font.render('E D O',
+                           True,
+                           colors.offred.value)
+    edo_rect = edo_text.get_rect(center=(width / 2,
+                                         height / 2))
+
+    play_surface.fill(colors.riverblue.value)
+    play_surface.blit(edo_text, edo_rect)
+    pygame.display.flip()
+
+    wait_for_input(key=pygame.K_RETURN)
+
+    play_surface.fill(colors.offblack.value)
+
+    return
 
 
 def main_menu(play_surface):
