@@ -29,3 +29,8 @@
 
 - actually hired by the king
 - spawns monsters
+
+## hero
+
+- loyal to the king
+- does not know of the king's plan
