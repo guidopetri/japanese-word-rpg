@@ -15,6 +15,9 @@ def select_player(play_surface):
     width = config.width
     height = config.height
 
+    if not os.path.exists('src/players'):
+        os.mkdir('src/players')
+
     player_names = [file[:-4] for file in os.listdir('src/players/')]
     player_names.extend(['new player'])
 
