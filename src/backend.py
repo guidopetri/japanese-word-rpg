@@ -20,10 +20,12 @@ def load_words():
 def load_player():
     import pickle
 
+    savepath = config.savepath
+
     # name = input('what's your name?\n')
     name = 'Sid'
-    if os.path.exists('src/players/{}.sav'.format(name)):
-        with open('src/players/{}.sav'.format(name), 'rb') as f:
+    if os.path.exists(savepath + 'players/{}.sav'.format(name)):
+        with open(savepath + 'players/{}.sav'.format(name), 'rb') as f:
             player = pickle.load(f)
     else:
         print("player doesn't exist")
@@ -38,10 +40,23 @@ def save_player():
     import pickle
 
     player = config.player
+    savepath = config.savepath
 
-    if not os.path.exists('src/players/'):
-        os.mkdir('src/players')
-    with open('src/players/{}.sav'.format(player.name), 'wb') as f:
+    with open(savepath + 'players/{}.sav'.format(player.name), 'wb') as f:
         pickle.dump(player, f, protocol=-1)
 
     return
+
+
+def create_dirs():
+    import os
+
+    savepath = config.savepath
+
+    game_paths = [savepath,
+                  savepath + 'players',
+                  ]
+
+    for path in game_paths:
+        if not os.path.exists(path):
+            os.mkdir(path)

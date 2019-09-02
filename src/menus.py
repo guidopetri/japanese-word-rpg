@@ -14,11 +14,9 @@ def select_player(play_surface):
 
     width = config.width
     height = config.height
+    savepath = config.savepath
 
-    if not os.path.exists('src/players'):
-        os.mkdir('src/players')
-
-    player_names = [file[:-4] for file in os.listdir('src/players/')]
+    player_names = [file[:-4] for file in os.listdir(savepath + 'players/')]
     player_names.extend(['new player'])
 
     selected = -1
@@ -32,7 +30,7 @@ def select_player(play_surface):
     if player_names[selected] == 'new player':
         create_player(play_surface)
     else:
-        with open('src/players/{}.sav'.format(player_names[selected]),
+        with open(savepath + 'players/{}.sav'.format(player_names[selected]),
                   'rb') as f:
             player = pickle.load(f)
             config.player = player
