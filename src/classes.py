@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# python 3.6.4
+#!/usr/bin/env python3
 
 import random
 from game_enums import status_effect, player_classes

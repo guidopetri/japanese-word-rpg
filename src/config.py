@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 from os.path import expanduser
 from sys import platform as _platform

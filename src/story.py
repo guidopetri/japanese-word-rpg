@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 king_story = {1: ["welcome to edo. we are pleased to have you here. "
                   "monsters have been attacking us recently. "
