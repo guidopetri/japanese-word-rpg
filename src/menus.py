@@ -131,7 +131,6 @@ def main_menu(play_surface):
     import backend
 
     all_words = backend.load_words()
-    backend.load_player()
 
     width, height = config.width, config.height
     selected = None
