@@ -53,10 +53,8 @@ def create_dirs():
 
     savepath = config.savepath
 
-    game_paths = [savepath,
-                  savepath + 'players',
+    game_paths = [savepath + 'players',
                   ]
 
     for path in game_paths:
-        if not os.path.exists(path):
-            os.mkdir(path)
+        os.makedirs(path, exist_ok=True)
