@@ -120,7 +120,6 @@ def move_player(game_map, key, player_location):
     new_location = list(player_location)  # must copy, not reference
 
     map_size = len(game_map)
-    map_len = map_size // 2
 
     if key == pygame.K_DOWN:
         new_location[1] += 1
@@ -131,14 +130,10 @@ def move_player(game_map, key, player_location):
     elif key == pygame.K_RIGHT:
         new_location[0] += 1
 
-    new_location[0] = max(new_location[0],
-                          - map_len)
-    new_location[0] = min(new_location[0],
-                          map_size - map_len - 1)
-    new_location[1] = max(new_location[1],
-                          - map_len)
-    new_location[1] = min(new_location[1],
-                          map_size - map_len - 1)
+    new_location[0] += map_size
+    new_location[0] %= map_size
+    new_location[1] += map_size
+    new_location[1] %= map_size
 
     tile_type = game_map[new_location[0]][new_location[1]]
 
@@ -154,6 +149,7 @@ def draw_map(surface, game_map, player_location):
 
     width = config.width
     height = config.height
+    map_size = len(game_map)
 
     positions = [[x, y]
                  for x in range(- 10, 10)
@@ -179,8 +175,8 @@ def draw_map(surface, game_map, player_location):
     surface.fill(colors.offwhite.value)
 
     for pos in positions:
-        abs_pos = (player_location[0] + pos[0],
-                   player_location[1] + pos[1])
+        abs_pos = ((player_location[0] + pos[0]) % map_size,
+                   (player_location[1] + pos[1]) % map_size)
         tile = tiles[game_map[abs_pos[0]][abs_pos[1]]]
 
         tile_rect = tile.get_rect(midtop=(pos[0] * 32 + width / 2,
