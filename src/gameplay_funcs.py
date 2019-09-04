@@ -84,22 +84,28 @@ def generate_map_drunkard_walk():
         game_map[current_loc[0]][current_loc[1]] = tile
 
         while count < amt:
-            direction = random.choice(['down', 'up', 'right', 'left'])
-            if direction == 'down':
-                current_loc[1] += 1
-            elif direction == 'up':
-                current_loc[1] -= 1
-            elif direction == 'right':
-                current_loc[0] += 1
-            elif direction == 'left':
-                current_loc[0] -= 1
+            new_area = random.randint(1, 100) <= 5
 
-            # don't walk off the edge!
-            current_loc[0] = max(current_loc[0], 0)
-            current_loc[1] = max(current_loc[1], 0)
-            current_loc[0] = min(current_loc[0], map_size - 1)
-            current_loc[1] = min(current_loc[1], map_size - 1)
+            if not new_area:
+                direction = random.choice(['down', 'up', 'right', 'left'])
+                if direction == 'down':
+                    current_loc[1] += 1
+                elif direction == 'up':
+                    current_loc[1] -= 1
+                elif direction == 'right':
+                    current_loc[0] += 1
+                elif direction == 'left':
+                    current_loc[0] -= 1
 
+                # don't walk off the edge!
+                current_loc[0] = max(current_loc[0], 0)
+                current_loc[1] = max(current_loc[1], 0)
+                current_loc[0] = min(current_loc[0], map_size - 1)
+                current_loc[1] = min(current_loc[1], map_size - 1)
+
+            else:
+                current_loc = [random.randint(1, map_size - 1),
+                               random.randint(1, map_size - 1)]
             game_map[current_loc[0]][current_loc[1]] = tile
             count += 1
 
