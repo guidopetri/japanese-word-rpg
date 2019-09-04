@@ -152,7 +152,7 @@ def draw_map(surface, game_map, player_location):
     map_size = len(game_map)
 
     positions = [[x, y]
-                 for x in range(- 10, 10)
+                 for x in range(- 12, 13)
                  for y in range(- 10, 10)]
 
     sprites = {}
