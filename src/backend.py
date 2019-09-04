@@ -25,12 +25,37 @@ def save_player():
     return
 
 
+def save_map(game_map):
+    import pickle
+
+    player = config.player
+    savepath = config.savepath
+
+    with open(savepath + 'maps/{}_map.sav'.format(player.name), 'wb') as f:
+        pickle.dump(game_map, f, protocol=-1)
+
+    return
+
+
+def load_map():
+    import pickle
+
+    player = config.player
+    savepath = config.savepath
+
+    with open(savepath + 'maps/{}_map.sav'.format(player.name), 'rb') as f:
+        game_map = pickle.load(f)
+
+    return game_map
+
+
 def create_dirs():
     import os
 
     savepath = config.savepath
 
     game_paths = [savepath + 'players',
+                  savepath + 'maps',
                   ]
 
     for path in game_paths:

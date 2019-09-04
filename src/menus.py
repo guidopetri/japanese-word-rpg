@@ -38,6 +38,7 @@ def select_player(play_surface):
 
 def create_player(play_surface):
     from game_enums import player_classes, colors
+    from gameplay_funcs import generate_map_drunkard_walk
     from classes import PlayerCharacter
 
     width = config.width
@@ -97,6 +98,9 @@ def create_player(play_surface):
                              player_class=pc_classes[selected])
 
     config.player = player
+    generate_map_drunkard_walk()
+
+    return
 
 
 def splash_screen(play_surface):

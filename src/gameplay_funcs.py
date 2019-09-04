@@ -13,17 +13,15 @@ def explore(game_surface, all_words):
     from map_tiles import location_types
     from game_enums import colors
     from menus import message_box, wait_for_input
+    from backend import load_map
 
     player = config.player
     width = config.width
     height = config.height
 
     player_loc = [0, 0]
-    map_size = 11
 
-    game_map = [['' for x in range(map_size)] for y in range(map_size)]
-
-    game_map = generate_map_drunkard_walk(game_map)
+    game_map = load_map()
 
     while player.alive:
 
@@ -65,8 +63,11 @@ def explore(game_surface, all_words):
     return
 
 
-def generate_map_drunkard_walk(game_map):
-    map_size = len(game_map)
+def generate_map_drunkard_walk():
+    from backend import save_map
+
+    map_size = 11
+    game_map = [['' for x in range(map_size)] for y in range(map_size)]
 
     amts = {'city': 0.03,
             'mountain': 0.06,
@@ -106,7 +107,9 @@ def generate_map_drunkard_walk(game_map):
             if a == '':
                 game_map[y][x] = 'grass'
 
-    return game_map
+    save_map(game_map)
+
+    return
 
 
 def move_player(game_map, key, player_location):
