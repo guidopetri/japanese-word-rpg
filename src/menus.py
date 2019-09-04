@@ -35,6 +35,8 @@ def select_player(play_surface):
 
     save_player()
 
+    return
+
 
 def create_player(play_surface):
     from game_enums import player_classes, colors

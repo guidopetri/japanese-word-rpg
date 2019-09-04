@@ -19,9 +19,10 @@ def explore(game_surface, all_words):
     width = config.width
     height = config.height
 
-    player_loc = [0, 0]
-
     game_map = load_map()
+
+    player_loc = [len(game_map) // 2,
+                  len(game_map) // 2]
 
     while player.alive:
 
@@ -66,7 +67,7 @@ def explore(game_surface, all_words):
 def generate_map_drunkard_walk():
     from backend import save_map
 
-    map_size = 11
+    map_size = 40
     game_map = [['' for x in range(map_size)] for y in range(map_size)]
 
     amts = {'city': 0.03,
@@ -153,12 +154,10 @@ def draw_map(surface, game_map, player_location):
 
     width = config.width
     height = config.height
-    map_size = len(game_map)
-    map_len = map_size // 2
 
     positions = [[x, y]
-                 for x in range(- map_len, map_size - map_len)
-                 for y in range(- map_len, map_size - map_len)]
+                 for x in range(- 10, 10)
+                 for y in range(- 10, 10)]
 
     sprites = {}
     sprites['player'] = pygame.image.load('src/media/player-ow.png').convert()
@@ -180,16 +179,18 @@ def draw_map(surface, game_map, player_location):
     surface.fill(colors.offwhite.value)
 
     for pos in positions:
-        tile = tiles[game_map[pos[0]][pos[1]]]
+        abs_pos = (player_location[0] + pos[0],
+                   player_location[1] + pos[1])
+        tile = tiles[game_map[abs_pos[0]][abs_pos[1]]]
 
         tile_rect = tile.get_rect(midtop=(pos[0] * 32 + width / 2,
                                           pos[1] * 32 + height / 2))
         surface.blit(tile, tile_rect)
 
-        if pos == player_location:
+        if pos == [0, 0]:
             sprite = sprites['player']
-            sprite_rect = sprite.get_rect(midtop=(pos[0] * 32 + width / 2,
-                                                  pos[1] * 32 + height / 2))
+            sprite_rect = sprite.get_rect(midtop=(width / 2,
+                                                  height / 2))
             surface.blit(sprite, sprite_rect)
 
 
